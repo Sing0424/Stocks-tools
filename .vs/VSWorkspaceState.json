@@ -1,6 +1,10 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Screener",
+    "\\Screener\\rs_data",
+    "\\Screener\\rs_data\\data_persist"
   ],
+  "SelectedNode": "\\Screener\\rs_data\\data_persist\\test_tickers_info.json",
   "PreviewInSolutionExplorer": false
 }
