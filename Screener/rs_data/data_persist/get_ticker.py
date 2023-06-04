@@ -2,7 +2,6 @@
 from urllib.request import urlopen
 from yahooquery import Ticker
 import json
-import time
 
 def get_latest_data():
     url = "https://dumbstockapi.com/stock?format=tickers-only&countries=US"
@@ -11,7 +10,7 @@ def get_latest_data():
     return data_json
 
 def update_data(data_json):
-    with open('test_tickers_info.json', 'r') as exist_json:
+    with open('/test_tickers_info.json', 'r') as exist_json:
         json_str = exist_json.read()
         exist_data = json.loads(json_str)
 
@@ -37,7 +36,7 @@ def update_data(data_json):
                                                         "sector":sector
                                                         }
                                             }
-                        print(symbol + ": data fetch sucessfully by update")
+                        print(symbol + ": data fetch sucessful by update")
                     else:
                         print(symbol + ": data up to date")
                 except:
@@ -56,10 +55,10 @@ def update_data(data_json):
                 except:
                     print(symbol + ": data add failed")
 
-    with open("test_tickers_info.json", "w") as outfile:
+    with open("/test_tickers_info.json", "w") as outfile:
         outfile.write(json.dumps(exist_data,indent=2))
 
-    with open('test_tickers_info.json', 'r') as exist_json:
+    with open('/test_tickers_info.json', 'r') as exist_json:
         json_str = exist_json.read()
         exist_data = json.loads(json_str)
         non_exist_list = []
@@ -72,7 +71,7 @@ def update_data(data_json):
             del exist_data[key]
             print(key + ": not existing, has been deleted")
 
-    with open("test_tickers_info.json", "w") as outfile:
+    with open("/test_tickers_info.json", "w") as outfile:
         outfile.write(json.dumps(exist_data,indent=2))
 
 latest_data = get_latest_data()
