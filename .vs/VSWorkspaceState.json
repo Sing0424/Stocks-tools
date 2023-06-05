@@ -3,8 +3,9 @@
     "",
     "\\Screener",
     "\\Screener\\rs_data",
-    "\\Screener\\rs_data\\data_persist"
+    "\\Screener\\rs_data\\data_persist",
+    "\\__pycache__"
   ],
-  "SelectedNode": "\\Screener\\rs_data\\data_persist\\test.py",
+  "SelectedNode": "\\Screener\\rs_data\\data_persist\\test_tickers_info.json",
   "PreviewInSolutionExplorer": false
 }
