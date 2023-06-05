@@ -20,10 +20,10 @@ def fetch_data(ticker, symbol):
     return {"info": {"industry":industry, "sector":sector}}
 
 def update_data(data_json):
-    with open('test_tickers_info.json', 'r') as exist_json:
+    with open(r'C:\Ivan\Repo\Stocks-tools\Screener\rs_data\data_persist\test_tickers_info.json', 'r') as exist_json:
         exist_data = json.load(exist_json)
 
-    symbols = {key.strip(): None for key in data_json}
+    symbols = {key.strip() for key in data_json}
     for symbol in symbols:
         ticker = Ticker(symbol)
         fetched_data = fetch_data(ticker, symbol)
@@ -41,7 +41,7 @@ def update_data(data_json):
             exist_data[symbol] = fetched_data
             print(f"{symbol}: data add successfully")
 
-    with open('test_tickers_info.json", "w") as outfile:
+    with open(r"C:\Ivan\Repo\Stocks-tools\Screener\rs_data\data_persist\test_tickers_info.json", "w") as outfile:
         json.dump(exist_data, outfile, indent=2)
 
 latest_data = get_latest_data()
