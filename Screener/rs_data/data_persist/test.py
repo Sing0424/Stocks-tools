@@ -1,6 +1,12 @@
+import os
 import requests
 from yahooquery import Ticker
 import json
+
+json_dir_path = os.path.join(
+    "Screener", "rs_data", "data_persist", "test_tickers_info.json"
+)
+print(json_dir_path)
 
 
 def get_latest_data():
@@ -24,10 +30,7 @@ def fetch_data(symbol):
 
 
 def update_data(data_json):
-    with open(
-        r"C:\Ivan\Repo\Stocks-tools\Screener\rs_data\data_persist\test_tickers_info.json",
-        "r",
-    ) as exist_json:
+    with open(json_dir_path, "r") as exist_json:
         exist_data = json.load(exist_json)
 
     symbols = {key.strip() for key in data_json}
@@ -47,11 +50,8 @@ def update_data(data_json):
             exist_data[symbol] = fetched_data
             print(f"{symbol}: data add successfully")
 
-    with open(
-        r"C:\Ivan\Repo\Stocks-tools\Screener\rs_data\data_persist\test_tickers_info.json",
-        "w",
-    ) as outfile:
-        json.dump(exist_data, outfile, indent=2)
+    with open(json_dir_path, "w") as outfile:
+        outfile.write(json.dumps(exist_data, indent=2))
 
 
 latest_data = get_latest_data()
