@@ -1,12 +1,8 @@
 import os
+import re
 import requests
 from yahooquery import Ticker
 import json
-
-json_dir_path = os.path.join(
-    "Screener", "rs_data", "data_persist", "test_tickers_info.json"
-)
-print(json_dir_path)
 
 
 def get_latest_data():
@@ -26,15 +22,17 @@ def fetch_data(symbol):
     except Exception as e:
         print(f"{symbol}: data fetch failed, {e}")
         return None
-    return {"info": {"industry": industry, "sector": sector}}
+    return {"info": {"industry": re.sub("[^a-zA-Z]", ' ', str(industry)), "sector": re.sub(r"[^a-zA-Z]", ' ', str(sector))}}
 
 
 def update_data(data_json):
+    json_dir_path = os.path.join("Screener", "rs_data", "data_persist", "test_tickers_info.json")
     with open(json_dir_path, "r") as exist_json:
         exist_data = json.load(exist_json)
 
     symbols = {key.strip() for key in data_json}
     for symbol in symbols:
+        symbol = symbol.split('^', 1)[0]
         fetched_data = fetch_data(symbol)
 
         if fetched_data is None:
