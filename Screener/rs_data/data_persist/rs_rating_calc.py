@@ -1,28 +1,44 @@
-import yfinance as yf
 import pandas as pd
+import numpy as np
+import yfinance as yf
+from config import stocks_csv_path
 
-# Define stock ticker and universe
-stock_ticker = "NVDA"
-universe = ["NVDA", "AMZN", "GOOG", "MSFT", "FB"]
+# Load the stock symbols into a pandas dataframe
+stocks_df = pd.read_csv(stocks_csv_path)
 
-# Download historical price data for stock and universe
-stock_data = yf.download(stock_ticker, start="2022-06-05", end="2023-06-05")
-universe_data = yf.download(universe, start="2022-06-05", end="2023-06-05")["Adj Close"]
+# Define the start and end dates for the RS rating calculation
+start_date = pd.Timestamp.today() - pd.DateOffset(years=1)
+end_date = pd.Timestamp.today()
 
-# Calculate percentage change in stock price and universe price
-stock_pct_change = stock_data["Adj Close"].pct_change()
-universe_pct_change = universe_data.pct_change()
+# Calculate the RS rating for each stock symbol
+ratings = []
+for symbol in stocks_df["symbol"]:
+    try:
+        # Get the historical stock prices from Yahoo Finance
+        stock_data = yf.download(symbol, start=start_date, end=end_date)
 
-# Calculate cumulative percentage change for each stock
-cum_pct_change = (universe_pct_change + 1).cumprod()
+        # Calculate the percentage change in price for the past year
+        price_changes = stock_data["Adj Close"].pct_change()
 
-# Calculate relative strength rank (RSR) for each stock
-rsr = pd.Series(index=universe)
-for ticker in universe:
-    rsr[ticker] = (
-        cum_pct_change[ticker].iloc[-1] / cum_pct_change[stock_ticker].iloc[-1]
-    )
-rs_ranking = (rsr.rank(ascending=False) / len(universe)) * 98 + 1
+        # Calculate the percentage change in price for the S&P 500 index for the past year
+        sp500_data = yf.download("^GSPC", start=start_date, end=end_date)
+        sp500_changes = sp500_data["Adj Close"].pct_change()
 
-# Print relative strength ranking for stock
-print(f"Relative strength ranking for {stock_ticker}: {rs_ranking[stock_ticker]:.2f}")
+        # Calculate the RS rating as the ratio of the stock's price change to the S&P 500's price change
+        rs_rating = (price_changes / sp500_changes).mean() * 100
+
+        # Append the symbol and RS rating to the list of ratings
+        ratings.append((symbol, rs_rating))
+
+    except:
+        # If there is an error getting the stock data, skip this symbol
+        continue
+
+# Convert the list of ratings to a pandas dataframe
+ratings_df = pd.DataFrame(ratings, columns=["symbol", "RS Rating"])
+
+# Filter the results to only include symbols with an RS rating greater than 70
+filtered_ratings_df = ratings_df[ratings_df["RS Rating"] > 70]
+
+# Save the results to a CSV file
+filtered_ratings_df.to_csv("rs_ratings.csv", index=False)
