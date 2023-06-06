@@ -1,13 +1,52 @@
+import yfinance as yf
 import pandas as pd
-import requests
-from config import symbols_url, stocks_csv_path
+import datetime
+from config import stocks_csv_path
 
-with requests.Session() as s:
-    download = s.get(symbols_url)
-    decoded_content = download.content.decode('utf-8')
-    cr = pd.read_csv(pd.compat.StringIO(decoded_content))
-    symbols = cr['symbol'].tolist()
+# Load the stock symbols from the CSV file into a list
+with open(stocks_csv_path, "r") as f:
+    symbols = [line.strip() for line in f]
 
-    # Write the symbols to a CSV file
-    cr['symbol'].to_csv(stocks_csv_path, index=False, header=True)
-    print('Symbols written to', stocks_csv_path)
+# Define the number of trading days in a quarter
+trading_days_per_quarter = 63
+
+
+# Define a function to calculate the price percentage change for a given stock over a given number of quarters
+def calculate_price_change(symbol, quarters):
+    start_date = datetime.datetime.now() - datetime.timedelta(
+        days=quarters * trading_days_per_quarter
+    )
+    end_date = datetime.datetime.now()
+    stock_data = yf.download(symbol, start=start_date, end=end_date)
+    price_change = (stock_data["Adj Close"][-1] / stock_data["Adj Close"][0]) - 1
+    return price_change
+
+
+# Calculate the RS rating for each stock
+rs_ratings = []
+for symbol in symbols:
+    try:
+        pc_1 = calculate_price_change(symbol, 1)
+        pc_2 = calculate_price_change(symbol, 2)
+        pc_3 = calculate_price_change(symbol, 3)
+        pc_4 = calculate_price_change(symbol, 4)
+        rs_rating = ((0.4 * pc_1) + (0.2 * pc_2) + (0.2 * pc_3) + (0.2 * pc_4)) * 100
+        print(f"{symbol}: {rs_rating}")
+        rs_ratings.append((symbol, rs_rating))
+    except:
+        pass
+
+# Sort the list of RS ratings by ascending order
+rs_ratings.sort(key=lambda x: x[1])
+
+# Get the top 30% of RS ratings
+num_top_ratings = int(len(rs_ratings) * 0.3)
+top_ratings = rs_ratings[-num_top_ratings:]
+
+# Write the top ratings to a CSV file
+date_string = datetime.datetime.now().strftime("%Y-%m-%d")
+filename = f"top_rs_ratings_{date_string}.csv"
+with open(filename, "w") as f:
+    f.write("Symbol,RS Rating\n")
+    for rating in top_ratings:
+        f.write(f"{rating[0]},{rating[1]}\n")
