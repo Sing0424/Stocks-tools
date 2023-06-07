@@ -1,41 +1,45 @@
 import pandas as pd
+import numpy as np
 import yfinance as yf
+import datetime
 from config import stocks_csv_path
 
-def get_rs_rating(stock):
-    # Download historical data for the stock and the S&P 500 index
-    data = yf.download(stock, start="2020-01-01", end="2023-06-06")
-    sp500_data = yf.download("^GSPC", start="2020-01-01", end="2023-06-06")
-
-    # Calculate the percentage change in price over the past 6 months
-    pct_change_6m = data['Adj Close'].pct_change(periods=126)
-    sp500_pct_change_6m = sp500_data['Adj Close'].pct_change(periods=126)
-
-    # Calculate the RS rating as the ratio of the stock's average percentage change to the S&P 500's average percentage change
-    rs_rating = (pct_change_6m.mean() / sp500_pct_change_6m.mean()) * 100
-    return rs_rating
-
-# Load the stock symbols into a Pandas DataFrame
+# Read the stock symbols from the CSV file
 stocks_df = pd.read_csv(stocks_csv_path)
+symbols = stocks_df["symbol"].tolist()
 
-# Calculate the RS rating for each stock and add it to the DataFrame
+# Calculate the date range for each quarter
+today = datetime.date.today()
+one_quarter_ago = today - datetime.timedelta(days=63)
+two_quarters_ago = today - datetime.timedelta(days=2 * 63)
+three_quarters_ago = today - datetime.timedelta(days=3 * 63)
+four_quarters_ago = today - datetime.timedelta(days=4 * 63)
+
+# Define a function to calculate the price percentage change for a given stock and time range
+def price_change_percentage(stock, start, end):
+    stock_data = yf.download(stock, start=start.strftime("%Y-%m-%d"), end=end.strftime("%Y-%m-%d"))
+    initial_price = stock_data["Close"].iloc[0]
+    final_price = stock_data["Close"].iloc[-1]
+    return ((final_price - initial_price) / initial_price) * 100
+
+# Calculate the RS ratings for each stock
 rs_ratings = []
-for symbol in stocks_df['symbol']:
+for symbol in symbols:
     try:
-        rs_rating = get_rs_rating(symbol)
-        rs_ratings.append(rs_rating)
-    except:
-        rs_ratings.append(None)
-stocks_df['RS Rating'] = rs_ratings
+        pc_1 = price_change_percentage(symbol, one_quarter_ago, today)
+        pc_2 = price_change_percentage(symbol, two_quarters_ago, one_quarter_ago)
+        pc_3 = price_change_percentage(symbol, three_quarters_ago, two_quarters_ago)
+        pc_4 = price_change_percentage(symbol, four_quarters_ago, three_quarters_ago)
 
-# Scale the RS rating between 0 and 100
-min_rating = stocks_df['RS Rating'].min()
-max_rating = stocks_df['RS Rating'].max()
-stocks_df['Scaled RS Rating'] = ((stocks_df['RS Rating'] - min_rating) / (max_rating - min_rating)) * 100
-print(stocks_df['Scaled RS Rating'])
+        rs_rating = (0.4 * pc_1) + (0.2 * pc_2) + (0.2 * pc_3) + (0.2 * pc_4)
+        rs_ratings.append((symbol, rs_rating))
+    except Exception as e:
+        print(f"Error calculating RS rating for {symbol}: {str(e)}")
 
-# Filter the DataFrame to include only stocks with a scaled RS rating greater than 70
-filtered_stocks_df = stocks_df[stocks_df['Scaled RS Rating'] > 70]
+# Sort the list by RS rating in descending order and get the top 30%
+rs_ratings.sort(key=lambda x: x[1], reverse=True)
+top_30_percent = rs_ratings[:int(len(rs_ratings) * 0.3)]
 
-# Write the filtered DataFrame to a new CSV file
-filtered_stocks_df.to_csv(f'RS_Ratings_{pd.Timestamp.now().strftime("%Y-%m-%d_%H-%M-%S")}.csv', index=False)
+# Save the top 30% of stocks with the highest RS rating into a new CSV file
+top_rs_df = pd.DataFrame(top_30_percent, columns=["symbol", "RS_rating"])
+top_rs_df.to_csv("top_30_percent_RS_rating.csv", index=False)

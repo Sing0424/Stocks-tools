@@ -18,20 +18,21 @@ def calculate_price_change(symbol, quarters):
     )
     end_date = datetime.datetime.now()
     stock_data = yf.download(symbol, start=start_date, end=end_date)
-    price_change = (stock_data["Adj Close"][-1] / stock_data["Adj Close"][0]) - 1
-    return price_change
+    now_price = stock_data["Adj Close"][-1]
+    past_price = stock_data["Adj Close"][0]
+    price_percentage_change = (now_price / past_price) * 100
+    return price_percentage_change
 
 
 # Calculate the RS rating for each stock
 rs_ratings = []
 for symbol in symbols:
     try:
-        pc_1 = calculate_price_change(symbol, 1)
-        pc_2 = calculate_price_change(symbol, 2)
-        pc_3 = calculate_price_change(symbol, 3)
-        pc_4 = calculate_price_change(symbol, 4)
-        rs_rating = ((0.4 * pc_1) + (0.2 * pc_2) + (0.2 * pc_3) + (0.2 * pc_4)) * 100
-        print(f"{symbol}: {rs_rating}")
+        c_q1 = calculate_price_change(symbol, 1)
+        c_q2 = calculate_price_change(symbol, 2)
+        c_q3 = calculate_price_change(symbol, 3)
+        c_q4 = calculate_price_change(symbol, 4)
+        rs_rating = ((0.4 * c_q1) + (0.2 * c_q2) + (0.2 * c_q3) + (0.2 * c_q4))
         rs_ratings.append((symbol, rs_rating))
     except:
         pass
