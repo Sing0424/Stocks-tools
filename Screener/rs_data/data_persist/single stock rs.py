@@ -1,7 +1,5 @@
 import yfinance as yf
-import pandas as pd
 import datetime
-from config import stocks_csv_path
 
 # Load the stock symbols from the CSV file into a list
 # with open(stocks_csv_path, "r") as f:
@@ -18,23 +16,35 @@ def calculate_price_change(symbol, quarters):
     )
     end_date = datetime.datetime.now()
     stock_data = yf.download(symbol, start=start_date, end=end_date)
+    print(f"{start_date} to {end_date}")
     now_price = stock_data["Adj Close"][-1]
+    print(f"now_price: {now_price}")
     past_price = stock_data["Adj Close"][0]
+    print(f"past_price: {past_price}")
     price_percentage_change = (now_price / past_price) * 100
-    return price_percentage_change
+    print(f"price_percentage_change: {price_percentage_change}")
+    return price_percentage_change, now_price
 
 
 # Calculate the RS rating for each stock
-symbol = 'NVDA'
-rs_ratings = []
+symbol = 'XBIOW'
+#rs_ratings = []
 # for symbol in symbols:
 try:
-    c_q1 = calculate_price_change(symbol, 1)
-    c_q2 = calculate_price_change(symbol, 2)
-    c_q3 = calculate_price_change(symbol, 3)
-    c_q4 = calculate_price_change(symbol, 4)
-    rs_rating = ((0.4 * c_q1) + (0.2 * c_q2) + (0.2 * c_q3) + (0.2 * c_q4))
-    rs_ratings.append((symbol, rs_rating))
+    if calculate_price_change(symbol,1)[1] < 10:
+        print(f"{symbol} price under 10")
+    else:
+        c_q1 = calculate_price_change(symbol, 1)
+        print(f"c_q1: {c_q1}")
+        c_q2 = calculate_price_change(symbol, 2)
+        print(f"c_q2: {c_q2}")
+        c_q3 = calculate_price_change(symbol, 3)
+        print(f"c_q3: {c_q3}")
+        c_q4 = calculate_price_change(symbol, 4)
+        print(f"c_q4: {c_q4}")
+        rs_rating = ((0.4 * c_q1) + (0.2 * c_q2) + (0.2 * c_q3) + (0.2 * c_q4))
+        print(f"rs_rating: {rs_rating}")
+        #rs_ratings.append((symbol, rs_rating))
 except:
     pass
 
