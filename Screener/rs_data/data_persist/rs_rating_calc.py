@@ -23,30 +23,31 @@ def calculate_price_change(symbol, quarters):
     price_percentage_change = (now_price / past_price) * 100
     return price_percentage_change, now_price
 
-
-# Calculate the RS rating for each stock
 rs_ratings = []
-for symbol in symbols:
-    print(symbol)
-    try:
-        c_q1, now_price = calculate_price_change(symbol, 1)
-        if now_price < 10:
-            print(f"Price under 10")
-            continue
-        print(f"c_q1: {c_q1}")
-        c_q2 = calculate_price_change(symbol, 2)[0]
-        print(f"c_q2: {c_q2}")
-        c_q3 = calculate_price_change(symbol, 3)[0]
-        print(f"c_q3: {c_q3}")
-        c_q4 = calculate_price_change(symbol, 4)[0]
-        print(f"c_q4: {c_q4}")
-        rs_rating = ((0.4 * c_q1) + (0.2 * c_q2) + (0.2 * c_q3) + (0.2 * c_q4))
-        print(f"rs rating: {rs_rating}")
-        rs_ratings.append((symbol, rs_rating))
-    except:
-        pass
+# Calculate the RS rating for each stock
+def calculate_rs_rating():
+    for symbol in symbols:
+        print(symbol)
+        try:
+            c_q1, now_price = calculate_price_change(symbol, 1)
+            if now_price < 10:
+                print(f"Price under 10")
+                continue
+            print(f"c_q1: {c_q1}")
+            c_q2 = calculate_price_change(symbol, 2)[0]
+            print(f"c_q2: {c_q2}")
+            c_q3 = calculate_price_change(symbol, 3)[0]
+            print(f"c_q3: {c_q3}")
+            c_q4 = calculate_price_change(symbol, 4)[0]
+            print(f"c_q4: {c_q4}")
+            rs_rating = ((0.4 * c_q1) + (0.2 * c_q2) + (0.2 * c_q3) + (0.2 * c_q4))
+            print(f"rs rating: {rs_rating}")
+            rs_ratings.append((symbol, rs_rating))
+        except:
+            pass
 
 # Sort the list of RS ratings by ascending order
+
 rs_ratings.sort(key=lambda x: x[1])
 
 # Get the top 30% of RS ratings
