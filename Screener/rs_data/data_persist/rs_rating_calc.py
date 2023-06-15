@@ -1,17 +1,10 @@
+from functools import cache
 import yfinance as yf
-import pandas as pd
 import datetime
-from config import stocks_csv_path, daily_rs_rating_Top_30_path
+from config import *
+from concurrent.futures import ProcessPoolExecutor
+from timeit import default_timer as timer
 
-# Load the stock symbols from the CSV file into a list
-with open(stocks_csv_path, "r") as f:
-    symbols = [line.strip() for line in f]
-
-# Define the number of trading days in a quarter
-trading_days_per_quarter = 63
-
-
-# Define a function to calculate the price percentage change for a given stock over a given number of quarters
 def calculate_price_change(symbol, quarters):
     start_date = datetime.datetime.now() - datetime.timedelta(
         days=quarters * trading_days_per_quarter
@@ -23,39 +16,47 @@ def calculate_price_change(symbol, quarters):
     price_percentage_change = (now_price / past_price) * 100
     return price_percentage_change, now_price
 
-rs_ratings = []
-# Calculate the RS rating for each stock
-def calculate_rs_rating():
-    for symbol in symbols:
-        print(symbol)
-        try:
-            c_q1, now_price = calculate_price_change(symbol, 1)
-            if now_price < 10:
-                print(f"Price under 10")
-                continue
-            print(f"c_q1: {c_q1}")
-            c_q2 = calculate_price_change(symbol, 2)[0]
-            print(f"c_q2: {c_q2}")
-            c_q3 = calculate_price_change(symbol, 3)[0]
-            print(f"c_q3: {c_q3}")
-            c_q4 = calculate_price_change(symbol, 4)[0]
-            print(f"c_q4: {c_q4}")
-            rs_rating = ((0.4 * c_q1) + (0.2 * c_q2) + (0.2 * c_q3) + (0.2 * c_q4))
-            print(f"rs rating: {rs_rating}")
-            rs_ratings.append((symbol, rs_rating))
-        except:
-            pass
+def calculate_rs_rating(symbol):
+    rs_ratings = []
+    print(symbol)
+    try:
+        c_q1, now_price = calculate_price_change(symbol, 1)
+        if now_price < 10:
+            print(f"Price under 10")
+            return None
+        c_q2 = calculate_price_change(symbol, 2)[0]
+        c_q3 = calculate_price_change(symbol, 3)[0]
+        c_q4 = calculate_price_change(symbol, 4)[0]
+        rs_rating = ((0.4 * c_q1) + (0.2 * c_q2) + (0.2 * c_q3) + (0.2 * c_q4))
+        rs_ratings.append((symbol, rs_rating))
+        return rs_ratings
+    except:
+        return None
 
-# Sort the list of RS ratings by ascending order
+def run_rs_data_program():
+    # Get the RS ratings using multiprocessing
+    rs_rating_list = []
+    if __name__ == '__main__':
+        with ProcessPoolExecutor(max_workers=None) as executor:
+            results = executor.map(calculate_rs_rating, symbols, chunksize=chunksize) #chunksize = 60 >> runtime: 266.5sec
+            for result in results:
+                if result is not None:
+                    rs_rating_list.extend(result)
 
-rs_ratings.sort(key=lambda x: x[1])
+    # Sort the list of RS ratings by ascending order
+    rs_rating_list.sort(key=lambda x: x[1])
 
-# Get the top 30% of RS ratings
-num_top_ratings = int(len(rs_ratings) * 0.3)
-top_ratings = rs_ratings[-num_top_ratings:]
+    # Get the top 30% of RS ratings
+    num_top_ratings = int(len(rs_rating_list) * top_rating)
+    top_ratings = rs_rating_list[-num_top_ratings:]
 
-# Write the top ratings to a CSV file
-with open(daily_rs_rating_Top_30_path, "w") as f:
-    f.write("Symbol,RS Rating\n")
-    for rating in top_ratings:
-        f.write(f"{rating[0]},{rating[1]}\n")
+    with open(daily_rs_rating_Top_30_path, "w") as f:
+        f.write("Symbol, RS Rating\n")
+        for rating in top_ratings:
+            f.write(f"{rating[0]},{rating[1]}\n")
+
+program_start_time = timer()
+run_rs_data_program()
+program_end_time = timer()
+
+print("Program runtime: --- %.2f seconds ---" (program_end_time - program_start_time))

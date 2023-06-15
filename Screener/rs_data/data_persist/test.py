@@ -1,4 +1,3 @@
-import re
 import yfinance as yf
 import pandas as pd
 import datetime
@@ -45,7 +44,7 @@ def calculate_rs_rating(symbol):
 # Calculate the RS rating for each stock using multiprocessing
 def calculate_rs_ratings_multiprocessing(symbols):
     with ProcessPoolExecutor(max_workers=None) as executor:
-        results = executor.map(calculate_rs_rating, symbols)
+        results = executor.map(calculate_rs_rating, symbols, chunksize=20)
         for result in results:
             if result is not None:
                 rs_rating_list.extend(result)
