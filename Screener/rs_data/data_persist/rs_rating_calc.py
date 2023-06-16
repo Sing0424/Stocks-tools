@@ -5,6 +5,7 @@ from config import *
 from concurrent.futures import ProcessPoolExecutor
 from timeit import default_timer as timer
 
+@cache
 def calculate_price_change(symbol, quarters):
     start_date = datetime.datetime.now() - datetime.timedelta(
         days=quarters * trading_days_per_quarter
@@ -22,7 +23,7 @@ def calculate_rs_rating(symbol):
     try:
         c_q1, now_price = calculate_price_change(symbol, 1)
         if now_price < 10:
-            print(f"Price under 10")
+            print(f"Price under 10\n")
             return None
         c_q2 = calculate_price_change(symbol, 2)[0]
         c_q3 = calculate_price_change(symbol, 3)[0]
@@ -59,4 +60,4 @@ program_start_time = timer()
 run_rs_data_program()
 program_end_time = timer()
 
-print("Program runtime: --- %.2f seconds ---" (program_end_time - program_start_time))
+print("Program runtime: --- %.2f seconds ---" % (program_end_time - program_start_time))
