@@ -1,15 +1,11 @@
 import os
 import datetime
 
-#Date/time config
-date_string = datetime.datetime.now().strftime("%Y-%m-%d")
-
 #Path config
-daily_rs_rating_filename = f"rs_rating_Top_30_{date_string}.csv"
-stocks_csv_path = 'symbols.csv'
-daily_rs_rating_Top_30_path = daily_rs_rating_filename
+stocks_csv_path = 'csv/symbols.csv'
+daily_rs_rating_Top_30_path = 'csv/rs_rating_Top_30.csv'
 # stocks_csv_path = os.path.join("Screener", "rs_data", "data_persist", "symbols.csv")
-# daily_rs_rating_Top_30_path = os.path.join("Screener", "rs_data", "data_persist", daily_rs_rating_filename)
+# daily_rs_rating_Top_30_path = os.path.join("Screener", "rs_data", "data_persist", "rs_rating_Top_30.csv")
 
 #Data config
 alphavantage_api_key = '7D80AAZF1EFC0TZJ'
@@ -20,4 +16,4 @@ with open(stocks_csv_path, "r") as f:
 #Program config
 trading_days_per_quarter = 63 #define days in a quarter
 top_rating = 0.3 #percentage of top ratings, range: 0.0 ~ 1.0
-chunksize = 128 #for optimizing the multiprocessing, higher = faster 
+chunksize = 64 #optimizing the multiprocessing

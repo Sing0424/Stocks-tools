@@ -11,7 +11,7 @@ def calculate_price_change(symbol, quarters):
         days=quarters * trading_days_per_quarter
     )
     end_date = datetime.datetime.now()
-    stock_data = yf.download(symbol, start=start_date, end=end_date)
+    stock_data = yf.download(symbol, start=start_date, end=end_date, progress=False)
     now_price = stock_data["Adj Close"][-1]
     past_price = stock_data["Adj Close"][0]
     price_percentage_change = (now_price / past_price) * 100
@@ -19,11 +19,11 @@ def calculate_price_change(symbol, quarters):
 
 def calculate_rs_rating(symbol):
     rs_ratings = []
-    print(symbol)
+    print(f"{symbol}\n")
     try:
         c_q1, now_price = calculate_price_change(symbol, 1)
         if now_price < 10:
-            print(f"Price under 10\n")
+            # print(f"Price under 10\n")
             return None
         c_q2 = calculate_price_change(symbol, 2)[0]
         c_q3 = calculate_price_change(symbol, 3)[0]
@@ -52,7 +52,7 @@ def run_rs_data_program():
     top_ratings = rs_rating_list[-num_top_ratings:]
 
     with open(daily_rs_rating_Top_30_path, "w") as f:
-        f.write("Symbol, RS Rating\n")
+        f.write("Symbol,RSR\n")
         for rating in top_ratings:
             f.write(f"{rating[0]},{rating[1]}\n")
 
