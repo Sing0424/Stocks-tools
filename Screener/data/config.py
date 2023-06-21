@@ -3,7 +3,7 @@ import datetime
 
 #Path config
 stocks_csv_path = 'csv/symbols.csv'
-daily_rs_rating_Top_30_path = 'csv/rs_rating_Top_30.csv'
+daily_rs_rating_Top_30_path = 'csv/rs_rating_top_30.xlsx'
 # stocks_csv_path = os.path.join("Screener", "rs_data", "data_persist", "symbols.csv")
 # daily_rs_rating_Top_30_path = os.path.join("Screener", "rs_data", "data_persist", "rs_rating_Top_30.csv")
 

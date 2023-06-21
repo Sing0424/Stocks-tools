@@ -4,6 +4,7 @@ import datetime
 from config import *
 from concurrent.futures import ProcessPoolExecutor
 from timeit import default_timer as timer
+import xlsxwriter
 
 @cache
 def calculate_price_change(symbol, quarters):
@@ -51,10 +52,19 @@ def run_rs_data_program():
     num_top_ratings = int(len(rs_rating_list) * top_rating)
     top_ratings = rs_rating_list[-num_top_ratings:]
 
-    with open(daily_rs_rating_Top_30_path, "w") as f:
-        f.write("Symbol,RSR\n")
-        for rating in top_ratings:
-            f.write(f"{rating[0]},{rating[1]}\n")
+    workbook = xlsxwriter.Workbook(daily_rs_rating_Top_30_path)
+    worksheet = workbook.add_worksheet()
+    worksheet.write('A1', 'Symbol')
+    worksheet.write('B1', 'RS Rating')
+    row = 1
+    col = 0
+
+    for symbol, rs_rating in (top_ratings):
+        worksheet.write(row, col, symbol)
+        worksheet.write(row, col + 1, rs_rating)
+        row += 1
+        
+    workbook.close()
 
 program_start_time = timer()
 run_rs_data_program()

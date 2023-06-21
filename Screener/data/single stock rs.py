@@ -27,7 +27,7 @@ def calculate_price_change(symbol, quarters):
 
 
 # Calculate the RS rating for each stock
-symbol = 'XBIOW'
+symbol = 'UNAM'
 #rs_ratings = []
 # for symbol in symbols:
 try:
