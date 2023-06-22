@@ -37,6 +37,9 @@ def calculate_rs_rating(symbol):
 
 def run_rs_data_program():
     # Get the RS ratings using multiprocessing
+    with open(stocks_csv_path, "r") as f:
+        symbols = [line.strip() for line in f]
+
     rs_rating_list = []
     if __name__ == '__main__':
         with ProcessPoolExecutor(max_workers=None) as executor:
