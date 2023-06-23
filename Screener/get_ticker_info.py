@@ -1,25 +1,24 @@
+from stocksymbol import StockSymbol
+from config import stocks_csv_path, stock_symbol_api_key
 import csv
-import requests
-from config import symbols_url, stocks_csv_path
 
-with requests.Session() as s:
-    download = s.get(symbols_url)
-    decoded_content = download.content.decode('utf-8')
-    cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-    my_list = list(cr)
-    
-    # Extract the symbol column from the list and format the symbols
-    symbols = []
-    for row in my_list[1:]:
-        symbol = row[0]
-        if symbol.count('-') >= 2:
-            symbol = symbol.rsplit('-', 1)[0]
-        symbols.append(symbol.strip())
-    
-    # Write the formatted symbols to a CSV file
-    with open(stocks_csv_path, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        for symbol in symbols:
-            writer.writerow([symbol])
-        
-    print(f'Symbols written to {stocks_csv_path}')
+symbols = StockSymbol(stock_symbol_api_key)
+
+# get symbol list based on market
+symbol_list_US = symbols.get_symbol_list(market="US") # "us" or "america" will also work
+symbol_list_US.sort(key=lambda x: x['symbol'])
+
+with open(stocks_csv_path, mode='w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=['symbol'], extrasaction='ignore')
+        writer.writerows(symbol_list_US)
+
+print(f'Symbols written to {stocks_csv_path}')
+
+# get symbol list based on index
+# symbol_list_spx = ss.get_symbol_list(index="SPX")
+
+# # show a list of available market
+# market_list = ss.market_list
+
+# # show a list of available index
+# index_list = ss.index_list
