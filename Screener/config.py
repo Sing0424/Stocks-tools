@@ -3,7 +3,7 @@ import os
 #Path config for command promt
 stocks_csv_path = 'data/symbols.csv'
 daily_rs_rating_Top_30_path = 'data/rs_rating_top_30.xlsx'
-screen_result_path = '/Screener/data/ScreenResult/ScreenResult.xlsx'
+screen_result_path = 'ScreenResult/ScreenResult.xlsx'
 
 #Path config for vscode terminal
 # stocks_csv_path = os.path.join("Screener", "data", "symbols.csv")

@@ -16,10 +16,12 @@ def get_stock_data(symbol, rsr):
         month_ago_sma_200 = sma_200[-21]
     except:
         month_ago_sma_200 = 0
+    avg_vol_50 = stock_data['Volume'].rolling(window=50).mean()
                                 
     return {
         'Symbol': symbol,
         'Current_price': stock_data['Adj Close'][-1],
+        '50D_Avg_Vol': avg_vol_50[-1],
         'Sma_50': sma_50[-1],
         'Sma_150': sma_150[-1],
         'Sma_200': sma_200[-1],
@@ -35,7 +37,7 @@ def Screener(symbol, rs_rating):
     print(f"Checking: {symbol}\n")
     
     #Condition 1: Current Price > 150 SMA and > 200 SMA
-    if ((stock_data['Current_price'] > stock_data['Sma_150']) and (stock_data['Current_price'] > stock_data['Sma_200'])) and (stock_data['Sma_150'] > stock_data['Sma_200']) and (stock_data['Sma_200'] > stock_data['Month_ago_sma_200']) and (stock_data['Sma_50'] > stock_data['Sma_150'] and stock_data['Sma_50'] > stock_data['Sma_200']) and (stock_data['Current_price'] > stock_data['Sma_50']) and (stock_data['Current_price'] > (1.3 * stock_data['Week_52_low'])) and (stock_data['Current_price'] > (0.75 * stock_data['Week_52_high'])):
+    if ((stock_data['Current_price'] > stock_data['Sma_150']) and (stock_data['Current_price'] > stock_data['Sma_200'])) and (stock_data['Sma_150'] > stock_data['Sma_200']) and (stock_data['Sma_200'] > stock_data['Month_ago_sma_200']) and (stock_data['Sma_50'] > stock_data['Sma_150'] and stock_data['Sma_50'] > stock_data['Sma_200']) and (stock_data['Current_price'] > stock_data['Sma_50']) and (stock_data['Current_price'] > (1.3 * stock_data['Week_52_low'])) and (stock_data['Current_price'] > (0.75 * stock_data['Week_52_high'])) and stock_data['50D_Avg_Vol'] >= 50000:
         return stock_data
     else:
         return None

@@ -12,7 +12,7 @@ def calculate_price_change(symbol, quarters):
         days=quarters * trading_days_per_quarter
     )
     end_date = datetime.datetime.now()
-    stock_data = yf.download(symbol, start=start_date, end=end_date, progress=False)
+    stock_data = yf.download(symbol, start=start_date, end=end_date, progress=False, threads = True)
     now_price = stock_data["Adj Close"][-1]
     past_price = stock_data["Adj Close"][0]
     price_percentage_change = (now_price / past_price) * 100
@@ -57,6 +57,7 @@ def run_rs_data_program():
 
     workbook = xlsxwriter.Workbook(daily_rs_rating_Top_30_path)
     worksheet = workbook.add_worksheet()
+    float_pt_round = workbook.add_format({'num_format': '#,#####0.00000', 'border': 1})
     worksheet.write('A1', 'Symbol')
     worksheet.write('B1', 'RS Rating')
     row = 1
@@ -64,7 +65,7 @@ def run_rs_data_program():
 
     for symbol, rs_rating in (top_ratings):
         worksheet.write(row, col, symbol)
-        worksheet.write(row, col + 1, rs_rating)
+        worksheet.write(row, col + 1, rs_rating, float_pt_round)
         row += 1
         
     workbook.close()
