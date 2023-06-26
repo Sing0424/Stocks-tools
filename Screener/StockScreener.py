@@ -8,7 +8,9 @@ from functools import cache
 
 @cache
 def get_stock_data(symbol, rsr):
-    stock_data = yf.download(tickers = symbol, period='1y')
+    print(f"Checking: {symbol}\n")
+    stock_data = yf.download(tickers = symbol, period='max')
+    ipo_date = stock_data.index[0].strftime("%Y-%m-%d")
     sma_50 = stock_data['Adj Close'].rolling(window=50).mean()
     sma_150 = stock_data['Adj Close'].rolling(window=150).mean()
     sma_200 = stock_data['Adj Close'].rolling(window=200).mean()
@@ -17,9 +19,17 @@ def get_stock_data(symbol, rsr):
     except:
         month_ago_sma_200 = 0
     avg_vol_50 = stock_data['Volume'].rolling(window=50).mean()
+
+    ticker = yf.Ticker(symbol)
+    info = ticker.info
+    sector = info.get('sector')
+    industry = info.get('industry')
                                 
     return {
         'Symbol': symbol,
+        'Sector': sector,
+        'Industry': industry,
+        'IPO Date': ipo_date,
         'Current_price': stock_data['Adj Close'][-1],
         '50D_Avg_Vol': avg_vol_50[-1],
         'Sma_50': sma_50[-1],
@@ -32,9 +42,7 @@ def get_stock_data(symbol, rsr):
     }
 
 def Screener(symbol, rs_rating):
-    
     stock_data = get_stock_data(symbol, rs_rating)
-    print(f"Checking: {symbol}\n")
     
     #Condition 1: Current Price > 150 SMA and > 200 SMA
     if ((stock_data['Current_price'] > stock_data['Sma_150']) and (stock_data['Current_price'] > stock_data['Sma_200'])) and (stock_data['Sma_150'] > stock_data['Sma_200']) and (stock_data['Sma_200'] > stock_data['Month_ago_sma_200']) and (stock_data['Sma_50'] > stock_data['Sma_150'] and stock_data['Sma_50'] > stock_data['Sma_200']) and (stock_data['Current_price'] > stock_data['Sma_50']) and (stock_data['Current_price'] > (1.3 * stock_data['Week_52_low'])) and (stock_data['Current_price'] > (0.75 * stock_data['Week_52_high'])) and stock_data['50D_Avg_Vol'] >= 50000:
