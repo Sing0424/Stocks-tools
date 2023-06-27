@@ -2,14 +2,13 @@ import os
 import pandas as pd
 import yfinance as yf
 from config import daily_rs_rating_Top_30_path, screen_result_path
-from timeit import default_timer as timer
 from concurrent.futures import ProcessPoolExecutor
 from functools import cache
+from tqdm import tqdm
 
 @cache
 def get_stock_data(symbol, rsr):
-    print(f"Checking: {symbol}\n")
-    stock_data = yf.download(tickers = symbol, period='max')
+    stock_data = yf.download(tickers = symbol, period='max', progress=False)
     ipo_date = stock_data.index[0].strftime("%Y-%m-%d")
     sma_50 = stock_data['Adj Close'].rolling(window=50).mean()
     sma_150 = stock_data['Adj Close'].rolling(window=150).mean()
@@ -56,7 +55,7 @@ def run_Screener():
 
     if __name__ == '__main__':
         with ProcessPoolExecutor(max_workers=None) as executor:
-            results = executor.map(Screener, import_data["Symbol"], import_data["RS Rating"])
+            results = tqdm(executor.map(Screener, import_data["Symbol"], import_data["RS Rating"]), desc='Screening')
             for result in results:
                 if result is not None:
                     Screen_result_list.append(result)
@@ -70,9 +69,4 @@ def run_Screener():
     output_file_path = os.path.join(screen_result_path)
     df.to_excel(output_file_path, index=False)
     
-
-program_start_time = timer()
 run_Screener()
-program_end_time = timer()
-
-print("Program runtime: --- %.2f seconds ---" % (program_end_time - program_start_time))

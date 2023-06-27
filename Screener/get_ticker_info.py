@@ -1,24 +1,37 @@
-from stocksymbol import StockSymbol
-from config import stocks_csv_path, stock_symbol_api_key
 import csv
+import requests
+from config import symbols_url, stocks_csv_path
+import tqdm
 
-symbols = StockSymbol(stock_symbol_api_key)
+def format_symbol(symbol):
+    # Count the number of '-' characters in the symbol
+    num_dashes = symbol.count('-')
+    # If there's only one '-', leave the symbol as is
+    if num_dashes <= 1:
+        return symbol
+    # Otherwise, remove the last '-' character
+    else:
+        last_dash_index = symbol.rfind('-')
+        formatted_symbol = symbol[:last_dash_index] + symbol[last_dash_index+1:]
+        return formatted_symbol
 
-# get symbol list based on market
-symbol_list_US = symbols.get_symbol_list(market="US") # "us" or "america" will also work
-symbol_list_US.sort(key=lambda x: x['symbol'])
-
-with open(stocks_csv_path, mode='w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=['symbol'], extrasaction='ignore')
-        writer.writerows(symbol_list_US)
-
+with requests.Session() as s:
+    download = s.get(symbols_url)
+    decoded_content = download.content.decode('utf-8')
+    cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+    symbol_list = list(cr)
+    
+    # Extract the symbol column from the list and format the symbols
+    symbols = []
+    for row in symbol_list[1:]:
+        symbol = row[0]
+        formatted_symbol = format_symbol(symbol)
+        symbols.append(formatted_symbol.strip())
+    
+# Write the formatted symbols to a CSV file
+with open(stocks_csv_path, mode='w', newline='') as file:
+    writer = csv.writer(file)
+    for symbol in symbols:
+        writer.writerow([symbol])
+        
 print(f'Symbols written to {stocks_csv_path}')
-
-# get symbol list based on index
-# symbol_list_spx = ss.get_symbol_list(index="SPX")
-
-# # show a list of available market
-# market_list = ss.market_list
-
-# # show a list of available index
-# index_list = ss.index_list

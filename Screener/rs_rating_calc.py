@@ -5,6 +5,7 @@ from config import *
 from concurrent.futures import ProcessPoolExecutor
 from timeit import default_timer as timer
 import xlsxwriter
+from contextlib import contextmanager
 
 @cache
 def calculate_price_change(symbol, quarters):
@@ -20,7 +21,6 @@ def calculate_price_change(symbol, quarters):
 
 def calculate_rs_rating(symbol):
     rs_ratings = []
-    print(f"{symbol}\n")
     try:
         c_q1, now_price = calculate_price_change(symbol, 1)
         if now_price < 10:
@@ -43,7 +43,7 @@ def run_rs_data_program():
     rs_rating_list = []
     if __name__ == '__main__':
         with ProcessPoolExecutor(max_workers=None) as executor:
-            results = executor.map(calculate_rs_rating, symbols, chunksize=chunksize) #chunksize = 60 >> runtime: 266.5sec
+            results = executor.map(calculate_rs_rating, symbols, chunksize=chunksize)
             for result in results:
                 if result is not None:
                     rs_rating_list.extend(result)
