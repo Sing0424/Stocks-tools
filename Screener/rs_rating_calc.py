@@ -5,9 +5,6 @@ from config import *
 from concurrent.futures import ProcessPoolExecutor
 import xlsxwriter
 from tqdm import tqdm
-import logging
-
-logging.getLogger("yfinance").setLevel(logging.DEBUG)
 
 @cache
 def calculate_price_change(symbol, quarters):
