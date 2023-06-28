@@ -3,9 +3,11 @@ import yfinance as yf
 import datetime
 from config import *
 from concurrent.futures import ProcessPoolExecutor
-from timeit import default_timer as timer
 import xlsxwriter
 from tqdm import tqdm
+import logging
+
+logging.getLogger("yfinance").setLevel(logging.DEBUG)
 
 @cache
 def calculate_price_change(symbol, quarters):
@@ -45,10 +47,10 @@ def run_rs_data_program():
 
         rs_rating_list = []
         with ProcessPoolExecutor(max_workers=None) as executor:
-            results = tqdm(executor.map(calculate_rs_rating, symbols, chunksize=chunksize), desc='Calculating RS', unit=' stocks', total=len(symbols), ncols=80)
-        for result in results:
-            if result is not None:
-                rs_rating_list.extend(result)
+            results = tqdm(executor.map(calculate_rs_rating, symbols, chunksize=chunksize), desc='Calculating RS', unit=' stocks', total=len(symbols), ncols=80, miniters=1)
+            for result in results:
+                if result is not None:
+                    rs_rating_list.extend(result)
 
         # Sort the list of RS ratings by ascending order
         rs_rating_list.sort(key=lambda x: x[1])
