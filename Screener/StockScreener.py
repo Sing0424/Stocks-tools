@@ -5,6 +5,7 @@ from config import daily_rs_rating_Top_30_path, screen_result_path
 from concurrent.futures import ProcessPoolExecutor
 from functools import cache
 from tqdm import tqdm
+import time
 
 @cache
 def get_stock_data(symbol, rsr):
@@ -50,23 +51,24 @@ def Screener(symbol, rs_rating):
         return None
 
 def run_Screener():
-    Screen_result_list = []
-    import_data = pd.read_excel(daily_rs_rating_Top_30_path)
-
     if __name__ == '__main__':
+        Screen_result_list = []
+        import_data = pd.read_excel(daily_rs_rating_Top_30_path)
+
         with ProcessPoolExecutor(max_workers=None) as executor:
-            results = tqdm(executor.map(Screener, import_data["Symbol"], import_data["RS Rating"]), desc='Screening')
+            results = tqdm(executor.map(Screener, import_data["Symbol"], import_data["RS Rating"]), desc='Screening', unit=' stocks', total=len(import_data), ncols=80)
             for result in results:
                 if result is not None:
                     Screen_result_list.append(result)
 
-    Screen_result_list.sort(key=lambda x: x['RS Rating'], reverse = True)
+        Screen_result_list.sort(key=lambda x: x['RS Rating'], reverse = True)
 
-    # Create a DataFrame from Screen_result_list
-    df = pd.DataFrame(Screen_result_list)
+        # Create a DataFrame from Screen_result_list
+        df = pd.DataFrame(Screen_result_list)
 
-    # Write the DataFrame to an Excel file
-    output_file_path = os.path.join(screen_result_path)
-    df.to_excel(output_file_path, index=False)
-    
+        # Write the DataFrame to an Excel file
+        output_file_path = os.path.join(screen_result_path)
+        df.to_excel(output_file_path, index=False)
+
+
 run_Screener()

@@ -1,9 +1,7 @@
-import yahoo_fin.stock_info as si
-import pandas as pd
+import yfinance as yf
 
-# get earnings history for AAPL
-aapl_earnings_hist = si.get_earnings_history("aapl")
+stock_data = yf.download('AFGS', period='1y', progress=False, threads = True)
 
-df = pd.DataFrame.from_dict(aapl_earnings_hist)
-
-print(df)
+print('aaa')
+if stock_data.empty:
+    print('bbb')
