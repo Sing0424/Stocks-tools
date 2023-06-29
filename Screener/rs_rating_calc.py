@@ -5,6 +5,7 @@ from config import *
 from concurrent.futures import ProcessPoolExecutor
 import xlsxwriter
 from tqdm import tqdm
+import logging
 
 @cache
 def calculate_price_change(symbol, quarters):
@@ -12,7 +13,9 @@ def calculate_price_change(symbol, quarters):
         days=quarters * trading_days_per_quarter
     )
     end_date = datetime.datetime.now()
+    logging.basicConfig(level=logging.CRITICAL)
     stock_data = yf.download(symbol, start=start_date, end=end_date, progress=False, threads = True)
+    logging.basicConfig(level=logging.WARNING)
     if stock_data.empty:
         return None
     now_price = stock_data["Adj Close"][-1]

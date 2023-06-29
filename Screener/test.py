@@ -1,12 +1,10 @@
-import yfinance as yf
-import logging
+import yahooquery as yq
 
-for key in logging.Logger.manager.loggerDict:
-    print(key)
+symbol = 'NVDA'
+stock_data = yq.Ticker('NVDA')
 
-logging.getLogger('urllib3').setLevel(logging.NOTSET)
-logging.getLogger('requests').setLevel(logging.NOTSET)
-logging.getLogger('charset_normalizer').setLevel(logging.NOTSET)
+eps_list = stock_data.income_statement("q")['DilutedEPS']
+t = stock_data.earning_history
 
-stock_data = yf.download('AFGS', period='1y', progress=False, threads = True)
-print('aaa')
+print(eps_list)
+print(t)
