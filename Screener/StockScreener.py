@@ -24,6 +24,12 @@ def get_stock_data(symbol, rsr):
     info = ticker.info
     sector = info.get('sector')
     industry = info.get('industry')
+    # print(symbol)
+    # eps = yq.Ticker(symbol).income_statement()['DilutedEPS']
+    # eps_first_y = eps[0]
+    # eps_second_y = eps[1]
+    # eps_third_y = eps[2]
+    # eps_current_y = eps[3]
                                 
     return {
         'Symbol': symbol,
@@ -39,13 +45,17 @@ def get_stock_data(symbol, rsr):
         'Week_52_low': stock_data['Adj Close'].min(),
         'Week_52_high': stock_data['Adj Close'].max(),
         'RS Rating': rsr
+        # '1st year eps': eps_first_y,
+        # '2nd year eps': eps_second_y,
+        # '3rd year eps': eps_third_y,
+        # 'currently eps (Annual)': eps_current_y
     }
 
 def Screener(symbol, rs_rating):
     stock_data = get_stock_data(symbol, rs_rating)
     
     #Condition 1: Current Price > 150 SMA and > 200 SMA
-    if ((stock_data['Current_price'] > stock_data['Sma_150']) and (stock_data['Current_price'] > stock_data['Sma_200'])) and (stock_data['Sma_150'] > stock_data['Sma_200']) and (stock_data['Sma_200'] > stock_data['Month_ago_sma_200']) and (stock_data['Sma_50'] > stock_data['Sma_150'] and stock_data['Sma_50'] > stock_data['Sma_200']) and (stock_data['Current_price'] > stock_data['Sma_50']) and (stock_data['Current_price'] > (1.3 * stock_data['Week_52_low'])) and (stock_data['Current_price'] > (0.75 * stock_data['Week_52_high'])) and stock_data['30D_Avg_Vol'] >= 50000:
+    if ((stock_data['Current_price'] > stock_data['Sma_150']) and (stock_data['Current_price'] > stock_data['Sma_200'])) and (stock_data['Sma_150'] > stock_data['Sma_200']) and (stock_data['Sma_200'] > stock_data['Month_ago_sma_200']) and (stock_data['Sma_50'] > stock_data['Sma_150'] and stock_data['Sma_50'] > stock_data['Sma_200']) and (stock_data['Current_price'] > stock_data['Sma_50']) and (stock_data['Current_price'] > (1.3 * stock_data['Week_52_low'])) and (stock_data['Current_price'] > (0.75 * stock_data['Week_52_high'])) and stock_data['30D_Avg_Vol'] >= 250000: #and stock_data['3rd year eps']*1.25 >= stock_data['currently eps (Annual)']:
         return stock_data
     else:
         return None

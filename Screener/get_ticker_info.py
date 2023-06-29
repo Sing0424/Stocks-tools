@@ -1,7 +1,6 @@
 import csv
 import requests
 from config import symbols_url, stocks_csv_path
-import tqdm
 
 def format_symbol(symbol):
     # Count the number of '-' characters in the symbol
