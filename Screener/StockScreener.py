@@ -25,14 +25,6 @@ def get_stock_data(symbol, rsr):
     info = ticker.info
     sector = info.get('sector')
     industry = info.get('industry')
-<<<<<<< HEAD
-    # print(symbol)
-    # eps = yq.Ticker(symbol).income_statement()['DilutedEPS']
-    # eps_first_y = eps[0]
-    # eps_second_y = eps[1]
-    # eps_third_y = eps[2]
-    # eps_current_y = eps[3]
-=======
 
     yq_stock_data = yq.Ticker(symbol)
     try:
@@ -58,28 +50,12 @@ def get_stock_data(symbol, rsr):
         first_qtr_inc = 0
         second_qtr_inc = 0
         current_qtr_inc = 0
->>>>>>> b2218a48e853e4aee2ce95b7d9215565788d9efc
                                 
     return {
         'Symbol': symbol,
         'Sector': sector,
         'Industry': industry,
         'IPO Date': ipo_date,
-<<<<<<< HEAD
-        'Current_price': stock_data['Adj Close'][-1],
-        '30D_Avg_Vol': avg_vol_30[-1],
-        'Sma_50': sma_50[-1],
-        'Sma_150': sma_150[-1],
-        'Sma_200': sma_200[-1],
-        'Month_ago_sma_200': month_ago_sma_200,
-        'Week_52_low': stock_data['Adj Close'].min(),
-        'Week_52_high': stock_data['Adj Close'].max(),
-        'RS Rating': rsr
-        # '1st year eps': eps_first_y,
-        # '2nd year eps': eps_second_y,
-        # '3rd year eps': eps_third_y,
-        # 'currently eps (Annual)': eps_current_y
-=======
         'Current price': stock_data['Adj Close'][-1],
         '30D Avg Vol': avg_vol_30[-1],
         'SMA 50': sma_50[-1],
@@ -95,18 +71,12 @@ def get_stock_data(symbol, rsr):
         '1st qtr Inc': first_qtr_inc,
         '2nd qtr Inc': second_qtr_inc,
         'current_qtr_inc': current_qtr_inc
->>>>>>> b2218a48e853e4aee2ce95b7d9215565788d9efc
     }
 
 def Screener(symbol, rs_rating):
     stock_data = get_stock_data(symbol, rs_rating)
     
-    #Condition 1: Current Price > 150 SMA and > 200 SMA
-<<<<<<< HEAD
-    if ((stock_data['Current_price'] > stock_data['Sma_150']) and (stock_data['Current_price'] > stock_data['Sma_200'])) and (stock_data['Sma_150'] > stock_data['Sma_200']) and (stock_data['Sma_200'] > stock_data['Month_ago_sma_200']) and (stock_data['Sma_50'] > stock_data['Sma_150'] and stock_data['Sma_50'] > stock_data['Sma_200']) and (stock_data['Current_price'] > stock_data['Sma_50']) and (stock_data['Current_price'] > (1.3 * stock_data['Week_52_low'])) and (stock_data['Current_price'] > (0.75 * stock_data['Week_52_high'])) and stock_data['30D_Avg_Vol'] >= 250000: #and stock_data['3rd year eps']*1.25 >= stock_data['currently eps (Annual)']:
-=======
     if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['Week 52 low'])) and (stock_data['Current price'] > (0.75 * stock_data['Week 52 high'])) and stock_data['30D Avg Vol'] >= 250000 and stock_data['Current qtr EPS'] > stock_data['2nd qtr EPS'] and stock_data['2nd qtr EPS'] > stock_data['1st qtr EPS'] and (datetime.datetime.now().year - datetime.datetime.strptime(stock_data['IPO Date'], "%Y-%m-%d").year) <= 10:
->>>>>>> b2218a48e853e4aee2ce95b7d9215565788d9efc
         return stock_data
     else:
         return None
@@ -131,6 +101,5 @@ def run_Screener():
         # Write the DataFrame to an Excel file
         output_file_path = os.path.join(screen_result_path)
         df.to_excel(output_file_path, index=False)
-
 
 run_Screener()
