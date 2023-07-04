@@ -27,8 +27,8 @@ def get_stock_data(symbol, rsr):
     industry = info.get('industry')
 
     yq_stock_data = yq.Ticker(symbol)
+    inc_stat = yq_stock_data.income_statement('q')
     try:
-        inc_stat = yq_stock_data.income_statement('q')
         eps_list = pd.DataFrame(inc_stat['DilutedEPS']).dropna()
         lenth_eps_list = len(eps_list)
         first_qtr_eps = eps_list.iloc[lenth_eps_list-3,0]
@@ -40,7 +40,6 @@ def get_stock_data(symbol, rsr):
         current_qtr_eps = 0
 
     try:
-        inc_stat = yq_stock_data.income_statement('q')
         inc_list = pd.DataFrame(inc_stat['NetIncome']).dropna()
         lenth_inc_list = len(inc_list)
         first_qtr_inc = inc_list.iloc[lenth_inc_list-5,0]
@@ -50,7 +49,27 @@ def get_stock_data(symbol, rsr):
         first_qtr_inc = 0
         second_qtr_inc = 0
         current_qtr_inc = 0
-                                
+
+    try:
+        rev_list = pd.DataFrame(inc_stat['TotalRevenue']).dropna()
+        lenth_rev_list = len(rev_list)
+        first_qtr_rev = rev_list.iloc[lenth_rev_list-5,0]
+        second_qtr_rev = rev_list.iloc[lenth_rev_list-4,0]
+        current_qtr_rev = rev_list.iloc[lenth_rev_list-2,0]
+    except:
+        first_qtr_rev = 0
+        second_qtr_rev = 0
+        current_qtr_rev = 0
+
+    if first_qtr_rev != 0 and second_qtr_rev !=0 and current_qtr_rev !=0:
+        first_qtr_profit_margin = first_qtr_inc/first_qtr_rev * 100
+        second_qtr_profit_margin = second_qtr_inc/second_qtr_rev * 100
+        current_qtr_profit_margin = current_qtr_inc/current_qtr_rev * 100
+    else:
+        first_qtr_profit_margin = 0
+        second_qtr_profit_margin = 0
+        current_qtr_profit_margin = 0
+
     return {
         'Symbol': symbol,
         'Sector': sector,
@@ -70,13 +89,16 @@ def get_stock_data(symbol, rsr):
         'Current qtr EPS': current_qtr_eps,
         '1st qtr Inc': first_qtr_inc,
         '2nd qtr Inc': second_qtr_inc,
-        'current_qtr_inc': current_qtr_inc
+        'Current qtr Inc': current_qtr_inc,
+        '1st qtr NPM': first_qtr_profit_margin,
+        '2nd qtr NPM': second_qtr_profit_margin,
+        'Current qtr NPM': current_qtr_profit_margin
     }
 
 def Screener(symbol, rs_rating):
     stock_data = get_stock_data(symbol, rs_rating)
     
-    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['Week 52 low'])) and (stock_data['Current price'] > (0.75 * stock_data['Week 52 high'])) and stock_data['30D Avg Vol'] >= 250000 and stock_data['Current qtr EPS'] > stock_data['2nd qtr EPS'] and stock_data['2nd qtr EPS'] > stock_data['1st qtr EPS'] and (datetime.datetime.now().year - datetime.datetime.strptime(stock_data['IPO Date'], "%Y-%m-%d").year) <= 10:
+    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['Week 52 low'])) and (stock_data['Current price'] > (0.75 * stock_data['Week 52 high'])) and stock_data['30D Avg Vol'] >= 250000:
         return stock_data
     else:
         return None
