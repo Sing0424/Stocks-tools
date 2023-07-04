@@ -1,24 +1,6 @@
 import yahooquery as yq
 import pandas as pd
 
-<<<<<<< HEAD
-symbol = 'EC'
-
-eps = yq.Ticker(symbol).income_statement()['DilutedEPS']
-
-print(eps)
-
-eps_first_y = eps[0]
-eps_second_y = eps[1]
-eps_third_y = eps[2]
-eps_current_y = eps[3]
-
-print(f'first year eps: {eps_first_y}')
-print(f'second year eps: {eps_second_y}')
-print(f'third year eps: {eps_third_y}')
-print(f'current year eps: {eps_current_y}')
-
-=======
 symbol = 'SMCI'
 stock_data = yq.Ticker(symbol)
 
@@ -43,7 +25,6 @@ current_qtr_inc = inc_list.iloc[lenth_inc_list-2,0]
 
 
 # Net Profit Margin = Net income/Total Revenue * 100.
->>>>>>> b2218a48e853e4aee2ce95b7d9215565788d9efc
 
 # asOfDate
 # periodType
@@ -52,27 +33,15 @@ current_qtr_inc = inc_list.iloc[lenth_inc_list-2,0]
 # BasicEPS
 # CostOfRevenue
 # DilutedAverageShares
-<<<<<<< HEAD
-                                                                                # DilutedEPS
-# DilutedNIAvailtoComStockholders
-# EBIT
-# EBITDA
-                                                                                # GrossProfit
-=======
                                                                     # DilutedEPS
 # DilutedNIAvailtoComStockholders
 # EBIT
 # EBITDA
->>>>>>> b2218a48e853e4aee2ce95b7d9215565788d9efc
 # InterestExpense
 # InterestExpenseNonOperating
 # InterestIncome
 # InterestIncomeNonOperating
-<<<<<<< HEAD
-                                                                                # NetIncome
-=======
                                                                     # NetIncome
->>>>>>> b2218a48e853e4aee2ce95b7d9215565788d9efc
 # NetIncomeCommonStockholders
 # NetIncomeContinuousOperations
 # NetIncomeFromContinuingAndDiscontinuedOperation
@@ -99,10 +68,6 @@ current_qtr_inc = inc_list.iloc[lenth_inc_list-2,0]
 # TaxRateForCalcs
 # TotalExpenses
 # TotalOperatingIncomeAsReported
-<<<<<<< HEAD
-# TotalRevenue
-=======
                                                                 # TotalRevenue
->>>>>>> b2218a48e853e4aee2ce95b7d9215565788d9efc
 # TotalUnusualItems
 # TotalUnusualItemsExcludingGoodwill
