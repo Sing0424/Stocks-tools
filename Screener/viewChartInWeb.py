@@ -3,10 +3,10 @@ import pandas as pd
 from config import screen_result_path
 
 import_data = pd.read_excel(screen_result_path)['Symbol']
-num_websites_per_batch = 200
+num_websites_per_batch = 10
+start_from = 150
 
-
-for i in range(0, len(import_data), num_websites_per_batch):
+for i in range(start_from, len(import_data), num_websites_per_batch):
     if i < num_websites_per_batch:
         input(f"Press enter to open {i} to {i+num_websites_per_batch} of {len(import_data)} websites...")
     else:
