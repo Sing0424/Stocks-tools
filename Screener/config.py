@@ -14,6 +14,7 @@ screen_result_path = 'ScreenResult/ScreenResult.xlsx'
 #Get symbol list from https://www.alphavantage.co/
 # stock_symbol_api_key = '7D80AAZF1EFC0TZJ'
 # symbols_url = f'https://www.alphavantage.co/query?function=LISTING_STATUS&apikey={stock_symbol_api_key}'
+
 #Get symbol list from https://stock-symbol.herokuapp.com/
 stock_symbol_api_key = '2b96bf82-acb9-40be-8cc1-73659e7fbafb'
 
