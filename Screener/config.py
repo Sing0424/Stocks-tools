@@ -5,16 +5,7 @@ stocks_csv_path = 'data/symbols.csv'
 daily_rs_rating_Top_30_path = 'data/rs_rating_top_30.xlsx'
 screen_result_path = 'ScreenResult/ScreenResult.xlsx'
 
-#Path config for vscode terminal
-# stocks_csv_path = os.path.join("Screener", "data", "symbols.csv")
-# daily_rs_rating_Top_30_path = os.path.join("Screener", "data", "rs_rating_top_30.xlsx")
-# screen_result_path = os.path.join("Screener", "ScreenResult", "ScreenResult.xlsx")
-
 #Data config
-#Get symbol list from https://www.alphavantage.co/
-# stock_symbol_api_key = '7D80AAZF1EFC0TZJ'
-# symbols_url = f'https://www.alphavantage.co/query?function=LISTING_STATUS&apikey={stock_symbol_api_key}'
-
 #Get symbol list from https://stock-symbol.herokuapp.com/
 stock_symbol_api_key = '2b96bf82-acb9-40be-8cc1-73659e7fbafb'
 

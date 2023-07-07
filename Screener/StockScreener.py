@@ -69,6 +69,11 @@ def get_stock_data(symbol, rsr):
         first_qtr_profit_margin = 0
         second_qtr_profit_margin = 0
         current_qtr_profit_margin = 0
+    
+    if (current_qtr_eps > second_qtr_eps > first_qtr_eps) and (current_qtr_inc > second_qtr_inc > first_qtr_inc) and (current_qtr_profit_margin > second_qtr_profit_margin > first_qtr_profit_margin):
+        code33 = 'T'
+    else:
+        code33 = 'F'
 
     return {
         'Symbol': symbol,
@@ -92,7 +97,8 @@ def get_stock_data(symbol, rsr):
         'Current qtr Inc': current_qtr_inc,
         '1st qtr NPM': first_qtr_profit_margin,
         '2nd qtr NPM': second_qtr_profit_margin,
-        'Current qtr NPM': current_qtr_profit_margin
+        'Current qtr NPM': current_qtr_profit_margin,
+        'Code 33': code33
     }
 
 def Screener(symbol, rs_rating):
