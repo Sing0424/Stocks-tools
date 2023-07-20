@@ -8,7 +8,6 @@ from functools import cache
 from tqdm import tqdm
 import datetime
 
-@cache
 def get_stock_data(symbol, rsr):
     stock_data = yf.download(tickers = symbol, period='max', progress=False)
     ipo_date = stock_data.index[0].strftime("%Y-%m-%d")
@@ -31,12 +30,14 @@ def get_stock_data(symbol, rsr):
     try:
         eps_list = pd.DataFrame(inc_stat['DilutedEPS']).dropna()
         lenth_eps_list = len(eps_list)
-        first_qtr_eps = eps_list.iloc[lenth_eps_list-3,0]
-        second_qtr_eps = eps_list.iloc[lenth_eps_list-2,0]
+        first_qtr_eps = eps_list.iloc[lenth_eps_list-4,0]
+        second_qtr_eps = eps_list.iloc[lenth_eps_list-3,0]
+        third_qtr_eps = eps_list.iloc[lenth_eps_list-2,0]
         current_qtr_eps = eps_list.iloc[lenth_eps_list-1,0]
     except:
         first_qtr_eps = 0
         second_qtr_eps = 0
+        third_qtr_eps = 0
         current_qtr_eps = 0
 
     try:
@@ -44,10 +45,12 @@ def get_stock_data(symbol, rsr):
         lenth_inc_list = len(inc_list)
         first_qtr_inc = inc_list.iloc[lenth_inc_list-5,0]
         second_qtr_inc = inc_list.iloc[lenth_inc_list-4,0]
-        current_qtr_inc = inc_list.iloc[lenth_inc_list-2,0]
+        third_qtr_inc = inc_list.iloc[lenth_inc_list-2,0]
+        current_qtr_inc = inc_list.iloc[lenth_inc_list-3,0]
     except:
         first_qtr_inc = 0
         second_qtr_inc = 0
+        third_qtr_inc = 0
         current_qtr_inc = 0
 
     try:
@@ -55,25 +58,29 @@ def get_stock_data(symbol, rsr):
         lenth_rev_list = len(rev_list)
         first_qtr_rev = rev_list.iloc[lenth_rev_list-5,0]
         second_qtr_rev = rev_list.iloc[lenth_rev_list-4,0]
-        current_qtr_rev = rev_list.iloc[lenth_rev_list-2,0]
+        third_qtr_rev = rev_list.iloc[lenth_rev_list-2,0]
+        current_qtr_rev = rev_list.iloc[lenth_rev_list-3,0]
     except:
         first_qtr_rev = 0
         second_qtr_rev = 0
+        third_qtr_rev = 0
         current_qtr_rev = 0
 
-    if first_qtr_rev != 0 and second_qtr_rev !=0 and current_qtr_rev !=0:
+    if first_qtr_rev != 0 and second_qtr_rev != 0 and third_qtr_rev != 0 and current_qtr_rev != 0:
         first_qtr_profit_margin = first_qtr_inc/first_qtr_rev * 100
         second_qtr_profit_margin = second_qtr_inc/second_qtr_rev * 100
+        third_qtr_profit_margin = third_qtr_inc/third_qtr_rev * 100
         current_qtr_profit_margin = current_qtr_inc/current_qtr_rev * 100
     else:
         first_qtr_profit_margin = 0
         second_qtr_profit_margin = 0
+        third_qtr_profit_margin = 0
         current_qtr_profit_margin = 0
-    
-    if (current_qtr_eps > second_qtr_eps > first_qtr_eps) and (current_qtr_inc > second_qtr_inc > first_qtr_inc) and (current_qtr_profit_margin > second_qtr_profit_margin > first_qtr_profit_margin):
-        code33 = 'T'
-    else:
-        code33 = 'F'
+
+    # if (current_qtr_eps > third_qtr_eps > second_qtr_eps > first_qtr_eps) and (current_qtr_inc > third_qtr_inc > second_qtr_inc > first_qtr_inc) and (current_qtr_profit_margin > third_qtr_profit_margin > second_qtr_profit_margin > first_qtr_profit_margin):
+    #     code33 = 'T'
+    # else:
+    #     code33 = 'F'
 
     return {
         'Symbol': symbol,
@@ -91,14 +98,17 @@ def get_stock_data(symbol, rsr):
         'RS Rating': rsr,
         '1st qtr EPS': first_qtr_eps,
         '2nd qtr EPS': second_qtr_eps,
+        '3rd qtr EPS': third_qtr_eps,
         'Current qtr EPS': current_qtr_eps,
         '1st qtr Inc': first_qtr_inc,
         '2nd qtr Inc': second_qtr_inc,
+        '3rd qtr Inc': third_qtr_inc,
         'Current qtr Inc': current_qtr_inc,
         '1st qtr NPM': first_qtr_profit_margin,
         '2nd qtr NPM': second_qtr_profit_margin,
-        'Current qtr NPM': current_qtr_profit_margin,
-        'Code 33': code33
+        # '3rd qtr NPM': third_qtr_profit_margin,
+        # 'Current qtr NPM': current_qtr_profit_margin
+        # 'Code 33': code33
     }
 
 def Screener(symbol, rs_rating):
