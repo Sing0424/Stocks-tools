@@ -1,28 +1,38 @@
-import os
-import pandas as pd
 import yfinance as yf
-import yahooquery as yq
-from config import daily_rs_rating_Top_30_path, screen_result_path
-from concurrent.futures import ProcessPoolExecutor
-from functools import cache
-from tqdm import tqdm
-import datetime
+import matplotlib.pyplot as plt
+import mplfinance as mpf
 
-symbol = 'NVDA'
+# List of stock symbols
+symbols = ['AAPL']
 
-yq_stock_data = yq.Ticker(symbol)
-inc_stat = yq_stock_data.income_statement('q')
+for symbol in symbols:
+    
+    # Get stock data 
+    data = yf.Ticker(symbol)
+    df = data.history(period="1d", start="2022-1-1", end="2023-7-21")
+    
+    # Plotting
+    # fig, (ax1, ax2) = plt.subplots(2, 1, figsize = (12, 6) ,sharex = True, height_ratios = [4, 1])
+    # fig.suptitle('Stock price and volume of {}'.format(symbol))
 
-rev_list = pd.DataFrame(inc_stat['TotalRevenue']).dropna()
-lenth_rev_list = len(rev_list)
-first_qtr_rev = rev_list.iloc[lenth_rev_list-5,0]
-second_qtr_rev = rev_list.iloc[lenth_rev_list-4,0]
-third_qtr_rev = rev_list.iloc[lenth_rev_list-2,0]
-current_qtr_rev = rev_list.iloc[lenth_rev_list-3,0]
+    # Price chart
+    # ax1.plot(df.index, df['Close'], color='r', label='Close price', mav=(10,20,30,50,150,200))     
+    # ax1.set_ylabel('Price')
+    
+    # # Volume chart      
+    # ax2.bar(df.index, df['Volume'], color='b', label='Volume')       
+    # ax2.set_ylabel('Volume')
+    
+    # plt.legend(loc='best')    
+    # plt.show()  
 
-print(rev_list)
-print('---------------------------------------------------------------------------------------------------')
-print(first_qtr_rev)
-print(second_qtr_rev)
-print(third_qtr_rev)
-print(current_qtr_rev)
+    mc = mpf.make_marketcolors(up='g',down='r',inherit=True)
+    s  = mpf.make_mpf_style(base_mpf_style='yahoo',marketcolors=mc)
+    #針對線圖的外觀微調，將上漲設定為紅色，下跌設定為綠色，符合台股表示習慣
+    #接著把自訂的marketcolors放到自訂的style中，而這個改動是基於預設的yahoo外觀
+
+    kwargs = dict(type='candle', mav=(5,20,60), volume=True, figratio=(10,8), figscale=0.75, title='NVDA', style=s) 
+    #設定可變參數kwargs，並在變數中填上繪圖時會用到的設定值
+
+    mpf.plot(df, **kwargs)
+    #選擇df資料表為資料來源，帶入kwargs參數，畫出目標股票的走勢圖

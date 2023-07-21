@@ -104,10 +104,14 @@ def get_stock_data(symbol, rsr):
         '2nd qtr Inc': second_qtr_inc,
         '3rd qtr Inc': third_qtr_inc,
         'Current qtr Inc': current_qtr_inc,
+        '1st qtr Rev': first_qtr_rev,
+        '2nd qtr Rev': second_qtr_rev,
+        '3rd qtr Rev': third_qtr_rev,
+        'Current qtr Rev': current_qtr_rev,
         '1st qtr NPM': first_qtr_profit_margin,
         '2nd qtr NPM': second_qtr_profit_margin,
-        # '3rd qtr NPM': third_qtr_profit_margin,
-        # 'Current qtr NPM': current_qtr_profit_margin
+        '3rd qtr NPM': third_qtr_profit_margin,
+        'Current qtr NPM': current_qtr_profit_margin
         # 'Code 33': code33
     }
 
