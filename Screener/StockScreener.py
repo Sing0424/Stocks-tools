@@ -30,10 +30,22 @@ def get_stock_data(symbol, rsr):
     try:
         eps_list = pd.DataFrame(inc_stat['DilutedEPS']).dropna()
         lenth_eps_list = len(eps_list)
-        first_qtr_eps = eps_list.iloc[lenth_eps_list-4,0]
-        second_qtr_eps = eps_list.iloc[lenth_eps_list-3,0]
-        third_qtr_eps = eps_list.iloc[lenth_eps_list-2,0]
-        current_qtr_eps = eps_list.iloc[lenth_eps_list-1,0]
+        try:
+            first_qtr_eps = eps_list.iloc[lenth_eps_list-4,0]
+        except:
+            first_qtr_eps = 0
+        try:
+            second_qtr_eps = eps_list.iloc[lenth_eps_list-3,0]
+        except:
+            second_qtr_eps = 0
+        try:
+            third_qtr_eps = eps_list.iloc[lenth_eps_list-2,0]
+        except:
+            third_qtr_eps = 0
+        try:
+            current_qtr_eps = eps_list.iloc[lenth_eps_list-1,0]
+        except:
+            current_qtr_eps = 0
     except:
         first_qtr_eps = 0
         second_qtr_eps = 0
@@ -43,44 +55,32 @@ def get_stock_data(symbol, rsr):
     try:
         inc_list = pd.DataFrame(inc_stat['NetIncome']).dropna()
         lenth_inc_list = len(inc_list)
-        first_qtr_inc = inc_list.iloc[lenth_inc_list-5,0]
-        second_qtr_inc = inc_list.iloc[lenth_inc_list-4,0]
-        third_qtr_inc = inc_list.iloc[lenth_inc_list-2,0]
-        current_qtr_inc = inc_list.iloc[lenth_inc_list-3,0]
+        try:
+            first_qtr_inc = inc_list.iloc[lenth_inc_list-5,0]
+        except:
+            first_qtr_inc = 0
+        try:
+            second_qtr_inc = inc_list.iloc[lenth_inc_list-4,0]
+        except:
+            second_qtr_inc = 0
+        try:
+            third_qtr_inc = inc_list.iloc[lenth_inc_list-2,0]
+        except:
+            third_qtr_inc = 0
+        try:
+            current_qtr_inc = inc_list.iloc[lenth_inc_list-3,0]
+        except:
+            current_qtr_inc = 0
     except:
         first_qtr_inc = 0
         second_qtr_inc = 0
         third_qtr_inc = 0
         current_qtr_inc = 0
 
-    try:
-        rev_list = pd.DataFrame(inc_stat['TotalRevenue']).dropna()
-        lenth_rev_list = len(rev_list)
-        first_qtr_rev = rev_list.iloc[lenth_rev_list-5,0]
-        second_qtr_rev = rev_list.iloc[lenth_rev_list-4,0]
-        third_qtr_rev = rev_list.iloc[lenth_rev_list-2,0]
-        current_qtr_rev = rev_list.iloc[lenth_rev_list-3,0]
-    except:
-        first_qtr_rev = 0
-        second_qtr_rev = 0
-        third_qtr_rev = 0
-        current_qtr_rev = 0
-
-    if first_qtr_rev != 0 and second_qtr_rev != 0 and third_qtr_rev != 0 and current_qtr_rev != 0:
-        first_qtr_profit_margin = first_qtr_inc/first_qtr_rev * 100
-        second_qtr_profit_margin = second_qtr_inc/second_qtr_rev * 100
-        third_qtr_profit_margin = third_qtr_inc/third_qtr_rev * 100
-        current_qtr_profit_margin = current_qtr_inc/current_qtr_rev * 100
+    if (current_qtr_eps > third_qtr_eps > second_qtr_eps > first_qtr_eps) and (current_qtr_inc > third_qtr_inc > second_qtr_inc > first_qtr_inc):
+        code33 = 'T'
     else:
-        first_qtr_profit_margin = 0
-        second_qtr_profit_margin = 0
-        third_qtr_profit_margin = 0
-        current_qtr_profit_margin = 0
-
-    # if (current_qtr_eps > third_qtr_eps > second_qtr_eps > first_qtr_eps) and (current_qtr_inc > third_qtr_inc > second_qtr_inc > first_qtr_inc) and (current_qtr_profit_margin > third_qtr_profit_margin > second_qtr_profit_margin > first_qtr_profit_margin):
-    #     code33 = 'T'
-    # else:
-    #     code33 = 'F'
+        code33 = 'F'
 
     return {
         'Symbol': symbol,
@@ -104,15 +104,7 @@ def get_stock_data(symbol, rsr):
         '2nd qtr Inc': second_qtr_inc,
         '3rd qtr Inc': third_qtr_inc,
         'Current qtr Inc': current_qtr_inc,
-        '1st qtr Rev': first_qtr_rev,
-        '2nd qtr Rev': second_qtr_rev,
-        '3rd qtr Rev': third_qtr_rev,
-        'Current qtr Rev': current_qtr_rev,
-        '1st qtr NPM': first_qtr_profit_margin,
-        '2nd qtr NPM': second_qtr_profit_margin,
-        '3rd qtr NPM': third_qtr_profit_margin,
-        'Current qtr NPM': current_qtr_profit_margin
-        # 'Code 33': code33
+        'Code 33': code33
     }
 
 def Screener(symbol, rs_rating):
