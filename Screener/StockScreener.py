@@ -26,7 +26,7 @@ def get_stock_data(symbol, rsr):
     industry = info.get('industry')
 
     yq_stock_data = yq.Ticker(symbol)
-    inc_stat = yq_stock_data.income_statement('q')
+    inc_stat = yq_stock_data.income_statement('q', trailing=False)
     try:
         eps_list = pd.DataFrame(inc_stat['DilutedEPS']).dropna()
         lenth_eps_list = len(eps_list)
@@ -56,11 +56,11 @@ def get_stock_data(symbol, rsr):
         inc_list = pd.DataFrame(inc_stat['NetIncome']).dropna()
         lenth_inc_list = len(inc_list)
         try:
-            first_qtr_inc = inc_list.iloc[lenth_inc_list-5,0]
+            first_qtr_inc = inc_list.iloc[lenth_inc_list-4,0]
         except:
             first_qtr_inc = 0
         try:
-            second_qtr_inc = inc_list.iloc[lenth_inc_list-4,0]
+            second_qtr_inc = inc_list.iloc[lenth_inc_list-3,0]
         except:
             second_qtr_inc = 0
         try:
@@ -68,7 +68,7 @@ def get_stock_data(symbol, rsr):
         except:
             third_qtr_inc = 0
         try:
-            current_qtr_inc = inc_list.iloc[lenth_inc_list-3,0]
+            current_qtr_inc = inc_list.iloc[lenth_inc_list-1,0]
         except:
             current_qtr_inc = 0
     except:
@@ -120,7 +120,7 @@ def run_Screener():
         Screen_result_list = []
         import_data = pd.read_excel(daily_rs_rating_Top_30_path)
 
-        with ProcessPoolExecutor(max_workers=None) as executor:
+        with ProcessPoolExecutor(max_workers=4) as executor:
             results = tqdm(executor.map(Screener, import_data["Symbol"], import_data["RS Rating"]), desc='Screening', unit=' stocks', total=len(import_data), ncols=80, miniters=1)
 
             for result in results:

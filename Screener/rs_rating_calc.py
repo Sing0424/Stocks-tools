@@ -46,7 +46,7 @@ def run_rs_data_program():
             symbols = [line.strip() for line in f]
 
         rs_rating_list = []
-        with ProcessPoolExecutor(max_workers=None) as executor:
+        with ProcessPoolExecutor(max_workers=8) as executor:
             results = tqdm(executor.map(calculate_rs_rating, symbols, chunksize=chunksize), desc='Calculating RS', unit=' stocks', total=len(symbols), ncols=80, miniters=1)
             for result in results:
                 if result is not None:
