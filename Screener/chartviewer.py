@@ -34,7 +34,7 @@ def weeklyChart():
         
         # Get stock data 
         data = yf.Ticker(symbol)
-        df = data.history(start = datetime.datetime.now() - datetime.timedelta(weeks= 104), end = datetime.datetime.now(),interval='1wk')
+        df = data.history(start = datetime.datetime.now() - datetime.timedelta(weeks= 104), end = datetime.datetime.now())
 
         df = df.resample('W').agg({'Open': 'first', 'High': 'max',
                             'Low': 'min','Close': 'last','Volume': 'sum'})
