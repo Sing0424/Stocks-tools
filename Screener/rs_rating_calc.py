@@ -8,9 +8,9 @@ from tqdm import tqdm
 import logging
 
 @cache
-def calculate_price_change(symbol, quarters):
+def calculate_price_change(symbol, c_period):
     start_date = datetime.datetime.now() - datetime.timedelta(
-        days=quarters * trading_days_per_quarter
+        days=c_period * days_per_month
     )
     end_date = datetime.datetime.now()
     logging.basicConfig(level=logging.CRITICAL)
@@ -27,13 +27,12 @@ def calculate_rs_rating(symbol):
     rs_ratings = []
     try:
         c_q1, now_price = calculate_price_change(symbol, 1)
-        if now_price < 10 or now_price == None:
+        if now_price < 12 or now_price == None:
             # print(f"Price under 10\n")
             return None
         c_q2 = calculate_price_change(symbol, 2)[0]
         c_q3 = calculate_price_change(symbol, 3)[0]
-        c_q4 = calculate_price_change(symbol, 4)[0]
-        rs_rating = ((0.4 * c_q1) + (0.2 * c_q2) + (0.2 * c_q3) + (0.2 * c_q4))
+        rs_rating = ((0.4 * c_q1) + (0.3 * c_q2) + (0.3 * c_q3))
         rs_ratings.append((symbol, rs_rating))
         return rs_ratings
     except:
