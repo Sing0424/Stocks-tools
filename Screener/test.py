@@ -1,26 +1,9 @@
-import pandas as pd
-import yfinance as yf
+rs_rating_list = [0,1,2,3,4,5,6,7,8,9,10]
+top_rating =0.2
 
-# Define symbols and date range
-symbols = ['AAPL', 'MSFT', 'GOOG'] 
-start = '2023-01-01'
-end = '2023-03-31' 
+rs_rating_list.sort(key=lambda x: x, reverse=True)
 
-# Download daily price data
-data = yf.download(symbols, start=start, end=end)['Adj Close']
+num_top_ratings = int(len(rs_rating_list) * top_rating)
+top_ratings = rs_rating_list[:num_top_ratings]
 
-# Calculate daily returns for each stock and S&P 500
-returns = data.pct_change()
-sp500 = yf.download('^GSPC', start=start, end=end)['Adj Close'].pct_change()
-
-# Calculate 14-day relative strength 
-rs = returns.rolling(14).corr(sp500)
-
-# Get maximum RS over the period  
-max_rs = rs.max()
-
-# Rank stocks by closeness to max RS
-rs_rank = max_rs.rank(method='dense', ascending=False)
-
-# Print results
-print(rs_rank)
+print(top_ratings)

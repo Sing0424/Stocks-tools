@@ -20,19 +20,19 @@ def calculate_price_change(symbol, c_period):
         return None
     now_price = stock_data["Adj Close"][-1]
     past_price = stock_data["Adj Close"][0]
-    price_percentage_change = (now_price / past_price) * 100
-    return price_percentage_change, now_price
+    price_change = (now_price / past_price)
+    return price_change, now_price
 
 def calculate_rs_rating(symbol):
     rs_ratings = []
     try:
-        c_q1, now_price = calculate_price_change(symbol, 1)
+        c_p1, now_price = calculate_price_change(symbol, 1)
         if now_price < 12 or now_price == None:
             # print(f"Price under 10\n")
             return None
-        c_q2 = calculate_price_change(symbol, 2)[0]
-        c_q3 = calculate_price_change(symbol, 3)[0]
-        rs_rating = ((0.4 * c_q1) + (0.3 * c_q2) + (0.3 * c_q3))
+        c_p2 = calculate_price_change(symbol, 2)[0]
+        c_p3 = calculate_price_change(symbol, 3)[0]
+        rs_rating = (((0.4 * c_p1) + (0.3 * c_p2) + (0.3 * c_p3)) / (c_p1 + c_p2 + c_p3)) * 100
         rs_ratings.append((symbol, rs_rating))
         return rs_ratings
     except:
@@ -52,11 +52,11 @@ def run_rs_data_program():
                     rs_rating_list.extend(result)
 
         # Sort the list of RS ratings by ascending order
-        rs_rating_list.sort(key=lambda x: x[1])
+        rs_rating_list.sort(key=lambda x: x[1], reverse=True)
 
         # Get the top 30% of RS ratings
         num_top_ratings = int(len(rs_rating_list) * top_rating)
-        top_ratings = rs_rating_list[-num_top_ratings:]
+        top_ratings = rs_rating_list[:num_top_ratings]
 
         workbook = xlsxwriter.Workbook(daily_rs_rating_Top_30_path)
         worksheet = workbook.add_worksheet()

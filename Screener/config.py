@@ -10,6 +10,6 @@ screen_result_path = 'ScreenResult/ScreenResult.xlsx'
 stock_symbol_api_key = '2b96bf82-acb9-40be-8cc1-73659e7fbafb'
 
 #Program config
-days_per_month = 30 #define days in a quarter
+days_per_month = 22 #define days in a quarter
 top_rating = 0.2 #percentage of top ratings, range: 0.0 ~ 1.0
 chunksize = 64 #optimizing the multiprocessing
