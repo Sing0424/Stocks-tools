@@ -32,7 +32,7 @@ def calculate_rs_rating(symbol):
             return None
         c_p2 = calculate_price_change(symbol, 2)[0]
         c_p3 = calculate_price_change(symbol, 3)[0]
-        rs_rating = (((0.4 * c_p1) + (0.3 * c_p2) + (0.3 * c_p3)) / (c_p1 + c_p2 + c_p3)) * 100
+        rs_rating = ((0.4 * c_p1) + (0.3 * c_p2) + (0.3 * c_p3)) * 100
         rs_ratings.append((symbol, rs_rating))
         return rs_ratings
     except:
