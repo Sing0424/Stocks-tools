@@ -4,7 +4,6 @@ import yfinance as yf
 import yahooquery as yq
 from config import daily_rs_rating_Top_30_path, screen_result_path
 from concurrent.futures import ProcessPoolExecutor
-from functools import cache
 from tqdm import tqdm
 import datetime
 

@@ -5,7 +5,7 @@ from config import screen_result_path
 import_data = pd.read_excel(screen_result_path , usecols=['Symbol', 'Code 33'])
 normal_filter = import_data['Symbol']
 code33_filter = import_data[(import_data['Code 33'] == 'T')]['Symbol']
-num_websites_per_batch = 10
+num_websites_per_batch = 5
 start_from = 0
 
 def run_w_normal_filter():

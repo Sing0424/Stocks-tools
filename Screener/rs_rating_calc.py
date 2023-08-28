@@ -1,4 +1,3 @@
-from functools import cache
 import yfinance as yf
 import datetime
 from config import *
@@ -7,7 +6,6 @@ import xlsxwriter
 from tqdm import tqdm
 import logging
 
-@cache
 def calculate_price_change(symbol, c_period):
     start_date = datetime.datetime.now() - datetime.timedelta(
         days=c_period * days_per_month
