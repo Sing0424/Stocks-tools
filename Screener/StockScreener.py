@@ -119,7 +119,7 @@ def run_Screener():
         Screen_result_list = []
         import_data = pd.read_excel(daily_rs_rating_Top_30_path)
 
-        with ProcessPoolExecutor(max_workers=4) as executor:
+        with ProcessPoolExecutor(max_workers=None) as executor:
             results = tqdm(executor.map(Screener, import_data["Symbol"], import_data["RS Rating"]), desc='Screening', unit=' stocks', total=len(import_data), ncols=80, miniters=1)
 
             for result in results:

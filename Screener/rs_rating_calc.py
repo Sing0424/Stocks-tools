@@ -41,6 +41,7 @@ def run_rs_data_program():
     if __name__ == '__main__':
         with open(stocks_csv_path, "r") as f:
             symbols = [line.strip() for line in f]
+            stock_data = yf.download(symbols, start=start_date, end=end_date, progress=False, threads = True)
 
         rs_rating_list = []
         with ProcessPoolExecutor(max_workers=8) as executor:
