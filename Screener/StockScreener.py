@@ -2,9 +2,11 @@ import os
 import pandas as pd
 import yfinance as yf
 import yahooquery as yq
-from config import daily_rs_rating_Top_30_path, screen_result_path
-from concurrent.futures import ProcessPoolExecutor
+from config import daily_rs_rating_Top_30_path, screen_result_path, chunksize
+from multiprocessing import Pool
 from tqdm import tqdm
+import time
+import threading
 import datetime
 
 def get_stock_data(symbol, rsr):
@@ -119,12 +121,16 @@ def run_Screener():
         Screen_result_list = []
         import_data = pd.read_excel(daily_rs_rating_Top_30_path)
 
-        with ProcessPoolExecutor(max_workers=None) as executor:
-            results = tqdm(executor.map(Screener, import_data["Symbol"], import_data["RS Rating"]), desc='Screening', unit=' stocks', total=len(import_data), ncols=80, miniters=1)
+        num_cpus = os.cpu_count()
+        pool = Pool(processes=int(num_cpus/2), maxtasksperchild=1)
 
-            for result in results:
-                if result is not None:
-                    Screen_result_list.append(result)
+        process_bar = tqdm(desc='Screening', unit=' stocks', total=len(import_data), ncols=80, smoothing=1)
+
+        for result in pool.imap_unordered(Screener, import_data["Symbol"], import_data["RS Rating"], chunksize=1):
+            if result is not None:
+                Screen_result_list.append(result)
+            process_bar.update()
+        process_bar.close()
 
         Screen_result_list.sort(key=lambda x: x['RS Rating'], reverse = True)
 
