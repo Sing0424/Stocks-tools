@@ -2,11 +2,9 @@ import os
 import pandas as pd
 import yfinance as yf
 import yahooquery as yq
-from config import daily_rs_rating_Top_30_path, screen_result_path, chunksize
+from config import daily_rs_rating_Top_30_path, screen_result_path
 from multiprocessing import Pool
 from tqdm import tqdm
-import time
-import threading
 import datetime
 
 def get_stock_data(symbol, rsr):
@@ -108,7 +106,10 @@ def get_stock_data(symbol, rsr):
         'Code 33': code33
     }
 
-def Screener(symbol, rs_rating):
+def Screener(symbol_rating_tuple):
+    symbol = symbol_rating_tuple[0]
+    rs_rating = symbol_rating_tuple[1]
+
     stock_data = get_stock_data(symbol, rs_rating)
     
     if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['Week 52 low'])) and (stock_data['Current price'] > (0.75 * stock_data['Week 52 high'])) and stock_data['30D Avg Vol'] >= 250000:
@@ -120,13 +121,17 @@ def run_Screener():
     if __name__ == '__main__':
         Screen_result_list = []
         import_data = pd.read_excel(daily_rs_rating_Top_30_path)
+        symbol_arg = import_data["Symbol"]
+        rs_rating_arg = import_data["RS Rating"]
+
+        args = zip(symbol_arg, rs_rating_arg)
 
         num_cpus = os.cpu_count()
         pool = Pool(processes=int(num_cpus/2), maxtasksperchild=1)
 
         process_bar = tqdm(desc='Screening', unit=' stocks', total=len(import_data), ncols=80, smoothing=1)
 
-        for result in pool.imap_unordered(Screener, import_data["Symbol"], import_data["RS Rating"], chunksize=1):
+        for result in pool.imap_unordered(Screener, args):
             if result is not None:
                 Screen_result_list.append(result)
             process_bar.update()
