@@ -121,13 +121,11 @@ def run_Screener():
     if __name__ == '__main__':
         Screen_result_list = []
         import_data = pd.read_excel(daily_rs_rating_Top_30_path)
-        symbol_arg = import_data["Symbol"]
-        rs_rating_arg = import_data["RS Rating"]
 
-        args = zip(symbol_arg, rs_rating_arg)
+        args = zip(import_data["Symbol"], import_data["RS Rating"])
 
         num_cpus = os.cpu_count()
-        pool = Pool(processes=int(num_cpus/2), maxtasksperchild=1)
+        pool = Pool(processes=4, maxtasksperchild=1)
 
         process_bar = tqdm(desc='Screening', unit=' stocks', total=len(import_data), ncols=80, smoothing=1)
 

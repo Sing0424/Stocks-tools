@@ -34,8 +34,7 @@ def run_rs_data_program():
     with open(stocks_csv_path, "r") as f: 
         symbols = [line.strip() for line in f]
 
-    num_cpus = os.cpu_count()
-    pool = Pool(processes=int(num_cpus/2), maxtasksperchild=1)
+    pool = Pool(processes=4, maxtasksperchild=1)
     rs_rating_list = []
     process_bar = tqdm(desc='Calculating RS', unit=' stocks', total=len(symbols), ncols=80, smoothing=1)
 
