@@ -1,3 +1,3 @@
 @echo off
 
-python test.py
+python test_copy.py
