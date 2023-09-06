@@ -49,7 +49,7 @@ def main():
         print(F'Folder ID: "{folder.get("id")}".')
 
         file_metadata = {
-            'name': f'Screen_Result_{datetime.datetime.today()}',
+            'name': f'Screen_Result_{datetime.date.today()}',
             'mimeType': 'application/vnd.google-apps.spreadsheet',
             "removeParents": [f'{folder.get("id")}'],
             "addParents": [f'{folder.get("id")}']
