@@ -8,4 +8,6 @@ python rs_rating_calc.py
 
 python StockScreener.py
 
+python screenResultUpload.py
+
 pause
