@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 import os.path
-
+import datetime
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -39,23 +39,33 @@ def main():
         # create drive api client
         service = build('drive', 'v3', credentials=creds)
 
-        file_metadata = {
+        folder_metadata = {
             'name': 'Screen Result',
-            'mimeType': 'application/vnd.google-apps.spreadsheet'
+            'mimeType': 'application/vnd.google-apps.folder'
+        }
+
+        folder = service.files().update(body=folder_metadata, fields='id', fileId='1XJmBN164biI7oE3c_ZuQp7UHn7pa3tiG'
+                                      ).execute()
+        print(F'Folder ID: "{folder.get("id")}".')
+
+        file_metadata = {
+            'name': f'Screen_Result_{datetime.datetime.today()}',
+            'mimeType': 'application/vnd.google-apps.spreadsheet',
+            "removeParents": [f'{folder.get("id")}'],
+            "addParents": [f'{folder.get("id")}']
         }
         media = MediaFileUpload('ScreenResult/ScreenResult.xlsx', mimetype=None,
                                 resumable=True)
         # pylint: disable=maybe-no-member
-        file = service.files().create(body=file_metadata, media_body=media,
-                                      fields='id').execute()
-        print(F'File with ID: "{file.get("id")}" has been uploaded.')
+        file = service.files().update(body=file_metadata, media_body=media,
+                                      fields='id', fileId='1xHoV8EW40ziRAud57N28kOlw_G_RimpYUpN5LH8sVNs').execute()
+        print(F'File ID: "{file.get("id")}".')
+        return None
 
     except HttpError as error:
         print(F'An error occurred: {error}')
         file = None
-
-    return file.get('id')
-
+        return None
 
 if __name__ == '__main__':
     main()
