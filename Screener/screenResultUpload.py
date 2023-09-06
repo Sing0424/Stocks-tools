@@ -21,18 +21,18 @@ def main():
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists('Screener\\token.json'):
-        creds = Credentials.from_authorized_user_file('Screener\\token.json', SCOPES)
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'Screener\credentials.json', SCOPES)
+                'credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('Screener\\token.json', 'w') as token:
+        with open('token.json', 'w') as token:
             token.write(creds.to_json())
 
     try:
@@ -43,7 +43,7 @@ def main():
             'name': 'Screen Result',
             'mimeType': 'application/vnd.google-apps.spreadsheet'
         }
-        media = MediaFileUpload('Screener\ScreenResult\ScreenResult.xlsx', mimetype=None,
+        media = MediaFileUpload('ScreenResult/ScreenResult.xlsx', mimetype=None,
                                 resumable=True)
         # pylint: disable=maybe-no-member
         file = service.files().create(body=file_metadata, media_body=media,
