@@ -1,5 +1,6 @@
 import yfinance as yf
 import datetime
+import time
 from config import *
 from multiprocessing import Pool
 from tqdm import tqdm
@@ -34,13 +35,15 @@ def run_rs_data_program():
     with open(stocks_csv_path, "r") as f: 
         symbols = [line.strip() for line in f]
 
-    pool = Pool(processes=4, maxtasksperchild=1)
+    cpu_count = os.cpu_count()
+    pool = Pool(processes=cpu_count, maxtasksperchild=1)
     rs_rating_list = []
-    process_bar = tqdm(desc='Calculating RS', unit=' stocks', total=len(symbols), ncols=80, smoothing=1)
+    process_bar = tqdm(desc='Calculating RS', unit=' stocks', total=len(symbols), ncols=80, smoothing=1, miniters=cpu_count)
 
     for result in pool.imap_unordered(calculate_rs_rating, symbols):
         if result is not None:
             rs_rating_list.extend(result)
+        time.sleep(1)
         process_bar.update()
     process_bar.close()
 

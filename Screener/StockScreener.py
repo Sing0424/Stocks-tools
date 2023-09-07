@@ -6,6 +6,7 @@ from config import daily_rs_rating_Top_30_path, screen_result_path
 from multiprocessing import Pool
 from tqdm import tqdm
 import datetime
+import time
 
 def get_stock_data(symbol, rsr):
     stock_data = yf.download(tickers = symbol, period='max', progress=False)
@@ -124,14 +125,15 @@ def run_Screener():
 
         args = zip(import_data["Symbol"], import_data["RS Rating"])
 
-        num_cpus = os.cpu_count()
+        cpu_count = os.cpu_count()
         pool = Pool(processes=4, maxtasksperchild=1)
 
-        process_bar = tqdm(desc='Screening', unit=' stocks', total=len(import_data), ncols=80, smoothing=1)
+        process_bar = tqdm(desc='Screening', unit=' stocks', total=len(import_data), ncols=80, smoothing=1, miniters=cpu_count)
 
         for result in pool.imap_unordered(Screener, args):
             if result is not None:
                 Screen_result_list.append(result)
+            time.sleep(1)
             process_bar.update()
         process_bar.close()
 
