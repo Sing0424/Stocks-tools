@@ -1,13 +1,13 @@
 @echo off
 
-pip install -r requirements.txt
+start "" /REALTIME /B /W pip install -r requirements.txt
 
-python get_ticker_info.py
+start "" /REALTIME /B /W python get_ticker_info.py
 
-python rs_rating_calc.py
+start "" /REALTIME /B /W python rs_rating_calc.py
 
-python StockScreener.py
+start "" /REALTIME /B /W python StockScreener.py
 
-python screenResultUpload.py
+start "" /REALTIME /B /W python screenResultUpload.py
 
 pause
