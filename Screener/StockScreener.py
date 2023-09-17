@@ -125,15 +125,14 @@ def run_Screener():
 
         args = zip(import_data["Symbol"], import_data["RS Rating"])
 
-        cpu_count = os.cpu_count()
-        pool = Pool(processes=4, maxtasksperchild=1)
+        cpu_count = os.cpu_count() / 2
+        pool = Pool(processes=cpu_count, maxtasksperchild=1)
 
         process_bar = tqdm(desc='Screening', unit=' stocks', total=len(import_data), ncols=80, smoothing=1, miniters=cpu_count)
 
         for result in pool.imap_unordered(Screener, args):
             if result is not None:
                 Screen_result_list.append(result)
-            time.sleep(1)
             process_bar.update()
         process_bar.close()
 

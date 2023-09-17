@@ -35,7 +35,7 @@ def run_rs_data_program():
     with open(stocks_csv_path, "r") as f: 
         symbols = [line.strip() for line in f]
 
-    cpu_count = os.cpu_count()
+    cpu_count = os.cpu_count() / 2
     pool = Pool(processes=cpu_count, maxtasksperchild=1)
     rs_rating_list = []
     process_bar = tqdm(desc='Calculating RS', unit=' stocks', total=len(symbols), ncols=80, smoothing=1, miniters=cpu_count)
@@ -43,7 +43,6 @@ def run_rs_data_program():
     for result in pool.imap_unordered(calculate_rs_rating, symbols):
         if result is not None:
             rs_rating_list.extend(result)
-        time.sleep(1)
         process_bar.update()
     process_bar.close()
 
