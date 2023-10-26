@@ -1,70 +1,36 @@
+import os
+import pandas as pd
 import yfinance as yf
-import datetime
-from config import *
+import yahooquery as yq
+from config import daily_rs_rating_Top_30_path, screen_result_path
 from multiprocessing import Pool
 from tqdm import tqdm
-import xlsxwriter
-import logging
+import datetime
+import time
 
-def calculate_rs_rating(symbol):
-    rs_ratings = []
-    start_date = datetime.datetime.now() - datetime.timedelta(days=98)
-    end_date = datetime.datetime.now()
-    logging.basicConfig(level=logging.CRITICAL)
-    stock_data = yf.download(symbol, start=start_date, end=end_date, progress=False, threads = True)
-    logging.basicConfig(level=logging.WARNING)
+Screen_result_list = []
+import_data = pd.read_excel(daily_rs_rating_Top_30_path)
+
+symbols = import_data["Symbol"]
+symbols = ['ASPAU']
+
+# stock_data = yf.download(tickers = symbol, period='max', progress=False)
+for symbol in symbols:
+    ticker_data = yf.Ticker(symbol)
+    #sector = info.get('sector')
+    #industry = info.get('industry')
+
+    inc_stat = ticker_data.quarterly_income_stmt
+    print(inc_stat)
     try:
-        now_price = stock_data["Adj Close"][-1]
-        if now_price < 12 or now_price == None:
-            pass
-        else:
-            c_1m = (stock_data["Adj Close"].div(stock_data["Adj Close"].shift(days_per_month)))
-            c_2m = (stock_data["Adj Close"].div(stock_data["Adj Close"].shift(days_per_month*2)))
-            c_3m = (stock_data["Adj Close"].div(stock_data["Adj Close"].shift(days_per_month*3)))
-            rs_rating = (c_1m*rs_month_weight[0] + c_2m*rs_month_weight[1] + c_3m*rs_month_weight[2])[-1] * 100
-            rs_ratings.append((symbol, rs_rating))
-            return rs_ratings
+        eps_list = inc_stat.loc['Diluted EPS']
+            # lenth_eps_list = len(eps_list)
+        first_qtr_eps = eps_list.iloc[3]
+        second_qtr_eps = eps_list.iloc[2]
+        third_qtr_eps = eps_list.iloc[1]
+        current_qtr_eps = eps_list.iloc[0]
     except:
-        rs_rating = 0
-        rs_ratings.append((symbol, rs_rating))
-        return rs_ratings
-
-def run_rs_data_program():
-    # Get the RS ratings using multiprocessing
-    with open(stocks_csv_path, "r") as f: 
-        symbols = [line.strip() for line in f]
-
-    pool = Pool(processes=4, maxtasksperchild=1)
-    rs_rating_list = []
-    process_bar = tqdm(desc='Calculating RS', unit=' stocks', total=len(symbols), ncols=80)
-
-    for result in pool.imap_unordered(calculate_rs_rating, symbols, chunksize=1):
-        if result is not None:
-            rs_rating_list.extend(result)
-        process_bar.update()
-    process_bar.close()
-
-    # Sort the list of RS ratings by ascending order
-    rs_rating_list.sort(key=lambda x: x[1], reverse=True)
-
-    # Get the top 30% of RS ratings
-    num_top_ratings = int(len(rs_rating_list) * top_rating)
-    top_ratings = rs_rating_list[:num_top_ratings]
-
-    workbook = xlsxwriter.Workbook(daily_rs_rating_Top_30_path)
-    worksheet = workbook.add_worksheet()
-    float_pt_round = workbook.add_format({'num_format': '#,#####0.00000', 'border': 1})
-    worksheet.write('A1', 'Symbol')
-    worksheet.write('B1', 'RS Rating')
-    row = 1
-    col = 0
-    
-    for symbol, rs_rating in (top_ratings):
-        worksheet.write(row, col, symbol)
-        worksheet.write(row, col + 1, rs_rating, float_pt_round)
-        row += 1
-        
-    workbook.close()
-
-if __name__ == '__main__':
-    run_rs_data_program()
+        first_qtr_eps = 0
+        second_qtr_eps = 0
+        third_qtr_eps = 0
+        current_qtr_eps = 0

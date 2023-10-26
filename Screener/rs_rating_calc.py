@@ -36,7 +36,7 @@ def run_rs_data_program():
         symbols = [line.strip() for line in f]
 
     cpu_count = os.cpu_count() / 2
-    pool = Pool(processes=cpu_count, maxtasksperchild=1)
+    pool = Pool(processes=int(cpu_count), maxtasksperchild=1)
     rs_rating_list = []
     process_bar = tqdm(desc='Calculating RS', unit=' stocks', total=len(symbols), ncols=80, smoothing=1, miniters=cpu_count)
 

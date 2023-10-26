@@ -20,72 +20,58 @@ def get_stock_data(symbol, rsr):
         month_ago_sma_200 = 0
     avg_vol_30 = stock_data['Volume'].rolling(window=30).mean()
 
-    ticker = yf.Ticker(symbol)
-    info = ticker.info
-    sector = info.get('sector')
-    industry = info.get('industry')
+    ticker_data = yf.Ticker(symbol)
+    #sector = info.get('sector')
+    #industry = info.get('industry')
 
-    yq_stock_data = yq.Ticker(symbol)
-    inc_stat = yq_stock_data.income_statement('q', trailing=False)
+    inc_stat = ticker_data.quarterly_income_stmt
     try:
-        eps_list = pd.DataFrame(inc_stat['DilutedEPS']).dropna()
-        lenth_eps_list = len(eps_list)
-        try:
-            first_qtr_eps = eps_list.iloc[lenth_eps_list-4,0]
-        except:
-            first_qtr_eps = 0
-        try:
-            second_qtr_eps = eps_list.iloc[lenth_eps_list-3,0]
-        except:
-            second_qtr_eps = 0
-        try:
-            third_qtr_eps = eps_list.iloc[lenth_eps_list-2,0]
-        except:
-            third_qtr_eps = 0
-        try:
-            current_qtr_eps = eps_list.iloc[lenth_eps_list-1,0]
-        except:
-            current_qtr_eps = 0
+        eps_list = inc_stat.loc['Diluted EPS']
+            # lenth_eps_list = len(eps_list)
+        first_qtr_eps = eps_list.iloc[3]
+        second_qtr_eps = eps_list.iloc[2]
+        third_qtr_eps = eps_list.iloc[1]
+        current_qtr_eps = eps_list.iloc[0]
     except:
         first_qtr_eps = 0
         second_qtr_eps = 0
         third_qtr_eps = 0
         current_qtr_eps = 0
 
-    try:
-        inc_list = pd.DataFrame(inc_stat['NetIncome']).dropna()
-        lenth_inc_list = len(inc_list)
-        try:
-            first_qtr_inc = inc_list.iloc[lenth_inc_list-4,0]
-        except:
-            first_qtr_inc = 0
-        try:
-            second_qtr_inc = inc_list.iloc[lenth_inc_list-3,0]
-        except:
-            second_qtr_inc = 0
-        try:
-            third_qtr_inc = inc_list.iloc[lenth_inc_list-2,0]
-        except:
-            third_qtr_inc = 0
-        try:
-            current_qtr_inc = inc_list.iloc[lenth_inc_list-1,0]
-        except:
-            current_qtr_inc = 0
-    except:
-        first_qtr_inc = 0
-        second_qtr_inc = 0
-        third_qtr_inc = 0
-        current_qtr_inc = 0
+    # try:
+    #     inc_list = pd.DataFrame(inc_stat['NetIncome']).dropna()
+    #     lenth_inc_list = len(inc_list)
+    #     try:
+    #         first_qtr_inc = inc_list.iloc[lenth_inc_list-4,0]
+    #     except:
+    #         first_qtr_inc = 0
+    #     try:
+    #         second_qtr_inc = inc_list.iloc[lenth_inc_list-3,0]
+    #     except:
+    #         second_qtr_inc = 0
+    #     try:
+    #         third_qtr_inc = inc_list.iloc[lenth_inc_list-2,0]
+    #     except:
+    #         third_qtr_inc = 0
+    #     try:
+    #         current_qtr_inc = inc_list.iloc[lenth_inc_list-1,0]
+    #     except:
+    #         current_qtr_inc = 0
+    # except:
+    #     first_qtr_inc = 0
+    #     second_qtr_inc = 0
+    #     third_qtr_inc = 0
+    #     current_qtr_inc = 0
 
-    if (current_qtr_eps > third_qtr_eps > second_qtr_eps > first_qtr_eps) and (current_qtr_inc > third_qtr_inc > second_qtr_inc > first_qtr_inc):
-        code33 = 'T'
-    else:
-        code33 = 'F'
+    # if (current_qtr_eps > third_qtr_eps > second_qtr_eps > first_qtr_eps) and (current_qtr_inc > third_qtr_inc > second_qtr_inc > first_qtr_inc):
+    #     code33 = 'T'
+    # else:
+    #     code33 = 'F'
 
     return {
         'Symbol': symbol,
-        'Sector': sector,
-        'Industry': industry,
+        #'Sector': sector,
+        #'Industry': industry,
         'IPO Date': ipo_date,
         'Current price': stock_data['Adj Close'][-1],
         '30D Avg Vol': avg_vol_30[-1],
@@ -99,12 +85,12 @@ def get_stock_data(symbol, rsr):
         '1st qtr EPS': first_qtr_eps,
         '2nd qtr EPS': second_qtr_eps,
         '3rd qtr EPS': third_qtr_eps,
-        'Current qtr EPS': current_qtr_eps,
-        '1st qtr Inc': first_qtr_inc,
-        '2nd qtr Inc': second_qtr_inc,
-        '3rd qtr Inc': third_qtr_inc,
-        'Current qtr Inc': current_qtr_inc,
-        'Code 33': code33
+        'Current qtr EPS': current_qtr_eps
+        # '1st qtr Inc': first_qtr_inc,
+        # '2nd qtr Inc': second_qtr_inc,
+        # '3rd qtr Inc': third_qtr_inc,
+        # 'Current qtr Inc': current_qtr_inc,
+        # 'Code 33': code33
     }
 
 def Screener(symbol_rating_tuple):
@@ -126,7 +112,7 @@ def run_Screener():
         args = zip(import_data["Symbol"], import_data["RS Rating"])
 
         cpu_count = os.cpu_count() / 2
-        pool = Pool(processes=cpu_count, maxtasksperchild=1)
+        pool = Pool(processes=int(cpu_count), maxtasksperchild=1)
 
         process_bar = tqdm(desc='Screening', unit=' stocks', total=len(import_data), ncols=80, smoothing=1, miniters=cpu_count)
 
