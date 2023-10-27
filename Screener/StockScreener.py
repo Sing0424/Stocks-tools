@@ -34,17 +34,17 @@ def get_stock_data(symbol, rsr):
             second_qtr_eps = eps_list.iloc[2]
             third_qtr_eps = eps_list.iloc[1]
             current_qtr_eps = eps_list.iloc[0]
-        elif lenth_eps_list > 3:
+        elif lenth_eps_list == 3:
             first_qtr_eps = 0
             second_qtr_eps = eps_list.iloc[2]
             third_qtr_eps = eps_list.iloc[1]
             current_qtr_eps = eps_list.iloc[0]
-        elif lenth_eps_list > 2:
+        elif lenth_eps_list == 2:
             first_qtr_eps = 0
             second_qtr_eps = 0
             third_qtr_eps = eps_list.iloc[1]
             current_qtr_eps = eps_list.iloc[0]
-        elif lenth_eps_list > 1:
+        elif lenth_eps_list == 1:
             first_qtr_eps = 0
             second_qtr_eps = 0
             third_qtr_eps = 0
@@ -64,17 +64,17 @@ def get_stock_data(symbol, rsr):
             second_qtr_inc = inc_list.iloc[2]
             third_qtr_inc = inc_list.iloc[1]
             current_qtr_inc = inc_list.iloc[0]
-        elif lenth_inc_list >= 3:
+        elif lenth_inc_list == 3:
             first_qtr_inc = 0
             second_qtr_inc = inc_list.iloc[2]
             third_qtr_inc = inc_list.iloc[1]
             current_qtr_inc = inc_list.iloc[0]
-        elif lenth_inc_list >= 2:
+        elif lenth_inc_list == 2:
             first_qtr_inc = 0
             second_qtr_inc = 0
             third_qtr_inc = inc_list.iloc[1]
             current_qtr_inc = inc_list.iloc[0]
-        elif lenth_inc_list >= 1:
+        elif lenth_inc_list == 1:
             first_qtr_inc = 0
             second_qtr_inc = 0
             third_qtr_inc = 0
@@ -95,17 +95,17 @@ def get_stock_data(symbol, rsr):
             second_qtr_rev = rev_list.iloc[2]
             third_qtr_rev = rev_list.iloc[1]
             current_qtr_rev = rev_list.iloc[0]
-        elif lenth_rev_list >= 3:
+        elif lenth_rev_list == 3:
             first_qtr_rev = 0
             second_qtr_rev = rev_list.iloc[2]
             third_qtr_rev = rev_list.iloc[1]
             current_qtr_rev = rev_list.iloc[0]
-        elif lenth_rev_list >= 2:
+        elif lenth_rev_list == 2:
             first_qtr_rev = 0
             second_qtr_rev = 0
             third_qtr_rev = rev_list.iloc[1]
             current_qtr_rev = rev_list.iloc[0]
-        elif lenth_rev_list >= 1:
+        elif lenth_rev_list == 1:
             first_qtr_rev = 0
             second_qtr_rev = 0
             third_qtr_rev = 0
@@ -185,7 +185,6 @@ def run_Screener():
         import_data = pd.read_excel(daily_rs_rating_Top_30_path)
 
         args = zip(import_data["Symbol"], import_data["RS Rating"])
-        print(import_data["Symbol"])
 
         cpu_count = os.cpu_count() / 2
         pool = Pool(processes=int(cpu_count), maxtasksperchild=1)
