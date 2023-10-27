@@ -87,7 +87,7 @@ def get_stock_data(symbol, rsr):
 
     #Total Revenue
     try:
-        rev_list = rev_stat.loc['Total Revenue'].dropna()
+        rev_list = inc_stat.loc['Total Revenue'].dropna()
         #print(inc_list)
         lenth_rev_list = len(rev_list)
         if lenth_rev_list >= 4:
@@ -161,6 +161,10 @@ def get_stock_data(symbol, rsr):
         '2nd qtr Inc': second_qtr_inc,
         '3rd qtr Inc': third_qtr_inc,
         'Current qtr Inc': current_qtr_inc,
+        '1st qtr Rev': first_qtr_rev,
+        '2nd qtr Rev': second_qtr_rev,
+        '3rd qtr Rev': third_qtr_rev,
+        'Current qtr Rev': current_qtr_rev,
         '1st qtr Profit Margin': first_qtr_Pmar,
         '2nd qtr Profit Margin': second_qtr_Pmar,
         '3rd qtr Profit Margin': third_qtr_Pmar,
