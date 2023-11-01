@@ -9,10 +9,10 @@ import datetime
 import time
 
 Screen_result_list = []
-# import_data = pd.read_excel(daily_rs_rating_Top_30_path)
+import_data = pd.read_excel(daily_rs_rating_Top_30_path)
 
-# symbols = import_data["Symbol"]
-symbols = ['GD']
+symbols = import_data["Symbol"]
+#symbols = ['GD']
 
 # stock_data = yf.download(tickers = symbol, period='max', progress=False)
 def test_block(symbol):
@@ -32,17 +32,17 @@ def test_block(symbol):
                 second_qtr_eps = eps_list.iloc[2]
                 third_qtr_eps = eps_list.iloc[1]
                 current_qtr_eps = eps_list.iloc[0]
-            elif lenth_eps_list > 3:
+            elif lenth_eps_list >= 3:
                 first_qtr_eps = 0
                 second_qtr_eps = eps_list.iloc[2]
                 third_qtr_eps = eps_list.iloc[1]
                 current_qtr_eps = eps_list.iloc[0]
-            elif lenth_eps_list > 2:
+            elif lenth_eps_list >= 2:
                 first_qtr_eps = 0
                 second_qtr_eps = 0
                 third_qtr_eps = eps_list.iloc[1]
                 current_qtr_eps = eps_list.iloc[0]
-            elif lenth_eps_list > 1:
+            elif lenth_eps_list >= 1:
                 first_qtr_eps = 0
                 second_qtr_eps = 0
                 third_qtr_eps = 0
