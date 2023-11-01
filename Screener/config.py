@@ -12,5 +12,5 @@ stock_symbol_api_key = '2b96bf82-acb9-40be-8cc1-73659e7fbafb'
 #Program config
 days_per_month = 22 #define days in a quarter
 rs_month_weight = [0.4, 0.3, 0.3] #weight for calculate_rs_rating
-top_rating = 0.2 #percentage of top ratings, range: 0.0 ~ 1.0
+top_rating = 0.3 #percentage of top ratings, range: 0.0 ~ 1.0
 chunksize = 1 #optimizing the multiprocessing
