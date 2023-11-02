@@ -9,16 +9,18 @@ import datetime
 import time
 
 Screen_result_list = []
-import_data = pd.read_excel(daily_rs_rating_Top_30_path)
+# import_data = pd.read_excel(daily_rs_rating_Top_30_path)
 
-symbols = import_data["Symbol"]
-#symbols = ['GD']
+# symbols = import_data["Symbol"]
+symbols = ['NVDA']
 
 # stock_data = yf.download(tickers = symbol, period='max', progress=False)
 def test_block(symbol):
     for symbol in symbols:
         print(symbol)
+        stock_data = yf.download(tickers = symbol, period='max', progress=False)
         ticker_data = yf.Ticker(symbol)
+        ipo_date = stock_data.index[0].strftime("%Y-%m-%d")
         #sector = info.get('sector')
         #industry = info.get('industry')
 
@@ -139,6 +141,7 @@ def test_block(symbol):
 
         print ({
             'Symbol': symbol,
+            'IPO Date': ipo_date,
             '1st qtr EPS': first_qtr_eps,
             '2nd qtr EPS': second_qtr_eps,
             '3rd qtr EPS': third_qtr_eps,
