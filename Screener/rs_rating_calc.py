@@ -9,7 +9,7 @@ import logging
 
 def calculate_rs_rating(symbol):
     rs_ratings = []
-    start_date = datetime.datetime.now() - datetime.timedelta(days=120)
+    start_date = datetime.datetime.now() - datetime.timedelta(weeks=52)
     end_date = datetime.datetime.now()
     logging.basicConfig(level=logging.CRITICAL)
     stock_data = yf.download(symbol, start=start_date, end=end_date, progress=False, threads = True)
@@ -17,18 +17,19 @@ def calculate_rs_rating(symbol):
     if stock_data.empty:
         return None
     now_price = stock_data["Adj Close"][-1]
-    try:
-        if now_price < 12 or now_price == None:
-            return None
-        else:
-            c_1m = now_price / stock_data["Adj Close"][-(days_per_month)]
-            c_2m = now_price / stock_data["Adj Close"][-(days_per_month*2)]
-            c_3m = now_price / stock_data["Adj Close"][-(days_per_month*3)]
-            rs_rating = (c_1m*rs_month_weight[0] + c_2m*rs_month_weight[1] + c_3m*rs_month_weight[2]) * 100
-            rs_ratings.append((symbol, rs_rating))
-            return rs_ratings
-    except:
+    # try:
+    if now_price < 12 or now_price == None:
         return None
+    else:
+        q1_p = (now_price / stock_data["Adj Close"][-(days_per_month)]) * (rs_month_weight * 2)
+        q2_p = now_price / stock_data["Adj Close"][-(days_per_month*2)] * rs_month_weight
+        q3_p = now_price / stock_data["Adj Close"][-(days_per_month*3)] * rs_month_weight
+        q4_p = now_price / stock_data["Adj Close"][-(days_per_month*4)] * rs_month_weight
+        rs_rating = (q1_p + q2_p + q3_p + q4_p) * 100
+        rs_ratings.append((symbol, rs_rating))
+        return rs_ratings
+    # except:
+        # return None
 
 def run_rs_data_program():
     # Get the RS ratings using multiprocessing
