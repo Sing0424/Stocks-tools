@@ -17,19 +17,19 @@ def calculate_rs_rating(symbol):
     if stock_data.empty:
         return None
     now_price = stock_data["Adj Close"][-1]
-    # try:
-    if now_price < 12 or now_price == None:
+    try:
+        if now_price < 12 or now_price == None:
+            return None
+        else:
+            q1_p = (now_price / stock_data["Adj Close"][-(days_per_month)]) * (rs_month_weight * 2)
+            q2_p = now_price / stock_data["Adj Close"][-(days_per_month*2)] * rs_month_weight
+            q3_p = now_price / stock_data["Adj Close"][-(days_per_month*3)] * rs_month_weight
+            q4_p = now_price / stock_data["Adj Close"][-(days_per_month*4)] * rs_month_weight
+            rs_rating = (q1_p + q2_p + q3_p + q4_p) * 100
+            rs_ratings.append((symbol, rs_rating))
+            return rs_ratings
+    except:
         return None
-    else:
-        q1_p = (now_price / stock_data["Adj Close"][-(days_per_month)]) * (rs_month_weight * 2)
-        q2_p = now_price / stock_data["Adj Close"][-(days_per_month*2)] * rs_month_weight
-        q3_p = now_price / stock_data["Adj Close"][-(days_per_month*3)] * rs_month_weight
-        q4_p = now_price / stock_data["Adj Close"][-(days_per_month*4)] * rs_month_weight
-        rs_rating = (q1_p + q2_p + q3_p + q4_p) * 100
-        rs_ratings.append((symbol, rs_rating))
-        return rs_ratings
-    # except:
-        # return None
 
 def run_rs_data_program():
     # Get the RS ratings using multiprocessing
