@@ -50,11 +50,11 @@ def run_rs_data_program():
     # Sort the list of RS ratings by ascending order
     rs_rating_list.sort(key=lambda x: x[1], reverse=True)
 
-    # Get the top 30% of RS ratings
+    # Get the top 10% of RS ratings
     num_top_ratings = int(len(rs_rating_list) * top_rating)
     top_ratings = rs_rating_list[:num_top_ratings]
 
-    workbook = xlsxwriter.Workbook(daily_rs_rating_Top_30_path)
+    workbook = xlsxwriter.Workbook(daily_rs_rating_path)
     worksheet = workbook.add_worksheet()
     float_pt_round = workbook.add_format({'num_format': '#,#####0.00000', 'border': 1})
     worksheet.write('A1', 'Symbol')

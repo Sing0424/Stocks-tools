@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import yfinance as yf
 import yahooquery as yq
-from config import daily_rs_rating_Top_30_path, screen_result_path
+from config import daily_rs_rating_path, screen_result_path
 from multiprocessing import Pool
 from tqdm import tqdm
 import datetime
@@ -24,8 +24,15 @@ def get_stock_data(symbol, rsr):
     avg_vol_30 = stock_data['Volume'].rolling(window=30).mean()
 
     ticker_data = yf.Ticker(symbol)
-    #sector = info.get('sector')
-    #industry = info.get('industry')
+    yq_info = yq.Ticker(symbol)
+    try:
+        sector = yq_info.summary_profile[symbol]['sector']
+    except:
+        sector = 'N/A'
+    try:
+        industry = yq_info.summary_profile[symbol]['industry']
+    except:
+        industry = 'N/A'
 
     inc_stat = ticker_data.quarterly_income_stmt
     try:
@@ -144,8 +151,8 @@ def get_stock_data(symbol, rsr):
 
     return {
         'Symbol': symbol,
-        #'Sector': sector,
-        #'Industry': industry,
+        'Sector': sector,
+        'Industry': industry,
         'IPO Date': ipo_date,
         'Current price': stock_data['Adj Close'][-1],
         '30D Avg Vol': avg_vol_30[-1],
@@ -189,7 +196,7 @@ def Screener(symbol_rating_tuple):
 def run_Screener():
     if __name__ == '__main__':
         Screen_result_list = []
-        import_data = pd.read_excel(daily_rs_rating_Top_30_path)
+        import_data = pd.read_excel(daily_rs_rating_path)
 
         args = zip(import_data["Symbol"], import_data["RS Rating"])
 
