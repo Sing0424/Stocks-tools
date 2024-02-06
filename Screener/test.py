@@ -12,9 +12,20 @@ import time
 # # import_data = pd.read_excel(daily_rs_rating_Top_30_path)
 
 # symbols = import_data["Symbol"]
-symbol = 'GBTC'
-stock_data = yq.Ticker(symbol)
-print(stock_data.asset_profile)
+symbol = 'NVDA'
+ticker_data = yf.Ticker(symbol)
+inc_stat_q = ticker_data.quarterly_income_stmt
+inc_stat_y = ticker_data.income_stmt
+print(inc_stat_y.loc['Diluted EPS'])
+
+# eps_list = inc_stat_q.loc['Diluted EPS'].dropna()
+# last_qtr_eps = eps_list.iloc[1]
+# current_qtr_eps = eps_list.iloc[0]
+# qtr_eps_growth_perc = (last_qtr_eps / current_qtr_eps) * 100
+
+# print(last_qtr_eps)
+# print(current_qtr_eps)
+# print(qtr_eps_growth_perc)
 # print(stock_data.summary_profile[symbol]['industry'])
 # print(stock_data.summary_profile[symbol]['sector'])
 # # stock_data = yf.download(tickers = symbol, period='max', progress=False)

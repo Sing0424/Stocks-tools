@@ -34,71 +34,28 @@ def get_stock_data(symbol, rsr):
     except:
         industry = 'N/A'
 
-    inc_stat = ticker_data.quarterly_income_stmt
-    try:
-        eps_list = inc_stat.loc['Diluted EPS'].dropna()
-        #print(eps_list)
-        lenth_eps_list = len(eps_list)
-        if lenth_eps_list >= 4:
-            first_qtr_eps = eps_list.iloc[3]
-            second_qtr_eps = eps_list.iloc[2]
-            third_qtr_eps = eps_list.iloc[1]
-            current_qtr_eps = eps_list.iloc[0]
-        elif lenth_eps_list == 3:
-            first_qtr_eps = 0
-            second_qtr_eps = eps_list.iloc[2]
-            third_qtr_eps = eps_list.iloc[1]
-            current_qtr_eps = eps_list.iloc[0]
-        elif lenth_eps_list == 2:
-            first_qtr_eps = 0
-            second_qtr_eps = 0
-            third_qtr_eps = eps_list.iloc[1]
-            current_qtr_eps = eps_list.iloc[0]
-        elif lenth_eps_list == 1:
-            first_qtr_eps = 0
-            second_qtr_eps = 0
-            third_qtr_eps = 0
-            current_qtr_eps = eps_list.iloc[0]
-    except:
-        first_qtr_eps = 0
-        second_qtr_eps = 0
-        third_qtr_eps = 0
-        current_qtr_eps = 0
+    inc_stat_q = ticker_data.quarterly_income_stmt
+    inc_stat_y = ticker_data.income_stmt
 
     try:
-        inc_list = inc_stat.loc['Net Income'].dropna()
-        #print(inc_list)
-        lenth_inc_list = len(inc_list)
-        if lenth_inc_list >= 4:
-            first_qtr_inc = inc_list.iloc[3]
-            second_qtr_inc = inc_list.iloc[2]
-            third_qtr_inc = inc_list.iloc[1]
-            current_qtr_inc = inc_list.iloc[0]
-        elif lenth_inc_list == 3:
-            first_qtr_inc = 0
-            second_qtr_inc = inc_list.iloc[2]
-            third_qtr_inc = inc_list.iloc[1]
-            current_qtr_inc = inc_list.iloc[0]
-        elif lenth_inc_list == 2:
-            first_qtr_inc = 0
-            second_qtr_inc = 0
-            third_qtr_inc = inc_list.iloc[1]
-            current_qtr_inc = inc_list.iloc[0]
-        elif lenth_inc_list == 1:
-            first_qtr_inc = 0
-            second_qtr_inc = 0
-            third_qtr_inc = 0
-            current_qtr_inc = inc_list.iloc[0]
+        eps_list = inc_stat_y.loc['Diluted EPS'].dropna()
+        lenth_eps_list = len(eps_list)
+        if lenth_eps_list >= 2:
+            last_qtr_eps = eps_list.iloc[1]
+            current_qtr_eps = eps_list.iloc[0]
+            qtr_eps_growth_perc = (last_qtr_eps / current_qtr_eps) * 100
+        else:
+            last_qtr_eps = 0
+            current_qtr_eps = 0
+            qtr_eps_growth_perc = 0
     except:
-        first_qtr_inc = 0
-        second_qtr_inc = 0
-        third_qtr_inc = 0
-        current_qtr_inc = 0
+        third_qtr_eps = 0
+        current_qtr_eps = 0
+        qtr_eps_growth_perc = 0
 
     #Total Revenue
     try:
-        rev_list = inc_stat.loc['Total Revenue'].dropna()
-        #print(inc_list)
+        rev_list = inc_stat_q.loc['Operating Income'].dropna()
         lenth_rev_list = len(rev_list)
         if lenth_rev_list >= 4:
             first_qtr_rev = rev_list.iloc[3]
@@ -125,29 +82,13 @@ def get_stock_data(symbol, rsr):
         second_qtr_rev = 0
         third_qtr_rev = 0
         current_qtr_rev = 0
-    
-    #profit_margin
-    if first_qtr_inc > 0 and first_qtr_rev > 0:
-        first_qtr_Pmar = first_qtr_inc / first_qtr_rev
-    else:
-        first_qtr_Pmar = 0 
-    if second_qtr_inc > 0 and second_qtr_rev > 0:
-        second_qtr_Pmar = second_qtr_inc / second_qtr_rev
-    else:
-        second_qtr_Pmar = 0 
-    if third_qtr_inc > 0 and third_qtr_rev > 0:
-        third_qtr_Pmar = third_qtr_inc / third_qtr_rev
-    else:
-        third_qtr_Pmar = 0 
-    if current_qtr_inc > 0 and current_qtr_rev > 0:
-        current_qtr_Pmar = current_qtr_inc / current_qtr_rev
-    else:
-        current_qtr_Pmar = 0 
 
-    if (current_qtr_eps > third_qtr_eps > second_qtr_eps > first_qtr_eps) and (current_qtr_inc > third_qtr_inc > second_qtr_inc > first_qtr_inc) and (current_qtr_Pmar > third_qtr_Pmar > second_qtr_Pmar > first_qtr_Pmar):
-        code33 = 'T'
+    if qtr_eps_growth_perc > 30:
+        quick_growth_yr = 'T'
     else:
-        code33 = 'F'
+        quick_growth_yr = 'F'
+
+
 
     return {
         'Symbol': symbol,
