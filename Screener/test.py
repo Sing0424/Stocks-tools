@@ -9,14 +9,33 @@ import datetime
 import time
 
 # Screen_result_list = []
-# # import_data = pd.read_excel(daily_rs_rating_Top_30_path)
+import_data = pd.read_excel(daily_rs_rating_path)
+symbols = import_data["Symbol"]
+# symbol = 'NVDA'
+for symbol in symbols:
+    ticker_data = yf.Ticker(symbol)
+    try:
+        eps_list = ticker_data.earnings_dates.reset_index(drop=True).dropna()['Reported EPS']
+    except:
+        pass
+    lenth_eps_list = len(eps_list)
+    if lenth_eps_list >= 5:
+        YoY_eps = eps_list.iloc[4]
+        print(f'YoY_eps:{YoY_eps}')
+        before_last_qtr_eps = eps_list.iloc[2]
+        print(f'before_last_qtr_eps:{before_last_qtr_eps}')
+        last_qtr_eps = eps_list.iloc[1]
+        print(f'last_qtr_eps:{last_qtr_eps}')
+        current_qtr_eps = eps_list.iloc[0]
+        print(f'current_qtr_eps:{current_qtr_eps}')
+        eps_growth_perc_last_qtr = ((current_qtr_eps - last_qtr_eps) / last_qtr_eps) * 100
+        print(f'eps_growth_perc_last_YoY:{eps_growth_perc_last_qtr}')
+        eps_growth_perc_yester_qtr = ((last_qtr_eps - before_last_qtr_eps) / before_last_qtr_eps) * 100
+        print(f'eps_growth_perc_yester_YoY:{eps_growth_perc_yester_qtr}')
+        eps_growth_perc_current_YoY = ((current_qtr_eps - YoY_eps) / YoY_eps) * 100
+        print(f'eps_growth_perc_current_YoY:{eps_growth_perc_current_YoY}')
 
-# symbols = import_data["Symbol"]
-symbol = 'NVDA'
-ticker_data = yf.Ticker(symbol)
-inc_stat_q = ticker_data.quarterly_income_stmt
-inc_stat_y = ticker_data.income_stmt
-print(inc_stat_y.loc['Diluted EPS'])
+
 
 # eps_list = inc_stat_q.loc['Diluted EPS'].dropna()
 # last_qtr_eps = eps_list.iloc[1]

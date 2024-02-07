@@ -35,60 +35,46 @@ def get_stock_data(symbol, rsr):
         industry = 'N/A'
 
     inc_stat_q = ticker_data.quarterly_income_stmt
-    inc_stat_y = ticker_data.income_stmt
 
     try:
-        eps_list = inc_stat_y.loc['Diluted EPS'].dropna()
+        eps_list = ticker_data.earnings_dates.reset_index(drop=True).dropna()['Reported EPS']
         lenth_eps_list = len(eps_list)
-        if lenth_eps_list >= 2:
+        if lenth_eps_list >= 5:
+            YoY_eps = eps_list.iloc[4]
+            before_last_qtr_eps = eps_list.iloc[2]
             last_qtr_eps = eps_list.iloc[1]
             current_qtr_eps = eps_list.iloc[0]
-            qtr_eps_growth_perc = (last_qtr_eps / current_qtr_eps) * 100
-        else:
-            last_qtr_eps = 0
-            current_qtr_eps = 0
-            qtr_eps_growth_perc = 0
+            eps_growth_perc_last_qtr = ((current_qtr_eps - last_qtr_eps) / last_qtr_eps) * 100
+            eps_growth_perc_yester_qtr = ((last_qtr_eps - before_last_qtr_eps) / before_last_qtr_eps) * 100
+            eps_growth_perc_current_YoY = ((current_qtr_eps - YoY_eps) / YoY_eps) * 100
     except:
-        third_qtr_eps = 0
+        yesteryear_qtr_eps = 0
+        last_qtr_eps = 0
         current_qtr_eps = 0
-        qtr_eps_growth_perc = 0
+        eps_growth_perc_last_qtr = 0
+        eps_growth_perc_yester_qtr = 0
+        eps_growth_perc_current_YoY = 0
 
     #Total Revenue
     try:
-        rev_list = inc_stat_q.loc['Operating Income'].dropna()
+        rev_list = inc_stat_q.loc['Total Revenue'].dropna()
         lenth_rev_list = len(rev_list)
         if lenth_rev_list >= 4:
-            first_qtr_rev = rev_list.iloc[3]
-            second_qtr_rev = rev_list.iloc[2]
-            third_qtr_rev = rev_list.iloc[1]
+            fourth_qtr_before_rev = rev_list.iloc[3]
+            before_last_qtr_rev = rev_list.iloc[2]
+            last_qtr_rev = rev_list.iloc[1]
             current_qtr_rev = rev_list.iloc[0]
-        elif lenth_rev_list == 3:
-            first_qtr_rev = 0
-            second_qtr_rev = rev_list.iloc[2]
-            third_qtr_rev = rev_list.iloc[1]
-            current_qtr_rev = rev_list.iloc[0]
-        elif lenth_rev_list == 2:
-            first_qtr_rev = 0
-            second_qtr_rev = 0
-            third_qtr_rev = rev_list.iloc[1]
-            current_qtr_rev = rev_list.iloc[0]
-        elif lenth_rev_list == 1:
-            first_qtr_rev = 0
-            second_qtr_rev = 0
-            third_qtr_rev = 0
-            current_qtr_rev = rev_list.iloc[0]
+            rev_growth_perc_current_qtr = ((current_qtr_rev - third_qtr_rev) / third_qtr_rev) * 100
+            rev_growth_perc_last_qtr = ((last_qtr_rev - before_last_qtr_rev) / before_last_qtr_rev) * 100
+            rev_growth_perc_last_before_qtr = ((before_last_qtr_rev - fourth_qtr_before_rev) / fourth_qtr_before_rev) * 100
     except:
-        first_qtr_rev = 0
-        second_qtr_rev = 0
-        third_qtr_rev = 0
+        fourth_qtr_before_rev = 0
+        before_last_qtr_rev = 0
+        last_qtr_rev = 0
         current_qtr_rev = 0
-
-    if qtr_eps_growth_perc > 30:
-        quick_growth_yr = 'T'
-    else:
-        quick_growth_yr = 'F'
-
-
+        rev_growth_perc_current_qtr = 0
+        rev_growth_perc_last_qtr = 0
+        rev_growth_perc_last_before_qtr = 0
 
     return {
         'Symbol': symbol,
@@ -104,23 +90,12 @@ def get_stock_data(symbol, rsr):
         'Week 52 low': stock_data['Adj Close'].min(),
         'Week 52 high': stock_data['Adj Close'].max(),
         'RS Rating': rsr,
-        '1st qtr EPS': first_qtr_eps,
-        '2nd qtr EPS': second_qtr_eps,
-        '3rd qtr EPS': third_qtr_eps,
-        'Current qtr EPS': current_qtr_eps,
-        '1st qtr Inc': first_qtr_inc,
-        '2nd qtr Inc': second_qtr_inc,
-        '3rd qtr Inc': third_qtr_inc,
-        'Current qtr Inc': current_qtr_inc,
-        '1st qtr Rev': first_qtr_rev,
-        '2nd qtr Rev': second_qtr_rev,
-        '3rd qtr Rev': third_qtr_rev,
-        'Current qtr Rev': current_qtr_rev,
-        '1st qtr Profit Margin': first_qtr_Pmar,
-        '2nd qtr Profit Margin': second_qtr_Pmar,
-        '3rd qtr Profit Margin': third_qtr_Pmar,
-        'Current qtr Profit Margin': current_qtr_Pmar,
-        'Code 33': code33
+        'eps_growth_perc_YoY': eps_growth_perc_current_YoY,
+        'eps_growth_perc_last_qtr': eps_growth_perc_last_qtr,
+        'eps_growth_perc_yester_qtr': eps_growth_perc_yester_qtr,
+        'rev_growth_perc_current_qtr': rev_growth_perc_current_qtr,
+        'rev_growth_perc_last_qtr': rev_growth_perc_last_qtr,
+        'rev_growth_perc_last_before_qtr': rev_growth_perc_last_before_qtr
     }
 
 def Screener(symbol_rating_tuple):
@@ -133,6 +108,8 @@ def Screener(symbol_rating_tuple):
         return stock_data
     else:
         return None
+
+    # and stock_data['eps_growth_perc_YoY'] >= 25 and stock_data['eps_growth_perc_last_qtr'] >= 25 and stock_data['eps_growth_perc_yester_qtr'] >= 25 and (stock_data['rev_growth_perc_current_qtr'] >= 25 | (stock_data['rev_growth_perc_current_qtr'] > 0 and stock_data['rev_growth_perc_last_qtr'] > 0 and stock_data['rev_growth_perc_last_before_qtr'] > 0))
 
 def run_Screener():
     if __name__ == '__main__':
