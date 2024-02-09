@@ -8,37 +8,33 @@ from tqdm import tqdm
 import datetime
 import time
 
-eps_list = []
-lenth_eps_list = len(eps_list)
-print(f'lenth_eps_list: {lenth_eps_list}')
 # Screen_result_list = []
 # import_data = pd.read_excel(daily_rs_rating_path)
 # symbols = import_data["Symbol"]
-# symbol = 'NVDA'
-# for symbol in symbols:
-#     ticker_data = yf.Ticker(symbol)
+symbols = ['NVDA']
+for symbol in symbols:
+    ticker_data = yf.Ticker(symbol)
+    print(ticker_data.info)
     # try:
-    #     eps_list = ticker_data.earnings_dates.reset_index(drop=True).dropna()['Reported EPS']
+    #     eps_list = ticker_data.get_earnings_dates().reset_index(drop=True).dropna()['Reported EPS']
     # except:
     #     pass
     # lenth_eps_list = len(eps_list)
-    # if lenth_eps_list >= 5:
-    #     YoY_eps = eps_list.iloc[4]
-    #     print(f'YoY_eps:{YoY_eps}')
-    #     before_last_qtr_eps = eps_list.iloc[2]
-    #     print(f'before_last_qtr_eps:{before_last_qtr_eps}')
-    #     last_qtr_eps = eps_list.iloc[1]
-    #     print(f'last_qtr_eps:{last_qtr_eps}')
-    #     current_qtr_eps = eps_list.iloc[0]
-    #     print(f'current_qtr_eps:{current_qtr_eps}')
-    #     eps_growth_perc_last_qtr = ((current_qtr_eps - last_qtr_eps) / last_qtr_eps) * 100
-    #     print(f'eps_growth_perc_last_YoY:{eps_growth_perc_last_qtr}')
-    #     eps_growth_perc_yester_qtr = ((last_qtr_eps - before_last_qtr_eps) / before_last_qtr_eps) * 100
-    #     print(f'eps_growth_perc_yester_YoY:{eps_growth_perc_yester_qtr}')
-    #     eps_growth_perc_current_YoY = ((current_qtr_eps - YoY_eps) / YoY_eps) * 100
-    #     print(f'eps_growth_perc_current_YoY:{eps_growth_perc_current_YoY}')
+    # print(lenth_eps_list)
+    # if lenth_eps_list >= 7:
+    #     EPS_QoQ_C = round(((eps_list.iloc[0] - eps_list.iloc[4]) / eps_list.iloc[4]) * 100)
+    #     EPS_QoQ_LQ = round(((eps_list.iloc[1] - eps_list.iloc[5]) / eps_list.iloc[5]) * 100)
+    #     EPS_QoQ_L2Q = round(((eps_list.iloc[2] - eps_list.iloc[6]) / eps_list.iloc[6]) * 100)
 
-
+    # inc_stat_a = ticker_data.income_stmt
+    # EPS_list_A = inc_stat_a.loc['Diluted EPS']
+    # lenth_EPS_list_A = len(EPS_list_A)
+    # if lenth_EPS_list_A >=2:
+    #     EPS_A = round(((EPS_list_A.iloc[0] - EPS_list_A.iloc[1]) / EPS_list_A.iloc[1]) * 100)
+    #     EPS_A1 = round(((EPS_list_A.iloc[1] - EPS_list_A.iloc[2]) / EPS_list_A.iloc[2]) * 100)
+    # elif lenth_EPS_list_A >=1:
+    #     EPS_A = round(((EPS_list_A.iloc[0] - EPS_list_A.iloc[1]) / EPS_list_A.iloc[1]) * 100)
+    #     EPS_A1 = 0
 
 # eps_list = inc_stat_q.loc['Diluted EPS'].dropna()
 # last_qtr_eps = eps_list.iloc[1]

@@ -30,69 +30,70 @@ def get_stock_data(symbol, rsr):
     industry = info.get('industry')
 
     inc_stat_q = ticker_data.quarterly_income_stmt
+    inc_stat_a = ticker_data.income_stmt
 
     try:
-        print(f'symbol: {symbol}')
         try:
+            logging.basicConfig(level=logging.CRITICAL)
             eps_list = ticker_data.get_earnings_dates(limit=20).reset_index(drop=True).dropna()['Reported EPS']
+            logging.basicConfig(level=logging.WARNING)
         except:
             eps_list = []
         lenth_eps_list = len(eps_list)
-        print(f'eps list lenth: {lenth_eps_list}')
-        if lenth_eps_list >= 5:
-            YoY_eps = eps_list.iloc[4]
-            fourth_qtr_before_eps = eps_list.iloc[3]
-            before_last_qtr_eps = eps_list.iloc[2]
-            last_qtr_eps = eps_list.iloc[1]
-            current_qtr_eps = eps_list.iloc[0]
-            eps_growth_perc_current_YoY = ((current_qtr_eps - YoY_eps) / YoY_eps) * 100
-            eps_growth_perc_last_qtr = ((current_qtr_eps - last_qtr_eps) / last_qtr_eps) * 100
-            eps_growth_perc_last_before_qtr = ((last_qtr_eps - before_last_qtr_eps) / before_last_qtr_eps) * 100
+        if lenth_eps_list >= 7:
+            EPS_QoQ_C = round(((eps_list.iloc[0] - eps_list.iloc[4]) / eps_list.iloc[4]) * 100)
+            EPS_QoQ_LQ = round(((eps_list.iloc[1] - eps_list.iloc[5]) / eps_list.iloc[5]) * 100)
+            EPS_QoQ_L2Q = round(((eps_list.iloc[2] - eps_list.iloc[6]) / eps_list.iloc[6]) * 100)
+        elif lenth_eps_list >= 6:
+            EPS_QoQ_C = round(((eps_list.iloc[0] - eps_list.iloc[4]) / eps_list.iloc[4]) * 100)
+            EPS_QoQ_LQ = round(((eps_list.iloc[1] - eps_list.iloc[5]) / eps_list.iloc[5]) * 100)
+            EPS_QoQ_L2Q = 0
+        elif lenth_eps_list >= 5:
+            EPS_QoQ_C = round(((eps_list.iloc[0] - eps_list.iloc[4]) / eps_list.iloc[4]) * 100)
+            EPS_QoQ_LQ = 0
+            EPS_QoQ_L2Q = 0
         else:
-            fourth_qtr_before_eps = 0
-            before_last_qtr_eps = 0
-            last_qtr_eps = 0
-            current_qtr_eps = 0
-            eps_growth_perc_current_YoY = 0
-            eps_growth_perc_last_qtr = 0
-            eps_growth_perc_last_before_qtr = 0
+            EPS_QoQ_C = 0
+            EPS_QoQ_LQ = 0
+            EPS_QoQ_L2Q = 0
     except:
-        fourth_qtr_before_eps = 0
-        before_last_qtr_eps = 0
-        last_qtr_eps = 0
-        current_qtr_eps = 0
-        eps_growth_perc_current_YoY = 0
-        eps_growth_perc_last_qtr = 0
-        eps_growth_perc_last_before_qtr = 0
+            EPS_QoQ_C = 0
+            EPS_QoQ_LQ = 0
+            EPS_QoQ_L2Q = 0
 
     #Total Revenue
     try:
         rev_list = inc_stat_q.loc['Total Revenue'].dropna()
         lenth_rev_list = len(rev_list)
         if lenth_rev_list >= 4:
-            fourth_qtr_before_rev = rev_list.iloc[3]
-            before_last_qtr_rev = rev_list.iloc[2]
-            last_qtr_rev = rev_list.iloc[1]
-            current_qtr_rev = rev_list.iloc[0]
-            rev_growth_perc_current_qtr = ((current_qtr_rev - last_qtr_rev) / last_qtr_rev) * 100
-            rev_growth_perc_last_qtr = ((last_qtr_rev - before_last_qtr_rev) / before_last_qtr_rev) * 100
-            rev_growth_perc_last_before_qtr = ((before_last_qtr_rev - fourth_qtr_before_rev) / fourth_qtr_before_rev) * 100
+            REV_C = round(((rev_list.iloc[0] - rev_list.iloc[1]) / rev_list.iloc[1]) * 100)
+            REV_LQ = round(((rev_list.iloc[1] - rev_list.iloc[2]) / rev_list.iloc[2]) * 100)
+            REV_L2Q = round(((rev_list.iloc[2] - rev_list.iloc[3]) / rev_list.iloc[3]) * 100)
+        elif lenth_rev_list >= 3:
+            REV_C = round(((rev_list.iloc[0] - rev_list.iloc[1]) / rev_list.iloc[1]) * 100)
+            REV_LQ = round(((rev_list.iloc[1] - rev_list.iloc[2]) / rev_list.iloc[2]) * 100)
+            REV_L2Q = 0
         else:
-            fourth_qtr_before_rev = 0
-            before_last_qtr_rev = 0
-            last_qtr_rev = 0
-            current_qtr_rev = 0
-            rev_growth_perc_current_qtr = 0
-            rev_growth_perc_last_qtr = 0
-            rev_growth_perc_last_before_qtr = 0
+            REV_C = 0
+            REV_LQ = 0
+            REV_L2Q = 0
     except:
-        fourth_qtr_before_rev = 0
-        before_last_qtr_rev = 0
-        last_qtr_rev = 0
-        current_qtr_rev = 0
-        rev_growth_perc_current_qtr = 0
-        rev_growth_perc_last_qtr = 0
-        rev_growth_perc_last_before_qtr = 0
+            REV_C = 0
+            REV_LQ = 0
+            REV_L2Q = 0
+
+    try:
+        EPS_list_A = inc_stat_a.loc['Diluted EPS']
+        lenth_EPS_list_A = len(EPS_list_A)
+        if lenth_EPS_list_A >=2:
+            EPS_A = round(((EPS_list_A.iloc[0] - EPS_list_A.iloc[1]) / EPS_list_A.iloc[1]) * 100)
+            EPS_A1 = round(((EPS_list_A.iloc[1] - EPS_list_A.iloc[2]) / EPS_list_A.iloc[2]) * 100)
+        elif lenth_EPS_list_A >=1:
+            EPS_A = round(((EPS_list_A.iloc[0] - EPS_list_A.iloc[1]) / EPS_list_A.iloc[1]) * 100)
+            EPS_A1 = 0
+    except:
+        EPS_A = 0
+        EPS_A1 = 0
 
     return {
         'Symbol': symbol,
@@ -108,12 +109,12 @@ def get_stock_data(symbol, rsr):
         'Week 52 low': stock_data['Adj Close'].min(),
         'Week 52 high': stock_data['Adj Close'].max(),
         'RS Rating': rsr,
-        'eps_growth_perc_current_YoY': eps_growth_perc_current_YoY,
-        'eps_growth_perc_last_qtr': eps_growth_perc_last_qtr,
-        'eps_growth_perc_last_before_qtr': eps_growth_perc_last_before_qtr,
-        'rev_growth_perc_current_qtr': rev_growth_perc_current_qtr,
-        'rev_growth_perc_last_qtr': rev_growth_perc_last_qtr,
-        'rev_growth_perc_last_before_qtr': rev_growth_perc_last_before_qtr
+        'EPS_QoQ_C': EPS_QoQ_C,
+        'EPS_QoQ_LQ': EPS_QoQ_LQ,
+        'EPS_QoQ_L2Q': EPS_QoQ_L2Q,
+        'EPS_A': EPS_A,
+        'EPS_A1': EPS_A1,
+        'REV_C': REV_C
     }
 
 def Screener(symbol_rating_tuple):
@@ -123,12 +124,10 @@ def Screener(symbol_rating_tuple):
 
     stock_data = get_stock_data(symbol, rs_rating)
     
-    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['Week 52 low'])) and (stock_data['Current price'] > (0.75 * stock_data['Week 52 high'])) and stock_data['30D Avg Vol'] >= 250000:
+    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['Week 52 low'])) and (stock_data['Current price'] > (0.75 * stock_data['Week 52 high'])) and stock_data['30D Avg Vol'] >= 250000 and stock_data['EPS_QoQ_C'] >= 25 and stock_data['EPS_QoQ_LQ'] > 10 and stock_data['EPS_QoQ_L2Q'] > 10 and stock_data['REV_C'] >= 25 and stock_data['EPS_A'] > 25 and stock_data['EPS_A1'] > 25:
         return stock_data
     else:
         return None
-
-    # and stock_data['eps_growth_perc_YoY'] >= 25 and stock_data['eps_growth_perc_last_qtr'] >= 25 and stock_data['eps_growth_perc_yester_qtr'] >= 25 and (stock_data['rev_growth_perc_current_qtr'] >= 25 | (stock_data['rev_growth_perc_current_qtr'] > 0 and stock_data['rev_growth_perc_last_qtr'] > 0 and stock_data['rev_growth_perc_last_before_qtr'] > 0))
 
 def run_Screener():
     if __name__ == '__main__':
