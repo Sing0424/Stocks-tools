@@ -114,7 +114,9 @@ def get_stock_data(symbol, rsr):
         'EPS_QoQ_L2Q': EPS_QoQ_L2Q,
         'EPS_A': EPS_A,
         'EPS_A1': EPS_A1,
-        'REV_C': REV_C
+        'REV_C': REV_C,
+        'REV_LQ': REV_LQ,
+        'REV_L2Q': REV_L2Q
     }
 
 def Screener(symbol_rating_tuple):
@@ -124,7 +126,7 @@ def Screener(symbol_rating_tuple):
 
     stock_data = get_stock_data(symbol, rs_rating)
     
-    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['Week 52 low'])) and (stock_data['Current price'] > (0.75 * stock_data['Week 52 high'])) and stock_data['30D Avg Vol'] >= 250000 and stock_data['EPS_QoQ_C'] >= 25 and stock_data['EPS_QoQ_LQ'] > 10 and stock_data['EPS_QoQ_L2Q'] > 10 and stock_data['REV_C'] >= 25 and stock_data['EPS_A'] > 25 and stock_data['EPS_A1'] > 25:
+    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['Week 52 low'])) and (stock_data['Current price'] > (0.75 * stock_data['Week 52 high'])) and stock_data['30D Avg Vol'] >= 100000 and stock_data['EPS_QoQ_C'] >= 20 and stock_data['EPS_QoQ_LQ'] >= 20 and stock_data['EPS_QoQ_L2Q'] >= 20 and stock_data['EPS_A'] > 0 and stock_data['REV_C'] > 0:
         return stock_data
     else:
         return None

@@ -18,7 +18,7 @@ def calculate_rs_rating(symbol):
         return None
     now_price = stock_data["Adj Close"][-1]
     try:
-        if now_price < 12 or now_price == None:
+        if now_price < 15 or now_price == None:
             return None
         else:
             q1_p = (now_price / stock_data["Adj Close"][-(days_per_month)]) * (rs_month_weight * 2)
