@@ -14,17 +14,21 @@ import time
 symbols = ['NVDA']
 for symbol in symbols:
     ticker_data = yf.Ticker(symbol)
-    print(ticker_data.info)
-    # try:
-    #     eps_list = ticker_data.get_earnings_dates().reset_index(drop=True).dropna()['Reported EPS']
-    # except:
-    #     pass
-    # lenth_eps_list = len(eps_list)
-    # print(lenth_eps_list)
-    # if lenth_eps_list >= 7:
-    #     EPS_QoQ_C = round(((eps_list.iloc[0] - eps_list.iloc[4]) / eps_list.iloc[4]) * 100)
-    #     EPS_QoQ_LQ = round(((eps_list.iloc[1] - eps_list.iloc[5]) / eps_list.iloc[5]) * 100)
-    #     EPS_QoQ_L2Q = round(((eps_list.iloc[2] - eps_list.iloc[6]) / eps_list.iloc[6]) * 100)
+    try:
+        eps_list = ticker_data.get_earnings_dates(limit=20).dropna()['Reported EPS']
+        print(eps_list)
+    except:
+        pass
+    lenth_eps_list = len(eps_list)
+    print(lenth_eps_list)
+    if lenth_eps_list >= 7:
+        EPS_QoQ_C = round(((eps_list.iloc[0] - eps_list.iloc[4]) / eps_list.iloc[4]) * 100)
+        EPS_QoQ_LQ = round(((eps_list.iloc[1] - eps_list.iloc[5]) / eps_list.iloc[5]) * 100)
+        EPS_QoQ_L2Q = round(((eps_list.iloc[2] - eps_list.iloc[6]) / eps_list.iloc[6]) * 100)
+
+        print(f"EPSQoQ:{EPS_QoQ_C}")
+        print(f"EPSQoQ_LQ:{EPS_QoQ_LQ}")
+        print(f"EPSQoQ_L2Q:{EPS_QoQ_L2Q}")
 
     # inc_stat_a = ticker_data.income_stmt
     # EPS_list_A = inc_stat_a.loc['Diluted EPS']
