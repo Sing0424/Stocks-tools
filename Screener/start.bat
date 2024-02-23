@@ -1,10 +1,10 @@
 @echo off
 
-start "" /REALTIME /B /W pip install -r "requirements.txt"
+rem start "" /REALTIME /B /W pip install -r "requirements.txt"
 
-start "" /REALTIME /B /W python "get_ticker_info.py"
+rem start "" /REALTIME /B /W python "get_ticker_info.py"
 
-start "" /REALTIME /B /W python "rs_rating_calc.py"
+rem start "" /REALTIME /B /W python "rs_rating_calc.py"
 
 start "" /REALTIME /B /W python "StockScreener.py"
 

@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import yfinance as yf
-import yahooquery as yq
+from yahooquery import Ticker
 from config import daily_rs_rating_path, screen_result_path
 from multiprocessing import Pool
 from tqdm import tqdm
@@ -13,22 +13,18 @@ import time
 # symbols = import_data["Symbol"]
 symbols = ['NVDA']
 for symbol in symbols:
-    ticker_data = yf.Ticker(symbol)
-    try:
-        eps_list = ticker_data.get_earnings_dates(limit=20).dropna()['Reported EPS']
-        print(eps_list)
-    except:
-        pass
-    lenth_eps_list = len(eps_list)
-    print(lenth_eps_list)
-    if lenth_eps_list >= 7:
-        EPS_QoQ_C = round(((eps_list.iloc[0] - eps_list.iloc[4]) / eps_list.iloc[4]) * 100)
-        EPS_QoQ_LQ = round(((eps_list.iloc[1] - eps_list.iloc[5]) / eps_list.iloc[5]) * 100)
-        EPS_QoQ_L2Q = round(((eps_list.iloc[2] - eps_list.iloc[6]) / eps_list.iloc[6]) * 100)
+    stock_data = yf.Ticker(symbol)
+    stock_price = stock_data.history(period="max")
 
-        print(f"EPSQoQ:{EPS_QoQ_C}")
-        print(f"EPSQoQ_LQ:{EPS_QoQ_LQ}")
-        print(f"EPSQoQ_L2Q:{EPS_QoQ_L2Q}")
+    week52_high = stock_price.tail(250)['Close'].max()
+    week52_low = stock_price.tail(250)['Close'].min()
+
+    print(week52_high)
+    print(week52_low)
+
+    # print(f"EPSQoQ_C:{EPS_QoQ_C}")
+    # print(f"EPSQoQ_LQ:{EPS_QoQ_LQ}")
+    # print(f"EPSQoQ_L2Q:{EPS_QoQ_L2Q}")
 
     # inc_stat_a = ticker_data.income_stmt
     # EPS_list_A = inc_stat_a.loc['Diluted EPS']
