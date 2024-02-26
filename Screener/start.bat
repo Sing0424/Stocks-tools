@@ -1,11 +1,27 @@
 @echo off
 
-rem start "" /REALTIME /B /W pip install -r "requirements.txt"
+FOR /F "usebackq tokens=1,2,3 delims=/ " %%A in (`echo %date%`) do (
+	SET "day=%%A"
+	SET "month=%%B"
+	SET "year=%%C"
+)
 
-rem start "" /REALTIME /B /W python "get_ticker_info.py"
+SET date=%year%%month%%day%
 
-rem start "" /REALTIME /B /W python "rs_rating_calc.py"
+start "" /REALTIME /B /W pip install -r "requirements.txt"
+
+start "" /REALTIME /B /W python "get_ticker_info.py"
+
+start "" /REALTIME /B /W python "rs_rating_calc.py"
 
 start "" /REALTIME /B /W python "StockScreener.py"
 
 start "" /REALTIME /B /W python "screenResultUpload.py"
+
+git add Screener/ScreenResult/ScreenResult.xlsx
+
+git add Screener/data/rs_rating.xlsx
+
+git add Screener/data/symbols.csv 
+
+git commit -m "Result upload %date%"
