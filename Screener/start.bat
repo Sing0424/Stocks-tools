@@ -25,3 +25,5 @@ git add Screener/data/rs_rating.xlsx
 git add Screener/data/symbols.csv 
 
 git commit -m "Result upload %date%"
+
+git push
