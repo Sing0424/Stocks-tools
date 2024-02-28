@@ -13,20 +13,27 @@ import time
 # symbols = import_data["Symbol"]
 symbols = ['NVDA']
 for symbol in symbols:
-    stock_data = yf.Ticker(symbol)
-    stock_price = stock_data.history(period="max")
+    ticker_data = yf.Ticker(symbol)
+    stock_price = ticker_data.history(period="max")
 
-    week52_high = stock_price.tail(250)['Close'].max()
-    week52_low = stock_price.tail(250)['Close'].min()
-
-    print(week52_high)
-    print(week52_low)
+    # eps_list = ticker_data.get_earnings_dates(limit=20).dropna()['Reported EPS']
+    # print(eps_list)
+    # print('######################################################')
+    # print(f'{eps_list.iloc[0]} - {eps_list.iloc[3]}')
+    # EPS_Q = round((eps_list.iloc[0]  / eps_list.iloc[3]) * 100)
+    # print(EPS_Q)
 
     # print(f"EPSQoQ_C:{EPS_QoQ_C}")
     # print(f"EPSQoQ_LQ:{EPS_QoQ_LQ}")
     # print(f"EPSQoQ_L2Q:{EPS_QoQ_L2Q}")
 
-    # inc_stat_a = ticker_data.income_stmt
+    inc_stat_q = ticker_data.quarterly_income_stmt
+    EPS_list_Q = inc_stat_q.loc['Diluted EPS']
+    print(EPS_list_Q)
+    if pd.isna(EPS_list_Q):
+        print('NaN')
+    else:
+        print(f'Not NaN: {EPS_list_Q}')
     # EPS_list_A = inc_stat_a.loc['Diluted EPS']
     # lenth_EPS_list_A = len(EPS_list_A)
     # if lenth_EPS_list_A >=2:

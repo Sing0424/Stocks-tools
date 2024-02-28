@@ -16,9 +16,11 @@ def get_stock_data(symbol, rsr):
         ipo_date = stock_data.index[0].strftime("%Y-%m-%d")
     except:
         ipo_date = 0
+
     sma_50 = stock_data['Close'].rolling(window=50).mean()
     sma_150 = stock_data['Close'].rolling(window=150).mean()
     sma_200 = stock_data['Close'].rolling(window=200).mean()
+
     try:
         month_ago_sma_200 = sma_200[-21]
     except:
@@ -27,10 +29,12 @@ def get_stock_data(symbol, rsr):
     week52_high = stock_data.tail(250)['Close'].max()
     week52_low = stock_data.tail(250)['Close'].min()
 
-    if stock_data['Close'][-1] > stock_data['Close'][-64]:
-        growth_in_qtr = (stock_data['Close'][-1] / stock_data['Close'][-64]) * 100
+    if stock_data['Close'][-1] > stock_data.tail(64)['Close'].min() or stock_data['Close'][-1] > stock_data.tail(250)['Close'].min():
+        growth_in_qtr = ((stock_data['Close'][-1] / stock_data.tail(64)['Close'].min()) - 1) * 100
+        growth_in_yr = ((stock_data['Close'][-1] / stock_data.tail(250)['Close'].min()) - 1) * 100
     else:
         growth_in_qtr = 0
+        growth_in_yr = 0
 
     avg_vol_30 = stock_data['Volume'].rolling(window=30).mean()
 
@@ -48,28 +52,31 @@ def get_stock_data(symbol, rsr):
     except:
         ROE = 0
 
-    #EPS Y/Y
+    #EPS Q/Q
     try:
-        try:
-            logging.basicConfig(level=logging.CRITICAL)
-            eps_list = ticker_data.get_earnings_dates(limit=20).reset_index(drop=True).dropna()['Reported EPS']
-            logging.basicConfig(level=logging.WARNING)
-        except:
-            eps_list = []
-        lenth_eps_list = len(eps_list)
-        if lenth_eps_list >= 5:
-            EPS_YoY = round((eps_list.iloc[0]  / eps_list.iloc[4]) * 100)
+        if pd.isna(inc_stat_q.loc['Diluted EPS'][0]):
+            lenth_eps_list = len(inc_stat_q.loc['Diluted EPS'])
+            if lenth_eps_list >= 4:
+                EPS_Q = round(((inc_stat_q.loc['Diluted EPS'][0]  / inc_stat_q.loc['Diluted EPS'][4]) - 1) * 100)
+            else:
+                EPS_Q = 0
         else:
-            EPS_YoY = 0
+            try:
+                logging.basicConfig(level=logging.CRITICAL)
+                ticker_data.get_earnings_dates(limit=20).reset_index(drop=True).dropna()['Reported EPS'][0]
+                EPS_Q = round(((ticker_data.get_earnings_dates(limit=20).reset_index(drop=True).dropna()['Reported EPS'][0]  / inc_stat_q.loc['Diluted EPS'][4]) - 1) * 100)
+                logging.basicConfig(level=logging.WARNING)
+            except:
+                EPS_Q = 0
     except:
-            EPS_YoY = 0
+        EPS_Q = 0
 
     #Total Revenue
     try:
         rev_list = inc_stat_q.loc['Total Revenue'].dropna()
         lenth_rev_list = len(rev_list)
         if lenth_rev_list >= 2:
-            REV_C = round((rev_list.iloc[0] / rev_list.iloc[1]) * 100)
+            REV_C = round(((rev_list.iloc[0] / rev_list.iloc[1]) - 1) * 100)
         else:
             REV_C = 0
     except:
@@ -80,7 +87,7 @@ def get_stock_data(symbol, rsr):
         EPS_list_A = inc_stat_a.loc['Diluted EPS']
         lenth_EPS_list_A = len(EPS_list_A)
         if lenth_EPS_list_A >=2:
-            EPS_A = round((EPS_list_A.iloc[0] / EPS_list_A.iloc[1]) * 100)
+            EPS_A = round(((EPS_list_A.iloc[0] / EPS_list_A.iloc[1]) - 1) * 100)
         else:
             EPS_A = 0
     except:
@@ -100,8 +107,9 @@ def get_stock_data(symbol, rsr):
         '52 Week low': week52_low,
         '52 Week high': week52_high,
         'growth_in_qtr': growth_in_qtr,
+        'growth_in_yr': growth_in_yr,
         'RS Rating': rsr,
-        'EPS_YoY': EPS_YoY,
+        'EPS_Q': EPS_Q,
         'EPS_A': EPS_A,
         'REV_C': REV_C,
         'ROE': ROE
@@ -114,7 +122,7 @@ def Screener(symbol_rating_tuple):
 
     stock_data = get_stock_data(symbol, rs_rating)
     
-    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['52 Week low'])) and (stock_data['Current price'] > (0.75 * stock_data['52 Week high'])) and stock_data['30D Avg Vol'] >= 200000 and stock_data['EPS_YoY'] >= 25 and stock_data['EPS_A'] > 25 and stock_data['REV_C'] > 25 and stock_data['ROE'] > 0:
+    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['52 Week low'])) and (stock_data['Current price'] > (0.75 * stock_data['52 Week high'])) and stock_data['30D Avg Vol'] >= 200000 and stock_data['EPS_Q'] >= 25 and stock_data['EPS_A'] > 25 and stock_data['REV_C'] > 25 and stock_data['ROE'] > 0 and (stock_data['growth_in_qtr'] > 20 or stock_data['growth_in_yr'] > 50):
         return stock_data
     else:
         return None
