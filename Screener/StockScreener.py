@@ -29,14 +29,17 @@ def get_stock_data(symbol, rsr):
     week52_high = stock_data.tail(250)['Close'].max()
     week52_low = stock_data.tail(250)['Close'].min()
 
-    if stock_data['Close'][-1] > stock_data.tail(64)['Close'].min() or stock_data['Close'][-1] > stock_data.tail(250)['Close'].min():
-        growth_in_qtr = ((stock_data['Close'][-1] / stock_data.tail(64)['Close'].min()) - 1) * 100
-        growth_in_yr = ((stock_data['Close'][-1] / stock_data.tail(250)['Close'].min()) - 1) * 100
+    if stock_data['Close'][-1] > stock_data['Close'][-64]:
+        growth_in_qtr = ((stock_data['Close'][-1] / stock_data['Close'][-64]) - 1) * 100
     else:
         growth_in_qtr = 0
+
+    if stock_data['Close'][-1] > stock_data['Close'][-250]:
+        growth_in_yr = ((stock_data['Close'][-1] / stock_data['Close'][-250]) - 1) * 100
+    else:
         growth_in_yr = 0
 
-    avg_vol_30 = stock_data['Volume'].rolling(window=30).mean()
+    avg_vol_30 = stock_data['Volume'].rolling(window=30).mean()[-1]
 
     info = ticker_data.info
     sector = info.get('sector')
@@ -54,20 +57,14 @@ def get_stock_data(symbol, rsr):
 
     #EPS Q/Q
     try:
-        if pd.isna(inc_stat_q.loc['Diluted EPS'][0]):
-            lenth_eps_list = len(inc_stat_q.loc['Diluted EPS'])
-            if lenth_eps_list >= 4:
-                EPS_Q = round(((inc_stat_q.loc['Diluted EPS'][0]  / inc_stat_q.loc['Diluted EPS'][4]) - 1) * 100)
-            else:
-                EPS_Q = 0
+        if pd.notna(inc_stat_q.loc['Diluted EPS'][0]) and pd.notna(inc_stat_q.loc['Diluted EPS'][4]):
+            EPS_Q = round(((inc_stat_q.loc['Diluted EPS'][0]  / inc_stat_q.loc['Diluted EPS'][4]) - 1) * 100)
+        elif pd.isna(inc_stat_q.loc['Diluted EPS'][0]) and pd.notna(inc_stat_q.loc['Diluted EPS'][4]):
+            logging.basicConfig(level=logging.CRITICAL)
+            EPS_Q = round(((ticker_data.get_earnings_dates(limit=20).reset_index(drop=True).dropna()['Reported EPS'][0]  / inc_stat_q.loc['Diluted EPS'][4]) - 1) * 100)
+            logging.basicConfig(level=logging.WARNING)
         else:
-            try:
-                logging.basicConfig(level=logging.CRITICAL)
-                ticker_data.get_earnings_dates(limit=20).reset_index(drop=True).dropna()['Reported EPS'][0]
-                EPS_Q = round(((ticker_data.get_earnings_dates(limit=20).reset_index(drop=True).dropna()['Reported EPS'][0]  / inc_stat_q.loc['Diluted EPS'][4]) - 1) * 100)
-                logging.basicConfig(level=logging.WARNING)
-            except:
-                EPS_Q = 0
+            EPS_Q = 0
     except:
         EPS_Q = 0
 
