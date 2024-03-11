@@ -17,13 +17,3 @@ start "" /REALTIME /B /W python "rs_rating_calc.py"
 start "" /REALTIME /B /W python "StockScreener.py"
 
 start "" /REALTIME /B /W python "screenResultUpload.py"
-
-git add Screener/ScreenResult/ScreenResult.xlsx
-
-git add Screener/data/rs_rating.xlsx
-
-git add Screener/data/symbols.csv 
-
-git commit -m "Result upload %date%"
-
-git push
