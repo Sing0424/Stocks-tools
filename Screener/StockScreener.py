@@ -96,7 +96,7 @@ def get_stock_data(symbol, rsr):
         'Industry': industry,
         'IPO Date': ipo_date,
         'Current price': stock_data['Close'][-1],
-        '30D Avg Vol': avg_vol_30[-1],
+        '30D Avg Vol': avg_vol_30,
         'SMA 50': sma_50[-1],
         'SMA 150': sma_150[-1],
         'SMA 200': sma_200[-1],
