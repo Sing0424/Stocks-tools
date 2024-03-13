@@ -121,7 +121,7 @@ def Screener(symbol_rating_tuple):
     
     #if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['52 Week low'])) and (stock_data['Current price'] > (0.75 * stock_data['52 Week high'])) and stock_data['30D Avg Vol'] >= 200000 and stock_data['EPS_Q'] >= 25 and stock_data['EPS_A'] > 25 and stock_data['REV_C'] > 25 and stock_data['ROE'] > 0 and (stock_data['growth_in_qtr'] > 20 or stock_data['growth_in_yr'] > 50):
 
-    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['52 Week low'])) and (stock_data['Current price'] > (0.75 * stock_data['52 Week high'])) and stock_data['30D Avg Vol'] >= 200000 and stock_data['growth_in_qtr'] > 30 :
+    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['52 Week low'])) and (stock_data['Current price'] > (0.75 * stock_data['52 Week high'])) and stock_data['30D Avg Vol'] >= 200000 and stock_data['EPS_Q'] >= 25 and stock_data['REV_C'] > 25 and stock_data['ROE'] > 0 and (stock_data['growth_in_qtr'] > 20 or stock_data['growth_in_yr'] > 50):
         return stock_data
     else:
         return None
@@ -133,7 +133,7 @@ def run_Screener():
 
         args = zip(import_data["Symbol"], import_data["RS Rating"])
 
-        cpu_count = 1 #os.cpu_count() / 2
+        cpu_count = os.cpu_count() / 2
         pool = Pool(processes=int(cpu_count), maxtasksperchild=1)
 
         process_bar = tqdm(desc='Screening', unit=' stocks', total=len(import_data), ncols=80, smoothing=1, miniters=cpu_count)
