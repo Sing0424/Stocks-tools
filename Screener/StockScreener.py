@@ -61,7 +61,7 @@ def get_stock_data(symbol, rsr):
             EPS_Q = round(((inc_stat_q.loc['Diluted EPS'][0]  / inc_stat_q.loc['Diluted EPS'][4]) - 1) * 100)
         elif pd.isna(inc_stat_q.loc['Diluted EPS'][0]) and pd.notna(inc_stat_q.loc['Diluted EPS'][4]):
             logging.basicConfig(level=logging.CRITICAL)
-            EPS_Q = round(((ticker_data.get_earnings_dates(limit=20).reset_index(drop=True).dropna()['Reported EPS'][0]  / inc_stat_q.loc['Diluted EPS'][4]) - 1) * 100)
+            EPS_Q = round(((ticker_data.get_earnings_dates(limit=20)['Reported EPS'].dropna().reset_index(drop=True)[0]  / inc_stat_q.loc['Diluted EPS'][4]) - 1) * 100)
             logging.basicConfig(level=logging.WARNING)
         else:
             EPS_Q = 0
