@@ -12,19 +12,19 @@ import logging
 # Screen_result_list = []
 # import_data = pd.read_excel(daily_rs_rating_path)
 # symbols = import_data["Symbol"]
-symbols = ['MSTR']
+symbols = ['VRT']
 for symbol in symbols:
     ticker_data = yf.Ticker(symbol)
+    yq_data = Ticker(symbol)
     stock_data = ticker_data.history(period="max")
     #print(stock_data)
     print("======================================================================================")
 
     inc_stat_q = ticker_data.quarterly_income_stmt
+    inc_stat_a = ticker_data.income_stmt
+    
+    print(yq_data.income_statement(frequency="a", trailing=False)["DilutedEPS"])
 
     #EPS Q/Q
-    
-    EPS_Q = ticker_data.get_earnings_dates(limit=20)['Reported EPS'].dropna().reset_index(drop=True)[0]
-        
-    print(EPS_Q)
 
 

@@ -58,11 +58,9 @@ def get_stock_data(symbol, rsr):
     #EPS Q/Q
     try:
         if pd.notna(inc_stat_q.loc['Diluted EPS'][0]) and pd.notna(inc_stat_q.loc['Diluted EPS'][4]):
-            EPS_Q = round(((inc_stat_q.loc['Diluted EPS'][0]  / inc_stat_q.loc['Diluted EPS'][4]) - 1) * 100)
+            EPS_Q = round(((inc_stat_q.loc['Diluted EPS'][0] - inc_stat_q.loc['Diluted EPS'][4]) / inc_stat_q.loc['Diluted EPS'][4]) * 100)
         elif pd.isna(inc_stat_q.loc['Diluted EPS'][0]) and pd.notna(inc_stat_q.loc['Diluted EPS'][4]):
-            logging.basicConfig(level=logging.CRITICAL)
-            EPS_Q = round(((ticker_data.get_earnings_dates(limit=20)['Reported EPS'].dropna().reset_index(drop=True)[0]  / inc_stat_q.loc['Diluted EPS'][4]) - 1) * 100)
-            logging.basicConfig(level=logging.WARNING)
+            EPS_Q = round(((yq_data.income_statement(frequency="q", trailing=True)["DilutedEPS"].reset_index(drop=True).iloc[4] - inc_stat_q.loc['Diluted EPS'][4]) / inc_stat_q.loc['Diluted EPS'][4]) * 100)
         else:
             EPS_Q = 0
     except:
@@ -81,12 +79,12 @@ def get_stock_data(symbol, rsr):
 
     #EPS Annual
     try:
-        EPS_list_A = inc_stat_a.loc['Diluted EPS']
-        lenth_EPS_list_A = len(EPS_list_A)
-        if lenth_EPS_list_A >=2:
-            EPS_A = round(((EPS_list_A.iloc[0] / EPS_list_A.iloc[1]) - 1) * 100)
+        if pd.notna(inc_stat_a.loc['Diluted EPS'][0]) and pd.notna(inc_stat_a.loc['Diluted EPS'][1]):
+            EPS_A = round(((inc_stat_a.loc['Diluted EPS'].iloc[0] - inc_stat_a.loc['Diluted EPS'].iloc[1]) / abs(inc_stat_a.loc['Diluted EPS'].iloc[1])) * 100)
+        elif pd.isna(inc_stat_a.loc['Diluted EPS'][0]) and pd.notna(inc_stat_a.loc['Diluted EPS'][1]):
+            EPS_Q = round(((yq_data.income_statement(frequency="a", trailing=False)["DilutedEPS"][3] - inc_stat_q.loc['Diluted EPS'][1]) / abs(inc_stat_q.loc['Diluted EPS'][1])) * 100)
         else:
-            EPS_A = 0
+            EPS_Q = 0
     except:
         EPS_A = 0
 
@@ -118,10 +116,10 @@ def Screener(symbol_rating_tuple):
     rs_rating = symbol_rating_tuple[1]
 
     stock_data = get_stock_data(symbol, rs_rating)
-    
+
     #if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['52 Week low'])) and (stock_data['Current price'] > (0.75 * stock_data['52 Week high'])) and stock_data['30D Avg Vol'] >= 200000 and stock_data['EPS_Q'] >= 25 and stock_data['EPS_A'] > 25 and stock_data['REV_C'] > 25 and stock_data['ROE'] > 0 and (stock_data['growth_in_qtr'] > 20 or stock_data['growth_in_yr'] > 50):
 
-    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['52 Week low'])) and (stock_data['Current price'] > (0.75 * stock_data['52 Week high'])) and stock_data['30D Avg Vol'] >= 200000 and stock_data['EPS_Q'] >= 25 and stock_data['REV_C'] > 25 and stock_data['ROE'] > 0 and (stock_data['growth_in_qtr'] > 20 or stock_data['growth_in_yr'] > 50):
+    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['52 Week low'])) and (stock_data['Current price'] > (0.75 * stock_data['52 Week high'])) and stock_data['30D Avg Vol'] >= 200000 and stock_data['ROE'] > 0 and stock_data['EPS_Q'] >= 25 and (stock_data['growth_in_qtr'] > 30 or stock_data['growth_in_yr'] > 50) :
         return stock_data
     else:
         return None
@@ -134,7 +132,7 @@ def run_Screener():
         args = zip(import_data["Symbol"], import_data["RS Rating"])
 
         cpu_count = os.cpu_count() / 2
-        pool = Pool(processes=int(cpu_count), maxtasksperchild=1)
+        pool = Pool(processes=int(cpu_count))
 
         process_bar = tqdm(desc='Screening', unit=' stocks', total=len(import_data), ncols=80, smoothing=1, miniters=cpu_count)
 

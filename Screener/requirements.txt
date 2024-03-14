@@ -8,5 +8,5 @@ stocksymbol==0.0.5
 tqdm==4.65.0
 XlsxWriter==3.1.2
 yahooquery==2.3.7
-yfinance==0.2.36
+yfinance==0.2.37
 openpyxl==3.1.2
