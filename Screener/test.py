@@ -22,9 +22,12 @@ for symbol in symbols:
 
     inc_stat_q = ticker_data.quarterly_income_stmt
     inc_stat_a = ticker_data.income_stmt
+
+    REV_Q_LIST = inc_stat_q.loc['Operating Revenue'].dropna()
+    if pd.notna(REV_Q_LIST[0]) and pd.notna(REV_Q_LIST[1]):
+        REV_Q = round(((REV_Q_LIST.iloc[0] - REV_Q_LIST.iloc[4]) / abs(REV_Q_LIST.iloc[4])) * 100)
     
-    print(round(yq_data.income_statement(frequency="q", trailing=False)["TotalRevenue"][4]))
-    print(round(yq_data.income_statement(frequency="q", trailing=False)["OperatingRevenue"][4]))
+    print(REV_Q_LIST.iloc[4])
 
     #EPS Q/Q
 
