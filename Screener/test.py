@@ -23,7 +23,8 @@ for symbol in symbols:
     inc_stat_q = ticker_data.quarterly_income_stmt
     inc_stat_a = ticker_data.income_stmt
     
-    print(yq_data.income_statement(frequency="a", trailing=False)["DilutedEPS"])
+    print(round(yq_data.income_statement(frequency="q", trailing=False)["TotalRevenue"][4]))
+    print(round(yq_data.income_statement(frequency="q", trailing=False)["OperatingRevenue"][4]))
 
     #EPS Q/Q
 

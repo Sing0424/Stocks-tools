@@ -6,18 +6,10 @@ from config import screen_result_path
 import_data = pd.read_excel(screen_result_path , usecols=['Symbol'])
 normal_filter = import_data['Symbol']
 # code33_filter = import_data[(import_data['Code 33'] == 'T')]['Symbol']
-num_websites_per_batch = 5
-start_from = 0
 
 def run_w_normal_filter():
-    for i in range(start_from, len(normal_filter), num_websites_per_batch):
-        if i < num_websites_per_batch:
-            input(f"Press enter to open {i} to {i+num_websites_per_batch} of {len(normal_filter)} websites...")
-        else:
-            input(f"Press enter to open {i} to {len(normal_filter)} of {len(normal_filter)} websites...")
-        symbols_to_open = normal_filter[i:i+num_websites_per_batch]
-        for symbol in symbols_to_open:
-            webbrowser.open(f'https://finviz.com/quote.ashx?t={symbol}&ty=c&ta=1&p=w')
+    str_symbol = ','.join(normal_filter.astype(str))
+    webbrowser.open(f'https://finviz.com/screener.ashx?v=211&p=w&t={str_symbol}')
 
 # def run_w_code33_filter():
 #     for i in range(start_from, len(code33_filter), num_websites_per_batch):
