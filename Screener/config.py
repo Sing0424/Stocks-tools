@@ -2,6 +2,9 @@ import os
 
 #Path config for command promt
 stocks_csv_path = 'data/symbols.csv'
+symbol_list_nq_path = 'data/nq_symbol.csv'
+symbol_list_other_path = 'data/other_symbol.csv'
+all_symbol_list_path = 'data/all_symbol.csv'
 daily_rs_rating_path = 'data/rs_rating.xlsx'
 screen_result_path = 'ScreenResult/ScreenResult.xlsx'
 
