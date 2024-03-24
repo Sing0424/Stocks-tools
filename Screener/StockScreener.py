@@ -29,14 +29,20 @@ def get_stock_data(symbol, rsr):
     week52_high = stock_data.tail(250)['Close'].max()
     week52_low = stock_data.tail(250)['Close'].min()
 
-    if stock_data['Close'][-1] > stock_data['Close'][-64]:
-        growth_in_qtr = ((stock_data['Close'][-1] / stock_data['Close'][-64]) - 1) * 100
-    else:
+    try:
+        if stock_data['Close'][-1] > stock_data['Close'][-64]:
+            growth_in_qtr = ((stock_data['Close'][-1] / stock_data['Close'][-64]) - 1) * 100
+        else:
+            growth_in_qtr = 0
+    except:
         growth_in_qtr = 0
 
-    if stock_data['Close'][-1] > stock_data['Close'][-250]:
-        growth_in_yr = ((stock_data['Close'][-1] / stock_data['Close'][-250]) - 1) * 100
-    else:
+    try:
+        if stock_data['Close'][-1] > stock_data['Close'][-250]:
+            growth_in_yr = ((stock_data['Close'][-1] / stock_data['Close'][-250]) - 1) * 100
+        else:
+            growth_in_yr = 0
+    except:
         growth_in_yr = 0
 
     avg_vol_30 = stock_data['Volume'].rolling(window=30).mean()[-1]
@@ -119,7 +125,7 @@ def Screener(symbol_rating_tuple):
 
     #if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['52 Week low'])) and (stock_data['Current price'] > (0.75 * stock_data['52 Week high'])) and stock_data['30D Avg Vol'] >= 200000 and stock_data['EPS_Q'] >= 25 and stock_data['EPS_A'] > 25 and stock_data['REV_C'] > 25 and stock_data['ROE'] > 0 and (stock_data['growth_in_qtr'] > 20 or stock_data['growth_in_yr'] > 50):
 
-    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['52 Week low'])) and (stock_data['Current price'] > (0.75 * stock_data['52 Week high'])) and stock_data['30D Avg Vol'] >= 200000 and stock_data['ROE'] > 0 and stock_data['EPS_Q'] >= 25 and stock_data['EPS_A'] > 25 and (stock_data['growth_in_qtr'] > 30 or stock_data['growth_in_yr'] > 50) :
+    if ((stock_data['Current price'] > stock_data['SMA 150']) and (stock_data['Current price'] > stock_data['SMA 200'])) and (stock_data['SMA 150'] > stock_data['SMA 200']) and (stock_data['SMA 200'] > stock_data['Month ago SMA 200']) and (stock_data['SMA 50'] > stock_data['SMA 150'] and stock_data['SMA 50'] > stock_data['SMA 200']) and (stock_data['Current price'] > stock_data['SMA 50']) and (stock_data['Current price'] > (1.3 * stock_data['52 Week low'])) and (stock_data['Current price'] > (0.75 * stock_data['52 Week high'])) and stock_data['30D Avg Vol'] >= 200000 and stock_data['ROE'] > 0 and stock_data['EPS_Q'] >= 25 and stock_data['EPS_A'] > 25 and stock_data['REV_Q'] > 10 and (stock_data['growth_in_qtr'] > 30 or stock_data['growth_in_yr'] > 50) :
         return stock_data
     else:
         return None

@@ -1,6 +1,6 @@
 import ftplib
 import pandas as pd
-from config import stocks_csv_path, stock_symbol_api_key, symbol_list_nq_path, symbol_list_other_path, all_symbol_list_path
+from config import stocks_csv_path, stock_symbol_api_key, symbol_list_nq_path, symbol_list_other_path
 import csv
 
 # symbols = StockSymbol(stock_symbol_api_key)
@@ -21,19 +21,18 @@ ftp_nasdaq = ftplib.FTP('ftp.nasdaqtrader.com')
 ftp_nasdaq.login()
 ftp_nasdaq.encoding = "utf-8"
 
-filenames = ["nasdaqlisted.txt", "otherlisted.txt"]
 all_symbol = []
 ftp_nasdaq.cwd('Symboldirectory')
 
-with open("nasdaqlisted.txt", "wb") as file:
+with open(symbol_list_nq_path, "wb") as file:
     ftp_nasdaq.retrbinary(f"RETR nasdaqlisted.txt", file.write)
-    data_nasdaq = pd.read_csv("nasdaqlisted.txt", sep="|")
+    data_nasdaq = pd.read_csv(symbol_list_nq_path, sep="|")
     data_nasdaq_filtered = data_nasdaq[(data_nasdaq['Test Issue'] == 'N') & (data_nasdaq['Financial Status'] == 'N') & (data_nasdaq["Symbol"].str.contains(f"[.+=$^-]") != True)]
     # print(data_nasdaq_filtered[(data_nasdaq_filtered['Symbol'].str.contains("nan") == True)])
 
-with open("otherlisted.txt", "wb") as file:
+with open(symbol_list_other_path, "wb") as file:
     ftp_nasdaq.retrbinary(f"RETR otherlisted.txt", file.write)
-    data_nasdaq_other = pd.read_csv("otherlisted.txt", sep="|")
+    data_nasdaq_other = pd.read_csv(symbol_list_other_path, sep="|")
     data_nasdaq_other_filtered = data_nasdaq_other[(data_nasdaq_other['Test Issue'] == 'N') & (data_nasdaq_other["NASDAQ Symbol"].str.contains(f"[.+=$^-]") != True)]
     # print(data_nasdaq_other_filtered['NASDAQ Symbol'].str.contains("nan"))
 
@@ -43,10 +42,9 @@ all_symbol_df = pd.concat([data_nasdaq_filtered['Symbol'], data_nasdaq_other_fil
 symbol_list = list(set(all_symbol_df.tolist()))
 symbol_list.sort(key=lambda x: str(x))
 
-with open(all_symbol_list_path, 'w', newline='') as csvfile:
+with open(stocks_csv_path, 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     for symbol in symbol_list:
-        # if '.' not in symbol:
         writer.writerow([symbol])
 
 print(f'Symbols written to {stocks_csv_path}')

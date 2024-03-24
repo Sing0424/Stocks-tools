@@ -366,7 +366,7 @@ ASCA|A SPAC I Acquisition Corp. - Class A Ordinary Share|S|N|D|100|N|N
 ASCAR|A SPAC I Acquisition Corp. - Right|S|N|N|100|N|N
 ASCAU|A SPAC I Acquisition Corp. - Unit|S|N|N|100|N|N
 ASCAW|A SPAC I Acquisition Corp. - Warrant|S|N|N|100|N|N
-ASCB|A SPAC II Acquisition Corp. - Ordinary Shares, Class A Common Stock|G|N|N|100|N|N
+ASCB|A SPAC II Acquisition Corp. - Ordinary Shares, Class A Common Stock|G|N|D|100|N|N
 ASCBR|A SPAC II Acquisition Corp. - Right|G|N|N|100|N|N
 ASCBU|A SPAC II Acquisition Corp. - Unit|G|N|N|100|N|N
 ASCBW|A SPAC II Acquisition Corp. - Warrant|G|N|N|100|N|N
@@ -1084,6 +1084,8 @@ COOL|Corner Growth Acquisition Corp. - Class A Ordinary Shares|S|N|D|100|N|N
 COOLU|Corner Growth Acquisition Corp. - Unit|S|N|D|100|N|N
 COOLW|Corner Growth Acquisition Corp. - Warrant|S|N|D|100|N|N
 COOP|Mr. Cooper Group Inc. - Common Stock|S|N|N|100|N|N
+COOT|Australian Oilseeds Holdings Limited - Ordinary Shares|G|N|N|100|N|N
+COOTW|Australian Oilseeds Holdings Limited - Warrant|G|N|N|100|N|N
 COPJ|Sprott Junior Copper Miners ETF|G|N|N|100|Y|N
 COPP|Sprott Copper Miners ETF|G|N|N|100|Y|N
 CORT|Corcept Therapeutics Incorporated - Common Stock|S|N|N|100|N|N
@@ -1251,7 +1253,7 @@ DBVT|DBV Technologies S.A. - American Depositary Shares|Q|N|D|100|N|N
 DBX|Dropbox, Inc. - Class A Common Stock|Q|N|N|100|N|N
 DCBO|Docebo Inc. - Common Shares|Q|N|N|100|N|N
 DCFC|Tritium DCFC Limited - Ordinary Shares|G|N|D|100|N|N
-DCFCW|Tritium DCFC Limited - Warrant|G|N|N|100|N|N
+DCFCW|Tritium DCFC Limited - Warrant|G|N|D|100|N|N
 DCGO|DocGo Inc. - Common Stock|S|N|N|100|N|N
 DCOM|Dime Community Bancshares, Inc. - Common Stock|Q|N|N|100|N|N
 DCOMP|Dime Community Bancshares, Inc. - Fixed-Rate Non-Cumulative Perpetual Preferred Stock, Series A|Q|N|N|100|N|N
@@ -1328,7 +1330,7 @@ DRIO|DarioHealth Corp. - Common Stock|S|N|N|100|N|N
 DRIV|Global X Autonomous & Electric Vehicles ETF|G|N|N|100|Y|N
 DRMA|Dermata Therapeutics, Inc. - Common Stock|S|N|D|100|N|N
 DRMAW|Dermata Therapeutics, Inc. - Warrant|S|N|N|100|N|N
-DRRX|DURECT Corporation - Common Stock|S|N|D|100|N|N
+DRRX|DURECT Corporation - Common Stock|S|N|N|100|N|N
 DRS|Leonardo DRS, Inc. - Common Stock|Q|N|N|100|N|N
 DRTS|Alpha Tau Medical Ltd. - Ordinary Shares|S|N|N|100|N|N
 DRTSW|Alpha Tau Medical Ltd. - Warrant|S|N|N|100|N|N
@@ -1940,7 +1942,7 @@ GOCO|GoHealth, Inc. - Class A Common Stock|S|N|N|100|N|N
 GODN|Golden Star Acquisition Corporation - Ordinary Shares|G|N|N|100|N|N
 GODNR|Golden Star Acquisition Corporation - Rights|G|N|N|100|N|N
 GODNU|Golden Star Acquisition Corporation - Unit|G|N|N|100|N|N
-GOEV|Canoo Inc.  - Class A Common Stock|S|N|D|100|N|N
+GOEV|Canoo Inc.  - Class A Common Stock|S|N|N|100|N|N
 GOEVW|Canoo Inc.  - Warrant|S|N|N|100|N|N
 GOGL|Golden Ocean Group Limited - Common Stock|Q|N|N|100|N|N
 GOGO|Gogo Inc. - Common Stock|Q|N|N|100|N|N
@@ -2014,9 +2016,9 @@ GVH|Globavend Holdings Limited - Ord Shares|S|N|N|100|N|N
 GVP|GSE Systems, Inc. - Common Stock|S|N|N|100|N|N
 GWAV|Greenwave Technology Solutions, Inc. - Common Stock|S|N|D|100|N|N
 GWRS|Global Water Resources, Inc. - common stock|G|N|N|100|N|N
-GXAI|Gaxos.ai Inc. - Common Stock|S|N|D|100|N|N
+GXAI|Gaxos.ai Inc. - Common Stock|S|N|N|100|N|N
 GXTG|Global X Thematic Growth ETF|G|N|N|100|Y|N
-GYRE|Gyre Therapeutics, Inc. - Common Stock|S|N|D|100|N|N
+GYRE|Gyre Therapeutics, Inc. - Common Stock|S|N|N|100|N|N
 GYRO|Gyrodyne , LLC - Common Stock|S|N|N|100|N|N
 HA|Hawaiian Holdings, Inc. - Common Stock|Q|N|N|100|N|N
 HAFC|Hanmi Financial Corporation - Common Stock|Q|N|N|100|N|N
@@ -2302,7 +2304,7 @@ INDI|indie Semiconductor, Inc. - Class A Common Stock|S|N|N|100|N|N
 INDP|Indaptus Therapeutics, Inc. - Common Stock|S|N|N|100|N|N
 INDV|Indivior PLC - Ordinary Shares|Q|N|N|100|N|N
 INDY|iShares India 50 ETF|G|N|N|100|Y|N
-INFN|Infinera Corporation - Common Stock|Q|N|N|100|N|N
+INFN|Infinera Corporation - Common Stock|Q|N|E|100|N|N
 INFR|ClearBridge Sustainable Infrastructure ETF|G|N|N|100|Y|N
 INGN|Inogen, Inc - Common Stock|Q|N|N|100|N|N
 INHD|Inno Holdings Inc. - Common Stock|S|N|N|100|N|N
@@ -3925,7 +3927,7 @@ SCSC|ScanSource, Inc. - Common Stock|Q|N|N|100|N|N
 SCTL|Societal CDMO, Inc. - Common Stock|S|N|N|100|N|N
 SCVL|Shoe Carnival, Inc. - Common Stock|Q|N|N|100|N|N
 SCWO|374Water Inc. - common stock|S|N|N|100|N|N
-SCWX|SecureWorks Corp. - Class A Common Stock|Q|N|D|100|N|N
+SCWX|SecureWorks Corp. - Class A Common Stock|Q|N|N|100|N|N
 SCYX|SCYNEXIS, Inc. - Common Stock|G|N|N|100|N|N
 SCZ|iShares MSCI EAFE Small-Cap ETF|G|N|N|100|Y|N
 SDA|SunCar Technology Group Inc. - Ordinary Shares|S|N|N|100|N|N
@@ -4918,4 +4920,4 @@ ZXZZT|NASDAQ TEST STOCK|G|Y|N|100||N
 ZYME|Zymeworks Inc. - Common Stock|Q|N|N|100|N|N
 ZYXI|Zynex, Inc. - Common Stock|Q|N|N|100|N|N
 ZZZ|Cyber Hornet S&P 500 and Bitcoin 75/25 Strategy ETF|G|N|N|100|Y|N
-File Creation Time: 0322202406:00|||||||
+File Creation Time: 0322202421:31|||||||

@@ -5,19 +5,11 @@ import datetime
 import pandas as pd
 from config import screen_result_path
 
-import_data = pd.read_excel(screen_result_path , usecols=['Symbol', 'Code 33'])
-code33_filter = import_data[(import_data['Code 33'] == 'T')]['Symbol']
+import_data = pd.read_excel(screen_result_path , usecols=['Symbol'])
+code33_filter = import_data['Symbol']
 
-# List of stock symbols
-print(f"Filter with code 33? (Y/N)")
-x = input()
 
-if x.upper() == "Y":
-    symbols = import_data[(import_data['Code 33'] == 'T')]['Symbol']
-elif x.upper() == "N":
-    symbols = import_data['Symbol']
-else:
-    print("Input Error")
+symbols = import_data['Symbol']
 
 def dailyChart():
     for symbol in symbols:
