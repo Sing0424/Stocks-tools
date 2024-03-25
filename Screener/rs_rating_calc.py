@@ -4,7 +4,8 @@ import time
 from config import *
 from multiprocessing import Pool
 from tqdm import tqdm
-import xlsxwriter
+import pandas as pd
+import csv
 import logging
 
 def calculate_rs_rating(symbol):
@@ -54,20 +55,28 @@ def run_rs_data_program():
     num_top_ratings = int(len(rs_rating_list) * top_rating)
     top_ratings = rs_rating_list[:num_top_ratings]
 
-    workbook = xlsxwriter.Workbook(daily_rs_rating_path)
-    worksheet = workbook.add_worksheet()
-    float_pt_round = workbook.add_format({'num_format': '#,#####0.00000', 'border': 1})
-    worksheet.write('A1', 'Symbol')
-    worksheet.write('B1', 'RS Rating')
-    row = 1
-    col = 0
+    # workbook = xlsxwriter.Workbook(daily_rs_rating_path)
+    # worksheet = workbook.add_worksheet()
+    # float_pt_round = workbook.add_format({'num_format': '#,#####0.00000', 'border': 1})
+    # worksheet.write('A1', 'Symbol')
+    # worksheet.write('B1', 'RS Rating')
+    # row = 1
+    # col = 0
     
-    for symbol, rs_rating in (top_ratings):
-        worksheet.write(row, col, symbol)
-        worksheet.write(row, col + 1, rs_rating, float_pt_round)
-        row += 1
+    # for symbol, rs_rating in (top_ratings):
+    #     worksheet.write(row, col, symbol)
+    #     worksheet.write(row, col + 1, rs_rating, float_pt_round)
+    #     row += 1
         
-    workbook.close()
+    # workbook.close()
+
+    # Create a DataFrame to rs_rating_path
+    rs_df = pd.DataFrame(top_ratings, columns=['Symbol', 'RS Rating'])
+    print(rs_df)
+    with open(rs_rating_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(rs_df.columns)
+        writer.writerows(rs_df.values)
 
 if __name__ == '__main__':
     run_rs_data_program()

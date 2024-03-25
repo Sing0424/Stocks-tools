@@ -27,13 +27,13 @@ ftp_nasdaq.cwd('Symboldirectory')
 with open(symbol_list_nq_path, "wb") as file:
     ftp_nasdaq.retrbinary(f"RETR nasdaqlisted.txt", file.write)
     data_nasdaq = pd.read_csv(symbol_list_nq_path, sep="|")
-    data_nasdaq_filtered = data_nasdaq[(data_nasdaq['Test Issue'] == 'N') & (data_nasdaq['Financial Status'] == 'N') & (data_nasdaq["Symbol"].str.contains(f"[.+=$^-]") != True)]
+    data_nasdaq_filtered = data_nasdaq[(data_nasdaq['Test Issue'] == 'N') & (data_nasdaq['Financial Status'] == 'N') & (data_nasdaq["Symbol"].str.contains(f"[.+=$^-]") != True) & (data_nasdaq['ETF'] == 'N')]
     # print(data_nasdaq_filtered[(data_nasdaq_filtered['Symbol'].str.contains("nan") == True)])
 
 with open(symbol_list_other_path, "wb") as file:
     ftp_nasdaq.retrbinary(f"RETR otherlisted.txt", file.write)
     data_nasdaq_other = pd.read_csv(symbol_list_other_path, sep="|")
-    data_nasdaq_other_filtered = data_nasdaq_other[(data_nasdaq_other['Test Issue'] == 'N') & (data_nasdaq_other["NASDAQ Symbol"].str.contains(f"[.+=$^-]") != True)]
+    data_nasdaq_other_filtered = data_nasdaq_other[(data_nasdaq_other['Test Issue'] == 'N') & (data_nasdaq_other["NASDAQ Symbol"].str.contains(f"[.+=$^-]") != True) & (data_nasdaq_other['ETF'] == 'N')]
     # print(data_nasdaq_other_filtered['NASDAQ Symbol'].str.contains("nan"))
 
 ftp_nasdaq.quit()

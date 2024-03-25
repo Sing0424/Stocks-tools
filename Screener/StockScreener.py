@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import yfinance as yf
 from yahooquery import Ticker
-from config import daily_rs_rating_path, screen_result_path
+from config import rs_rating_path, screen_result_path
 from multiprocessing import Pool
 from tqdm import tqdm
 import datetime
@@ -133,7 +133,7 @@ def Screener(symbol_rating_tuple):
 def run_Screener():
     if __name__ == '__main__':
         Screen_result_list = []
-        import_data = pd.read_excel(daily_rs_rating_path)
+        import_data = pd.read_csv(rs_rating_path)
 
         args = zip(import_data["Symbol"], import_data["RS Rating"])
 
@@ -155,6 +155,6 @@ def run_Screener():
 
         # Write the DataFrame to an Excel file
         output_file_path = os.path.join(screen_result_path)
-        df.to_excel(output_file_path, index=False)
+        df.to_csv(output_file_path, index=False)
 
 run_Screener()

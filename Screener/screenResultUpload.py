@@ -54,7 +54,7 @@ def main():
             "removeParents": [f'{folder.get("id")}'],
             "addParents": [f'{folder.get("id")}']
         }
-        media = MediaFileUpload('ScreenResult/ScreenResult.xlsx', mimetype=None,
+        media = MediaFileUpload('ScreenResult/ScreenResult.csv', mimetype=None,
                                 resumable=True)
         # pylint: disable=maybe-no-member
         file = service.files().update(body=file_metadata, media_body=media,
