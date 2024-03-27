@@ -5,7 +5,7 @@ stocks_csv_path = 'data/symbols.csv'
 symbol_list_nq_path = 'data/nq_symbol.csv'
 symbol_list_other_path = 'data/other_symbol.csv'
 rs_rating_path = 'data/rs_rating.csv'
-screen_result_path = 'ScreenResult/ScreenResult.csv'
+screen_result_path = 'ScreenResult/ScreenResult.xlsx'
 
 #Data config
 #Get symbol list from https://stock-symbol.herokuapp.com/

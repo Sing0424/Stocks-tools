@@ -1118,6 +1118,7 @@ CP|Canadian Pacific Kansas City Limited Common Shares|N|CP|N|100|N|CP
 CPA|Copa Holdings, S.A. Class A Common Stock|N|CPA|N|100|N|CPA
 CPAC|Cementos Pacasmayo S.A.A. American Depositary Shares (Each representing five Common Shares)|N|CPAC|N|100|N|CPAC
 CPAI|Northern Lights Fund Trust III Counterpoint Quantitative Equity ETF|P|CPAI|Y|100|N|CPAI
+CPAY|Corpay, Inc. Common Stock|N|CPAY|N|100|N|CPAY
 CPB|Campbell Soup Company Common Stock|N|CPB|N|100|N|CPB
 CPE|Callon Petroleum Company Common Stock|N|CPE|N|100|N|CPE
 CPER|United States Copper Index Fund ETV|P|CPER|Y|100|N|CPER
@@ -1545,6 +1546,7 @@ EAD|Allspring Income Opportunities Fund Common Shares|A|EAD|N|100|N|EAD
 EAF|GrafTech International Ltd. Common Stock|N|EAF|N|100|N|EAF
 EAFG|Pacer Funds Trust Pacer Developed Markets Cash Cows Growth Leaders ETF|P|EAFG|Y|100|N|EAFG
 EAGG|iShares ESG Aware U.S. Aggregate Bond ETF|P|EAGG|Y|100|N|EAGG
+EAGL|The 2023 ETF Series Trust Eagle Capital Select Equity ETF|P|EAGL|Y|100|N|EAGL
 EAI|Entergy Arkansas, LLC First Mortgage Bonds, 4.875% Series Due September 1, 2066|N|EAI|N|100|N|EAI
 EALT|Innovator ETFs Trust Innovator U.S. Equity 5 to 15 Buffer ETF - Quarterly|Z|EALT|Y|100|N|EALT
 EAOA|iShares ESG Aware Aggressive Allocation ETF|Z|EAOA|Y|100|N|EAOA
@@ -1839,10 +1841,12 @@ EVNT|AltShares Event-Driven ETF|P|EVNT|Y|100|N|EVNT
 EVR|Evercore Inc. Class A Common Stock|N|EVR|N|100|N|EVR
 EVRI|Everi Holdings Inc. Common Stock|N|EVRI|N|100|N|EVRI
 EVSB|Morgan Stanley ETF Trust Eaton Vance Ultra-Short Income ETF|P|EVSB|Y|100|N|EVSB
+EVSM|Morgan Stanley ETF Trust Eaton Vance Short Duration Municipal Income ETF|P|EVSM|Y|100|N|EVSM
 EVT|Eaton Vance Tax Advantaged Dividend Income Fund Common Shares of Beneficial Interest|N|EVT|N|100|N|EVT
 EVTC|Evertec, Inc. Common Stock|N|EVTC|N|100|N|EVTC
 EVTL|Vertical Aerospace Ltd. Ordinary Shares|N|EVTL|N|100|N|EVTL
 EVTL.W|Vertical Aerospace Ltd. Warrants, each whole warrant exercisable for one ordinary share at an exercise price of $11.50 per share|N|EVTL.WS|N|100|N|EVTL+
+EVTR|Morgan Stanley ETF Trust Eaton Vance Total Return Bond ETF|N|EVTR|Y|100|N|EVTR
 EVUS|iShares Trust iShares ESG Aware MSCI USA Value ETF|Z|EVUS|Y|100|N|EVUS
 EVV|Eaton Vance Limited Duration Income Fund Common Shares of Beneficial Interest|A|EVV|N|100|N|EVV
 EVX|VanEck Environmental Services ETF|P|EVX|Y|100|N|EVX
@@ -2077,7 +2081,6 @@ FLS|Flowserve Corporation Common Stock|N|FLS|N|100|N|FLS
 FLSA|Franklin FTSE Saudi Arabia ETF|P|FLSA|Y|100|N|FLSA
 FLSP|Franklin Systematic Style Premia ETF|P|FLSP|Y|100|N|FLSP
 FLSW|Franklin FTSE Switzerland ETF|P|FLSW|Y|100|N|FLSW
-FLT|FleetCor Technologies, Inc. Common Stock|N|FLT|N|100|N|FLT
 FLTB|Fidelity Limited Term Bond ETF|P|FLTB|Y|100|N|FLTB
 FLTR|VanEck ETF Trust VanEck IG Floating Rate ETF|P|FLTR|Y|100|N|FLTR
 FLTW|Franklin FTSE Taiwan ETF|P|FLTW|Y|100|N|FLTW
@@ -4736,7 +4739,6 @@ RYAM|Rayonier Advanced Materials Inc. Common Stock|N|RYAM|N|100|N|RYAM
 RYAN|Ryan Specialty Holdings, Inc. Class A Common Stock|N|RYAN|N|100|N|RYAN
 RYDE|Ryde Group Ltd. Class A Ordinary Shares|A|RYDE|N|100|N|RYDE
 RYI|Ryerson Holding Corporation Common Stock|N|RYI|N|100|N|RYI
-RYJ|Invesco Raymond James SB-1 Equity ETF|P|RYJ|Y|100|N|RYJ
 RYLD|Global X Russell 2000 Covered Call ETF|P|RYLD|Y|100|N|RYLD
 RYLG|Global X Funds Global X Russell 2000 Covered Call & Growth ETF|P|RYLG|Y|100|N|RYLG
 RYN|Rayonier Inc. REIT Common Stock|N|RYN|N|100|N|RYN
@@ -5597,6 +5599,7 @@ UNP|Union Pacific Corporation Common Stock|N|UNP|N|100|N|UNP
 UOCT|Innovator U.S. Equity Ultra Buffer ETF - October|Z|UOCT|Y|100|N|UOCT
 UP|Wheels Up Experience Inc. Class A Common Stock|N|UP|N|100|N|UP
 UPAR|Tidal ETF Trust UPAR Ultra Risk Parity ETF|P|UPAR|Y|100|N|UPAR
+UPGD|Invesco Bloomberg Analyst Rating Improvers ETF|P|UPGD|Y|100|N|UPGD
 UPRO|ProShares UltraPro S&P 500|P|UPRO|Y|100|N|UPRO
 UPS|United Parcel Service, Inc. Common Stock|N|UPS|N|100|N|UPS
 UPV|ProShares Ultra FTSE Europe|P|UPV|Y|100|N|UPV
@@ -6150,4 +6153,4 @@ ZVIA|Zevia PBC Class A Common Stock|N|ZVIA|N|100|N|ZVIA
 ZVV|NYSE ARCA test stock|P|ZVV|N|100|Y|ZVV
 ZWS|Zurn Elkay Water Solutions Corporation Common Stock|N|ZWS|N|100|N|ZWS
 ZXIET|IEX Test Company Test Symbol Three for IEX|V|ZXIET|N|100|Y|ZXIET
-File Creation Time: 0322202421:31||||||
+File Creation Time: 0325202418:01||||||

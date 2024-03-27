@@ -155,6 +155,6 @@ def run_Screener():
 
         # Write the DataFrame to an Excel file
         output_file_path = os.path.join(screen_result_path)
-        df.to_csv(output_file_path, index=False)
+        df.to_excel(output_file_path, index=False, freeze_panes=[1,1])
 
 run_Screener()
