@@ -1,0 +1,15 @@
+# Stock Screening Output Files
+data/
+
+# Data directories (exclude all CSV files in data folder)
+data/
+
+# Screen Result directory (exclude all files)
+ScreenResult/
+
+# Authentication and API files
+token.json
+credentials.json
+
+# pycache files
+__pycache__/
