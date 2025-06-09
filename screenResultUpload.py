@@ -71,5 +71,5 @@ def upload_results():
         file = None
         return False
 
-# if __name__ == '__main__':
-#     upload_results()
+if __name__ == '__main__':
+    upload_results()
