@@ -41,10 +41,26 @@ This file specifies the project dependencies. You can install them all using the
 
 ```txt
 # requirements.txt
-pandas
-yfinance
-numpy
-tqdm
+
+# Core data processing and analysis
+pandas>=2.2.3
+numpy>=1.24.0
+
+# Financial data retrieval
+yfinance>=0.2.54
+requests>=2.31.0
+
+# Progress tracking and user interface
+tqdm>=4.66.0
+
+# Google Drive API integration
+google-auth>=2.15.0
+google-auth-oauthlib>=0.7.1
+google-auth-httplib2>=0.1.0
+google-api-python-client>=2.70.0
+
+# Optional performance enhancements
+numba>=0.58.0
 ```
 
 
@@ -52,75 +68,60 @@ tqdm
 
 ### 2. `config.py`
 
-This configuration file holds the list of stock tickers you want to analyze. For this example, we use a small list of major US tech and industrial stocks. You can expand this list with any US stock tickers, such as those from the S\&P 500 [^1_2].
+This configuration file holds the list of stock tickers you want to analyze. we use a stocks list of US market from alphavantage. You can replace this list with any US stock tickers.
 
 ```python
 # config.py
+
+class Config:
+    # API Key
+    ALPHA_VANTAGE_API_KEY = 'YOUR ALPHA_VANTAGE_API_KEY'  # Replace with your key
+    
+    # File paths
+    LISTING_STATUS_FILE = 'data/listing_status.csv'
+    FILTERED_SYMBOLS_FILE = 'data/filtered_symbols.csv'
+    TECHNICAL_RESULTS_FILE = 'data/technical_results.csv'
+    FINAL_RESULTS_FILE = 'ScreenResult/screenResults.csv'
+    CONSOLIDATED_PRICE_DATA_FILE = 'data/consolidated_price_data.csv'
+    
+    # Data download
+    MAX_WORKERS = os.cpu_count() / 2 # Default to use half of your cpu processors
+    PRICE_DATA_PERIOD = "13mo" #period parameters from yfinance
+    
+    # Screening criteria
+    MIN_RS_RANK = 70
+    
+    # Flags, set FALSE to skip the steps
+    FORCE_REFRESH_SYMBOLS = True
+    FORCE_REFRESH_FILTERS = True
+    FORCE_REFRESH_PRICE_DATA = True
 
 """
 Configuration file for the stock screener application.
 """
 
-# List of US stock tickers to analyze.
-# You can replace this list with any tickers from the US market.
-# For a broader scan, consider using a list of S&P 500 or NASDAQ tickers.
-TICKERS = [
-    'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'TSLA', 'META', 'BRK-B', 'JPM',
-    'JNJ', 'V', 'PG', 'UNH', 'HD', 'MA', 'BAC', 'DIS', 'NFLX', 'PYPL', 'ADBE',
-    'CRM', 'CSCO', 'PFE', 'KO', 'XOM', 'CVX', 'MCD', 'WMT', 'PEP'
-]
-```
-
-
 ---
 
 ### 3. `data_fetcher.py`
 
-This module uses the `yfinance` library to download historical stock data [^1_2][^1_12]. A function is defined to fetch data for a single ticker over a specified period, which is essential for calculating moving averages and historical performance.
-
-```python
-# data_fetcher.py
-
-import yfinance as yf
-import pandas as pd
-
-def fetch_stock_data(ticker, period="2y"):
-    """
-    Fetches historical stock data for a given ticker.
-
-    Args:
-        ticker (str): The stock ticker symbol.
-        period (str): The period for which to fetch data (e.g., "1y", "2y").
-
-    Returns:
-        pd.DataFrame: A pandas DataFrame with historical data, or None if download fails.
-    """
-    try:
-        stock = yf.Ticker(ticker)
-        # Fetch historical market data for the last 2 years to ensure we have enough data
-        # for 200-day moving averages and 52-week highs/lows.
-        data = stock.history(period=period)
-        if data.empty:
-            # print(f"No data found for {ticker}, skipping.")
-            return None
-        return data
-    except Exception as e:
-        # print(f"Could not fetch data for {ticker}: {e}")
-        return None
-
-```
-
+This module uses the `yfinance` library to download historical stock data [^1_2][^1_12]. A function is defined to fetch data for a single ticker over a specified period.
 
 ---
 
 ### 4. `analyzer.py`
 
-This is the core analysis module. It contains functions to calculate moving averages, Relative Strength (RS), and check if a stock meets all the specified screening criteria.
+This is the core analysis module. It contains functions to calculate and check if a stock meets all the specified screening criteria.
 
-**Calculating Moving Averages and Relative Strength**
+**Relative Strength Ranking**
 
-* Simple Moving Averages (SMAs) are calculated using pandas' `.rolling().mean()` method, a standard technique for this purpose [^1_3][^1_9].
-* The Relative Strength score is calculated using the custom formula you provided.
+* The Relative Strength Ranking is calculated using the custom formula:
+    latest 3 months rs performance = (nowadays price / price of 3 months ago) * 0.4
+    latest 6 months rs performance = (nowadays price / price of 6 months ago) * 0.2
+    latest 9 months rs performance = (nowadays price / price of 9 months ago) * 0.2
+    latest 12 months rs performance = (nowadays price / price of 12 months ago) * 0.2
+    Relative Strength ranking = (latest 3 months rs performance + latest 6 months rs performance + latest 9 months rs performance + latest 12 months rs performance) * 100
+
+This formula were reference from [Amibroker article](https://forum.amibroker.com/t/how-to-imitate-ibd-relative-strength-percentile-ranking-of-stocks/6068)
 
 ```python
 # analyzer.py
