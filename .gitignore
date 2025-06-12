@@ -1,11 +1,13 @@
 # Stock Screening Output Files
-data/
+data/consolidated_price_data.csv
+data/filtered_symbols.csv
+data/listing_status.csv
+data/technical_results.csv
 
-# Data directories (exclude all CSV files in data folder)
-data/
 
 # Screen Result directory (exclude all files)
-ScreenResult/
+ScreenResult/screenResults.csv
+
 
 # Authentication and API files
 token.json

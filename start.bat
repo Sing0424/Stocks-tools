@@ -1,6 +1,6 @@
 @echo off
 
-@REM start "" /B /W pip install -r "requirements.txt"
+start "" /B /W pip install -r "requirements.txt"
 
 start "" /B /W python "run_all_stages.py"
 @REM start "" /B /W python "stage_01_download_symbols.py"

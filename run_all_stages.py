@@ -1,8 +1,10 @@
 # run_all_stages.py
 
 import sys
+import tracemalloc
 from datetime import datetime
 
+tracemalloc.start()
 def run_stage(name, func):
     print(f"\n{'='*60}\nRunning {name}\n{'='*60}")
     try:

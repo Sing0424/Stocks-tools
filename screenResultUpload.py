@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import os.path
 import datetime
+import warnings
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -15,7 +16,7 @@ from googleapiclient.http import MediaFileUpload
 
 
 def upload_results():
-
+    warnings.filterwarnings(action="ignore", message="unclosed", category=ResourceWarning)
     SCOPES = ['https://www.googleapis.com/auth/drive']
     
     """Shows basic usage of the Drive v3 API.
@@ -64,6 +65,7 @@ def upload_results():
         file = service.files().update(body=file_metadata, media_body=media,
                                       fields='id', fileId='1xHoV8EW40ziRAud57N28kOlw_G_RimpYUpN5LH8sVNs').execute()
         print(F'File ID: "{file.get("id")}".')
+
         return True
 
     except HttpError as error:

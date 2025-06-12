@@ -67,7 +67,7 @@ def analyze_all():
         print("Run stage 3 first.")
         return False
     df_all = pd.read_csv(Config.CONSOLIDATED_PRICE_DATA_FILE)
-    df_all['Date'] = pd.to_datetime(df_all['Date'])
+    df_all['Date'] = pd.to_datetime(df_all['Date'], utc=True)
     grouped = df_all.groupby('Symbol')
     args = [(sym, group) for sym, group in grouped]
     with Pool(processes=Config.MAX_WORKERS, initializer=init_worker) as pool:

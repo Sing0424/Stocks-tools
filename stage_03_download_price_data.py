@@ -16,6 +16,7 @@ def download_single_stock(symbol):
         with redirect_stderr(StringIO()):
             stock = yf.Ticker(symbol)
             data = stock.history(period=Config.PRICE_DATA_PERIOD)
+            
         if data.empty:
             return None
         data = data.reset_index()
