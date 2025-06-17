@@ -43,7 +43,7 @@ def download_price_data():
     symbols = df['symbol'].tolist()
     with Pool(processes=Config.MAX_WORKERS, initializer=init_worker) as pool:
         results = list(tqdm(pool.imap(download_single_stock, symbols), total=len(symbols)))
-    warnings.resetwarnings()
+        warnings.resetwarnings()
     successful = [d for d in results if d is not None]
     if not successful:
         print("No data downloaded.")
