@@ -15,3 +15,5 @@ credentials.json
 
 # pycache files
 __pycache__/
+
+.devcontainer
