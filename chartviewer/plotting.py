@@ -1,3 +1,5 @@
+# plotting.py
+
 import math
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
@@ -9,7 +11,6 @@ def create_figure(
     """
     根據資料與參數回傳 Plotly Figure
     """
-    # 【關鍵修正】這裡的判斷條件必須與 app.py 中的 radio button 選項文字完全一致
     is_log = (yaxis_type == "對數 (log)")
 
     fig = make_subplots(
@@ -55,10 +56,9 @@ def create_figure(
     # X 軸刻度設定 (category → 自動跳過無資料日)
     tick_step = max(len(data) // 10, 1)
     tickvals = data['Date_str'][::tick_step]
-    ticktext = tickvals.tolist()
     fig.update_xaxes(
         type='category', tickangle=45,
-        tickvals=tickvals, ticktext=ticktext,
+        tickvals=tickvals, ticktext=tickvals.tolist(),
         tickfont=dict(size=12), row=2, col=1
     )
     fig.for_each_xaxis(lambda ax: ax.update(type='category'))
@@ -83,7 +83,12 @@ def create_figure(
             showgrid=True, gridcolor='rgba(128,128,128,0.1)',
             row=1, col=1
         )
-        fig.add_hline(y=next_tick, line_color='rgba(128,128,128,0.1)', line_width=1, row=1, col=1)
+        fig.add_hline(
+            y=next_tick,
+            line_color='rgba(128,128,128,0.1)',
+            line_width=1,
+            row=1, col=1
+        )
     else:
         fig.update_yaxes(
             type='linear', showgrid=True,
@@ -93,15 +98,20 @@ def create_figure(
 
     # 成交量 Y 軸 (固定從0開始且禁止縮放)
     fig.update_yaxes(
-        title="成交量", rangemode='tozero', fixedrange=True,showgrid=True, gridcolor='rgba(128,128,128,0.1)',
+        title="成交量",
+        rangemode='tozero',
+        fixedrange=True,
+        showgrid=True,
+        gridcolor='rgba(128,128,128,0.1)',
         row=2, col=1
     )
     fig.update_yaxes(title="價格", row=1, col=1)
 
     # 版面配置
     fig.update_layout(
+        margin=dict(t=120),
+        legend=dict(orientation='h', yanchor='bottom', y=1.10, xanchor='right', x=1),
         height=700, showlegend=True,
-        legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1),
         xaxis_rangeslider_visible=False
     )
 
