@@ -1,18 +1,11 @@
 import React, { useRef, useLayoutEffect, useState, useCallback } from 'react';
 import {
-  Box,
-  Typography,
-  Switch,
-  FormControlLabel,
-  Paper,
-  Stack,
-  useTheme,
-  alpha
+  Box, Typography, Switch, FormControlLabel, Paper, Stack, useTheme, alpha
 } from '@mui/material';
 import { createChart, ColorType, CrosshairMode } from 'lightweight-charts';
-import { calculateEMA, calculateSMA } from '../utils/indicators.js'; // ✅ 更新 import 路徑
+import { calculateEMA, calculateSMA } from '../utils/indicators.js';
 
-const StockChart = ({ stockData = [], stockCode }) => {
+const StockChart = ({ stockData = [], stockCode, height = 480 }) => {
   const theme = useTheme();
   const chartContainerRef = useRef(null);
 
@@ -39,7 +32,7 @@ const StockChart = ({ stockData = [], stockCode }) => {
 
     const chart = createChart(chartContainer, {
       width: chartContainer.clientWidth,
-      height: chartContainer.clientHeight,
+      height,
       layout: {
         background: { type: ColorType.Solid, color: theme.palette.background.paper },
         textColor: theme.palette.text.primary,
@@ -97,14 +90,14 @@ const StockChart = ({ stockData = [], stockCode }) => {
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
-  }, [stockData, indicators, theme, stockCode]);
+  }, [stockData, indicators, theme, stockCode, height]);
 
   const handleIndicatorToggle = useCallback((indicatorKey) => {
     setIndicators(prev => ({ ...prev, [indicatorKey]: !prev[indicatorKey] }));
   }, []);
 
   return (
-    <Box height="100%" display="flex" flexDirection="column">
+    <Box height={height} display="flex" flexDirection="column">
       <Paper elevation={0} sx={{ p: 1, mb: 1, flexShrink: 0 }}>
         <Typography variant="subtitle2" gutterBottom>技術指標</Typography>
         <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
@@ -118,7 +111,16 @@ const StockChart = ({ stockData = [], stockCode }) => {
           ))}
         </Stack>
       </Paper>
-      <Box ref={chartContainerRef} sx={{ flexGrow: 1, width: '100%', minHeight: 300 }} />
+      <Box
+        ref={chartContainerRef}
+        style={{
+          width: '100%',
+          height,
+          minHeight: 200,
+          maxHeight: 600,
+          flex: 1,
+        }}
+      />
       {(!stockData || stockData.length === 0) && (
           <Box sx={{ p: 4, textAlign: 'center', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
               <Typography variant="h6" color="text.secondary">

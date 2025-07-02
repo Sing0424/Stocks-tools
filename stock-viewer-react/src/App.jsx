@@ -1,36 +1,18 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
-  Box,
-  Container,
-  Typography,
-  Paper,
-  Alert,
-  Snackbar,
-  CircularProgress,
-  Fab,
-  Tooltip,
-  AppBar,
-  Toolbar,
-  IconButton,
-  useMediaQuery,
-  Stack,
-  LinearProgress
-} from '@mui/material';
+  Container, Typography, Paper, Alert, Snackbar, CircularProgress, Fab,
+  Tooltip, AppBar, Toolbar, IconButton, useMediaQuery, Stack, LinearProgress, Box
+} from '@mui/material'; // <--- Box 已加進來
 import {
-  Refresh as RefreshIcon,
-  ArrowBack as ArrowBackIcon,
-  ArrowForward as ArrowForwardIcon,
-  DarkMode as DarkModeIcon,
-  LightMode as LightModeIcon,
-  CheckCircle as CheckCircleIcon,
-  Error as ErrorIcon
+  Refresh as RefreshIcon, ArrowBack as ArrowBackIcon, ArrowForward as ArrowForwardIcon,
+  DarkMode as DarkModeIcon, LightMode as LightModeIcon, CheckCircle as CheckCircleIcon, Error as ErrorIcon
 } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import Papa from 'papaparse';
-
-import StockTable from './components/StockTable.jsx';   // ✅ 更新 import 路徑
-import StockChart from './components/StockChart.jsx';   // ✅ 更新 import 路徑
+import StockTable from './components/StockTable.jsx';
+import StockChart from './components/StockChart.jsx';
+import './App.css';
 
 const createAppTheme = (mode) => createTheme({
   palette: {
@@ -38,7 +20,7 @@ const createAppTheme = (mode) => createTheme({
     primary: { main: mode === 'dark' ? '#90caf9' : '#1976d2' },
     background: {
       default: mode === 'dark' ? '#121212' : '#f5f5f5',
-      paper: mode === 'dark' ? '#1e1e1e' : '#ffffff',
+      paper: mode === 'dark' ? '#1e1e1e' : '#fff',
     },
   },
   typography: { fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif' },
@@ -56,7 +38,6 @@ function App() {
     priceData: 'pending'
   });
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
-
   const theme = useMemo(() => createAppTheme(darkMode ? 'dark' : 'light'), [darkMode]);
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -70,7 +51,6 @@ function App() {
 
   useEffect(() => {
     const loadAllData = async () => {
-      // --- 載入 screenResults.csv ---
       try {
         setLoadingStatus(s => ({ ...s, screenResults: 'loading' }));
         const response = await fetch('/data/screenResults.csv');
@@ -106,13 +86,11 @@ function App() {
         setLoadingStatus(s => ({ ...s, screenResults: 'error' }));
       }
 
-      // --- 載入 consolidated_price_data.csv ---
       try {
         setLoadingStatus(s => ({ ...s, priceData: 'loading' }));
         const response = await fetch('/data/consolidated_price_data.csv');
         if (!response.ok) throw new Error(`HTTP ${response.status} for consolidated_price_data.csv`);
         const csvText = await response.text();
-
         Papa.parse(csvText, {
           worker: true,
           header: true,
@@ -134,7 +112,6 @@ function App() {
               }))
               .filter(r => !isNaN(r.time) && r.close > 0)
               .sort((a, b) => a.time - b.time);
-            
             setPriceData(validData);
             setLoadingStatus(s => ({ ...s, priceData: 'success' }));
           },
@@ -189,10 +166,10 @@ function App() {
     else if (status === 'error') icon = <ErrorIcon color="error" fontSize="small" />;
     else icon = <CircularProgress size={16} />;
     return (
-      <Box display="flex" alignItems="center" gap={1}>
+      <span className="loading-indicator">
         {icon}
-        <Typography variant="caption" color="textSecondary">{label}</Typography>
-      </Box>
+        <span className="loading-label">{label}</span>
+      </span>
     );
   };
 
@@ -200,10 +177,10 @@ function App() {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline/>
-        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100vh" gap={3}>
+        <div className="app-loading-root">
           <CircularProgress size={60}/>
-          <Typography variant="h6" color="textSecondary">載入資料中... (背景處理大型檔案中)</Typography>
-          <Paper elevation={2} sx={{ p: 3, minWidth: 350 }}>
+          <Typography variant="h6" color="textSecondary">載入資料中…</Typography>
+          <Paper elevation={2} className="app-loading-paper">
             <Typography variant="subtitle2" gutterBottom>載入進度</Typography>
             <Stack spacing={2}>
               <Box>
@@ -212,12 +189,12 @@ function App() {
               </Box>
               <Box>
                 <LoadingIndicator status={loadingStatus.priceData} label="價格資料"/>
-                {loadingStatus.priceData === 'loading' && <Typography variant="caption" color="text.secondary">正在背景解析, 請稍候...</Typography>}
+                {loadingStatus.priceData === 'loading' && <Typography variant="caption" color="text.secondary">正在背景解析，請稍候...</Typography>}
                 <LinearProgress variant="determinate" value={loadingStatus.priceData === 'success' ? 100 : (loadingStatus.priceData === 'pending' ? 0 : 50)} sx={{ mt: 1 }}/>
               </Box>
             </Stack>
           </Paper>
-        </Box>
+        </div>
       </ThemeProvider>
     );
   }
@@ -229,45 +206,47 @@ function App() {
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>股票分析檢視器</Typography>
           {selectedSymbol && (
-            <Box sx={{ display: 'flex', gap:1, mr:2 }}>
+            <div className="toolbar-arrows">
               <Tooltip title="上一支"><IconButton color="inherit" onClick={()=>navigate('prev')} disabled={listData.length === 0}><ArrowBackIcon/></IconButton></Tooltip>
               <Tooltip title="下一支"><IconButton color="inherit" onClick={()=>navigate('next')} disabled={listData.length === 0}><ArrowForwardIcon/></IconButton></Tooltip>
-            </Box>
+            </div>
           )}
           <Tooltip title={darkMode?'淺色模式':'深色模式'}><IconButton color="inherit" onClick={toggleDarkMode}>{darkMode?<LightModeIcon/>:<DarkModeIcon/>}</IconButton></Tooltip>
         </Toolbar>
       </AppBar>
-      <Container maxWidth="xl" sx={{ py:3 }}>
-        <Paper elevation={1} sx={{ p:2, mb:3, bgcolor:'background.default' }}>
+      <Container maxWidth="xl" className="main-container">
+        <Paper elevation={1} className="status-paper">
           <Typography variant="subtitle2" gutterBottom>資料載入狀態</Typography>
-          <Box display="flex" gap={4}>
+          <div className="status-row">
             <LoadingIndicator status={loadingStatus.screenResults} label={`篩選結果: ${listData.length} 支`}/>
             <LoadingIndicator status={loadingStatus.priceData} label={`價格資料: ${priceData.length} 筆`}/>
-          </Box>
+          </div>
         </Paper>
-        <Box display="flex" flexDirection={isMobile?'column':'row'} gap={3} minHeight="calc(100vh - 200px)">
-          <Paper elevation={2} sx={{ width:isMobile?'100%':'400px', minWidth:isMobile?'auto':'350px', p:2, display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="h6" gutterBottom>篩選結果 ({listData.length} 支)</Typography>
-            <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+        <div className={isMobile ? "main-flex mobile" : "main-flex"}>
+          {/* 篩選結果（可捲動） */}
+          <Paper elevation={2} className={isMobile ? "left-panel mobile" : "left-panel"}>
+            <Typography variant="h6" gutterBottom>
+              篩選結果 ({listData.length} 支)
+            </Typography>
+            <div className="table-scroll">
               <StockTable rows={listData} onSelect={handleSelect} selectedSymbol={selectedSymbol}/>
-            </Box>
+            </div>
           </Paper>
-          <Box sx={{ flex:1, minWidth:0 }}>
-            {selectedSymbol ?
-              <Paper elevation={2} sx={{ p:2, height:'100%' }}>
-                <Typography variant="h6" gutterBottom>
-                  {selectedSymbol} - 技術分析 ({priceIndex.get(selectedSymbol)?.length||0} 點)
-                </Typography>
-                <StockChart stockCode={selectedSymbol} stockData={priceIndex.get(selectedSymbol)||[]} />
-              </Paper>
-            :
-              <Paper elevation={2} sx={{ p:4, height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}>
-                <Typography variant="h6" color="textSecondary">請選擇股票</Typography>
-              </Paper>
-            }
-          </Box>
-        </Box>
-        <Tooltip title="重新載入"><Fab color="primary" onClick={handleRefresh} sx={{ position:'fixed', bottom:24, right:24 }}><RefreshIcon/></Fab></Tooltip>
+          {/* 圖表區（自適應寬度） */}
+          <div className="chart-panel">
+            <Paper elevation={2} className="chart-paper">
+              <Typography variant="h6" gutterBottom>
+                {selectedSymbol} - 技術分析 ({priceIndex.get(selectedSymbol)?.length||0} 點)
+              </Typography>
+              <StockChart
+                stockCode={selectedSymbol}
+                stockData={priceIndex.get(selectedSymbol)||[]}
+                height={isMobile ? 260 : 480}
+              />
+            </Paper>
+          </div>
+        </div>
+        <Tooltip title="重新載入"><Fab color="primary" onClick={handleRefresh} className="fab-refresh"><RefreshIcon/></Fab></Tooltip>
         <Snackbar open={!!error} autoHideDuration={6000} onClose={handleCloseErr} anchorOrigin={{ vertical:'bottom', horizontal:'left' }}>
           <Alert onClose={handleCloseErr} severity="error" variant="filled" sx={{ width:'100%' }}>{error}</Alert>
         </Snackbar>

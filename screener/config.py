@@ -10,6 +10,10 @@ class Config:
     TECHNICAL_RESULTS_FILE = './data/technical_results.csv'
     FINAL_RESULTS_FILE = './ScreenResult/screenResults.csv'
     CONSOLIDATED_PRICE_DATA_FILE = './data/consolidated_price_data.csv'
+
+    # Web app data paths
+    CONSOLIDATED_PRICE_DATA_FILE_WEBAPP = '../stock-viewer-react/public/data/consolidated_price_data.csv'
+    FINAL_RESULTS_FILE_WEBAPP = '../stock-viewer-react/public/data/screenResults.csv'
     
     # Data download
     MAX_WORKERS = 8

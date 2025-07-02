@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { Box, Typography, Chip, useTheme, alpha } from '@mui/material';
+import { Box, Chip, useTheme, alpha } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 const StockTable = ({ rows = [], onSelect, selectedSymbol }) => {
@@ -22,7 +22,7 @@ const StockTable = ({ rows = [], onSelect, selectedSymbol }) => {
   const handleRowClick = useCallback((params) => onSelect(params.row.symbol), [onSelect]);
 
   return (
-    <Box sx={{ height: '100%', width: '100%' }}>
+    <Box sx={{ height: '100%', width: '100%', minWidth: 250 }}>
       <DataGrid
         rows={rows}
         columns={columns}

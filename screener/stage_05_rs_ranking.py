@@ -16,6 +16,7 @@ def rank_stocks():
     df['rs_rank'] = df['rs_score'].rank(pct=True) * 100
     final = df[df['rs_rank'] >= Config.MIN_RS_RANK].sort_values('rs_rank', ascending=False)
     final.to_csv(Config.FINAL_RESULTS_FILE, index=False)
+    final.to_csv(Config.FINAL_RESULTS_FILE_WEBAPP, index=False)
     print(f"{len(final)} stocks meet RS criteria.")
     return True
 
