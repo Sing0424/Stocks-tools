@@ -1,0 +1,19 @@
+# Stock Screening Output Files
+consolidated_price_data.csv
+filtered_symbols.csv
+listing_status.csv
+technical_results.csv
+
+
+# Screen Result directory (exclude all files)
+screenResults.csv
+
+
+# Authentication and API files
+token.json
+credentials.json
+
+# pycache files
+__pycache__/
+
+.devcontainer
