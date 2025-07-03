@@ -49,10 +49,8 @@ def download_price_data():
         print("No data downloaded.")
         return False
     concat_df = pd.concat(successful, ignore_index=True)
-    os.makedirs(os.path.dirname(Config.CONSOLIDATED_PRICE_DATA_FILE), exist_ok=True)
     concat_df.to_csv(Config.CONSOLIDATED_PRICE_DATA_FILE, index=False)
     print(f"Saved {len(concat_df):,} records.")
-    os.makedirs(os.path.dirname(Config.CONSOLIDATED_PRICE_DATA_FILE_WEBAPP), exist_ok=True)
     concat_df.to_csv(Config.CONSOLIDATED_PRICE_DATA_FILE_WEBAPP, index=False)
     print(f"Saved {len(concat_df):,} records for webapp.")
     return True

@@ -34,10 +34,10 @@ def upload_results():
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+                '../credentials.json', SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open('token.json', 'w') as token:
+        with open('../token.json', 'w') as token:
             token.write(creds.to_json())
 
     try:
@@ -59,7 +59,7 @@ def upload_results():
             "removeParents": [f'{folder.get("id")}'],
             "addParents": [f'{folder.get("id")}']
         }
-        media = MediaFileUpload('ScreenResult/screenResults.csv', mimetype=None,
+        media = MediaFileUpload('../ScreenResult/screenResults.csv', mimetype=None,
                                 resumable=True)
         # pylint: disable=maybe-no-member
         file = service.files().update(body=file_metadata, media_body=media,

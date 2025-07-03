@@ -5,11 +5,11 @@ class Config:
     ALPHA_VANTAGE_API_KEY = '7D80AAZF1EFC0TZJ'  # Replace with your key
     
     # File paths
-    LISTING_STATUS_FILE = './data/listing_status.csv'
-    FILTERED_SYMBOLS_FILE = './data/filtered_symbols.csv'
-    TECHNICAL_RESULTS_FILE = './data/technical_results.csv'
-    FINAL_RESULTS_FILE = './ScreenResult/screenResults.csv'
-    CONSOLIDATED_PRICE_DATA_FILE = './data/consolidated_price_data.csv'
+    LISTING_STATUS_FILE = '../data/listing_status.csv'
+    FILTERED_SYMBOLS_FILE = '../data/filtered_symbols.csv'
+    TECHNICAL_RESULTS_FILE = '../data/technical_results.csv'
+    FINAL_RESULTS_FILE = '../ScreenResult/screenResults.csv'
+    CONSOLIDATED_PRICE_DATA_FILE = '../data/consolidated_price_data.csv'
 
     # Web app data paths
     CONSOLIDATED_PRICE_DATA_FILE_WEBAPP = '../stock-viewer-react/public/data/consolidated_price_data.csv'
