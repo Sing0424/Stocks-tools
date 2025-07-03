@@ -1,27 +1,87 @@
-import React, { useRef, useLayoutEffect, useState, useCallback } from 'react';
+import React, { useRef, useLayoutEffect, useState, useCallback, useMemo } from 'react';
 import {
-  Box, Typography, Switch, FormControlLabel, Paper, Stack, useTheme, alpha
+  Box, Typography, Switch, FormControlLabel, Paper, Stack, ButtonGroup, Button, useTheme, alpha
 } from '@mui/material';
 import { createChart, ColorType, CrosshairMode } from 'lightweight-charts';
 import { calculateEMA, calculateSMA } from '../utils/indicators.js';
+
+// ✅ **核心修復**: 使用更穩健的、基於 Map 的聚合演算法
+function aggregateToWeekly(dailyData) {
+  if (!dailyData || dailyData.length === 0) return [];
+
+  const weeklyDataMap = new Map();
+
+  dailyData.forEach(day => {
+    const date = new Date(day.time * 1000);
+    
+    // 計算該日期所在週的週一零點時間戳 (UTC)
+    const dayOfWeek = date.getUTCDay(); // Sunday = 0, Monday = 1, ...
+    const diff = (dayOfWeek + 6) % 7; // Monday = 0, Tuesday = 1, ..., Sunday = 6
+    
+    const weekStart = new Date(date);
+    weekStart.setUTCDate(date.getUTCDate() - diff);
+    weekStart.setUTCHours(0, 0, 0, 0);
+    
+    const weekTimestamp = Math.floor(weekStart.getTime() / 1000);
+
+    if (!weeklyDataMap.has(weekTimestamp)) {
+      // 這是本週的第一筆資料，創建新的週K線
+      weeklyDataMap.set(weekTimestamp, {
+        time: weekTimestamp,
+        open: day.open,
+        high: day.high,
+        low: day.low,
+        close: day.close,
+        volume: day.volume,
+      });
+    } else {
+      // 更新已有的週K線
+      const week = weeklyDataMap.get(weekTimestamp);
+      week.high = Math.max(week.high, day.high);
+      week.low = Math.min(week.low, day.low);
+      week.close = day.close; // 不斷更新收盤價為本週最新一日的收盤價
+      week.volume += day.volume; // 累加成交量
+      weeklyDataMap.set(weekTimestamp, week);
+    }
+  });
+
+  // 從 Map 中取出所有值，並按時間排序以確保順序正確
+  return Array.from(weeklyDataMap.values()).sort((a, b) => a.time - b.time);
+}
 
 const StockChart = ({ stockData = [], stockCode, height = 480 }) => {
   const theme = useTheme();
   const chartContainerRef = useRef(null);
 
+  // 日/週 K線模式狀態
+  const [candleMode, setCandleMode] = useState('day'); // 'day' 或 'week'
   const [indicators, setIndicators] = useState({
     ema6: true, ema12: true, ema24: true,
     sma50: true, sma150: true, sma200: true,
   });
 
+  const handleModeChange = useCallback((mode) => {
+    if (mode) {
+      setCandleMode(mode);
+    }
+  }, []);
+
+  // 根據模式選擇要顯示的資料
+  const displayedData = useMemo(() => {
+    if (candleMode === 'week') {
+        return aggregateToWeekly(stockData);
+    }
+    return stockData;
+  }, [stockData, candleMode]);
+
   useLayoutEffect(() => {
     const chartContainer = chartContainerRef.current;
-    if (!chartContainer || !stockData || stockData.length === 0) {
+    if (!chartContainer || !displayedData || displayedData.length === 0) {
       if(chartContainer) chartContainer.innerHTML = '';
       return;
     }
 
-    const sortedData = [...stockData].sort((a, b) => a.time - b.time);
+    const sortedData = [...displayedData].sort((a, b) => a.time - b.time);
     const candleData = sortedData.map(item => ({
       time: item.time, open: item.open, high: item.high, low: item.low, close: item.close,
     }));
@@ -90,17 +150,30 @@ const StockChart = ({ stockData = [], stockCode, height = 480 }) => {
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
-  }, [stockData, indicators, theme, stockCode, height]);
+  }, [displayedData, indicators, theme, stockCode, height]);
 
   const handleIndicatorToggle = useCallback((indicatorKey) => {
     setIndicators(prev => ({ ...prev, [indicatorKey]: !prev[indicatorKey] }));
   }, []);
 
   return (
-    <Box height={height} display="flex" flexDirection="column">
-      <Paper elevation={0} sx={{ p: 1, mb: 1, flexShrink: 0 }}>
-        <Typography variant="subtitle2" gutterBottom>技術指標</Typography>
-        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+    <Box height="100%" display="flex" flexDirection="column">
+      <Paper elevation={0} sx={{ p: 1, mb: 1, flexShrink: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+        <ButtonGroup size="small" variant="outlined">
+          <Button
+            variant={candleMode === 'day' ? 'contained' : 'outlined'}
+            onClick={() => handleModeChange('day')}
+          >
+            日K
+          </Button>
+          <Button
+            variant={candleMode === 'week' ? 'contained' : 'outlined'}
+            onClick={() => handleModeChange('week')}
+          >
+            週K
+          </Button>
+        </ButtonGroup>
+        <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
           {Object.keys(indicators).map(key => (
             <FormControlLabel
               key={key}
@@ -113,15 +186,13 @@ const StockChart = ({ stockData = [], stockCode, height = 480 }) => {
       </Paper>
       <Box
         ref={chartContainerRef}
-        style={{
+        sx={{
           width: '100%',
           height,
-          minHeight: 200,
-          maxHeight: 600,
-          flex: 1,
+          flexGrow: 1,
         }}
       />
-      {(!stockData || stockData.length === 0) && (
+      {(!displayedData || displayedData.length === 0) && (
           <Box sx={{ p: 4, textAlign: 'center', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
               <Typography variant="h6" color="text.secondary">
                   {stockCode ? `沒有 ${stockCode} 的圖表資料` : "請選擇股票"}
