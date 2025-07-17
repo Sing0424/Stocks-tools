@@ -1,1 +1,0 @@
-start "" /B /W streamlit run "E:\Repo\Stocks-tools\chartviewer\app.py"
