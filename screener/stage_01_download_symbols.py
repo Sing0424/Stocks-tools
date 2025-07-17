@@ -6,6 +6,7 @@ from datetime import datetime
 from config import Config
 
 def download_symbols():
+    print(f"Using CPU threads: {Config.MAX_WORKERS}")
     print(f"[{datetime.now()}] Stage 1: Downloading symbols...")
     if os.path.exists(Config.LISTING_STATUS_FILE) and not Config.FORCE_REFRESH_SYMBOLS:
         print("Symbols file exists. Set FORCE_REFRESH_SYMBOLS=True to re-download.")

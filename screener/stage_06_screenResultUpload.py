@@ -11,6 +11,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload
+from config import Config
 
 # If modifying these scopes, delete the file token.json.
 
@@ -59,7 +60,7 @@ def upload_results():
             "removeParents": [f'{folder.get("id")}'],
             "addParents": [f'{folder.get("id")}']
         }
-        media = MediaFileUpload('../ScreenResult/screenResults.csv', mimetype=None,
+        media = MediaFileUpload(Config.FINAL_RESULTS_FILE, mimetype=None,
                                 resumable=True)
         # pylint: disable=maybe-no-member
         file = service.files().update(body=file_metadata, media_body=media,

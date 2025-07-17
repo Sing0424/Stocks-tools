@@ -25,11 +25,11 @@ def analyze_stock(args):
             return None
         high52w = df['Close'][-252:].max()
         low52w = df['Close'][-252:].min()
-        # New criteria: calculate average of Close * Volume over past 30 days
         if len(df) < 30:
             return None
         close_volume_30d = (df['Close'][-30:] * df['Volume'][-30:]).mean()
         conds = [
+            p > 12,
             p > s150 and p > s200,
             s150 > s200,
             s200 > df['SMA200'].iloc[-21],

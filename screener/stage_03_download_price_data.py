@@ -29,7 +29,7 @@ def download_single_stock(symbol):
 
 def init_worker():
     import warnings
-    warnings.filterwarnings("ignore", module="yfinance")
+    # warnings.filterwarnings("ignore", module="yfinance")
 
 def download_price_data():
     print(f"[{datetime.now()}] Stage 3: Downloading to consolidated file...")
@@ -43,7 +43,7 @@ def download_price_data():
     symbols = df['symbol'].tolist()
     with Pool(processes=Config.MAX_WORKERS, initializer=init_worker) as pool:
         results = list(tqdm(pool.imap(download_single_stock, symbols), total=len(symbols)))
-        warnings.resetwarnings()
+        # warnings.resetwarnings()
     successful = [d for d in results if d is not None]
     if not successful:
         print("No data downloaded.")
