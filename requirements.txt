@@ -1,26 +1,16 @@
 # Core data processing and analysis
-pandas>=2.2.3
-numpy>=1.24.0
+pandas
+numpy
 
 # Financial data retrieval
-yfinance>=0.2.54
-requests>=2.31.0
+yfinance
+requests
+curl-cffi
 
 # Progress tracking and user interface
-tqdm>=4.66.0
+tqdm
 
 # Google Drive API integration
-google-auth>=2.15.0
-google-auth-oauthlib>=0.7.1
-google-auth-httplib2>=0.1.0
-google-api-python-client>=2.70.0
-
-# Optional performance enhancements
-numba>=0.58.0
-
-# Visualization libraries
-streamlit
-plotly
-streamlit-screen-stats
-streamlit-local-storage
-streamlit-browser-session-storage
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib

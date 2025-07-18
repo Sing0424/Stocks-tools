@@ -2,7 +2,6 @@
 
 import pandas as pd
 import os
-import warnings
 from datetime import datetime
 from multiprocessing import Pool
 from tqdm import tqdm
@@ -58,9 +57,6 @@ def analyze_stock(args):
     except:
         return None
 
-def init_worker():
-    warnings.simplefilter("ignore", category=FutureWarning)
-
 def analyze_all():
     print(f"[{datetime.now()}] Stage 4: Analyzing consolidated data...")
     if not os.path.exists(Config.CONSOLIDATED_PRICE_DATA_FILE):
@@ -70,9 +66,9 @@ def analyze_all():
     df_all['Date'] = pd.to_datetime(df_all['Date'], utc=True)
     grouped = df_all.groupby('Symbol')
     args = [(sym, group) for sym, group in grouped]
-    with Pool(processes=Config.MAX_WORKERS, initializer=init_worker) as pool:
+    with Pool(processes=Config.MAX_WORKERS) as pool:
         results = list(tqdm(pool.imap(analyze_stock, args), total=len(args)))
-    warnings.resetwarnings()
+    # warnings.resetwarnings()
     filtered = [r for r in results if r]
     if filtered:
         pd.DataFrame(filtered).to_csv(Config.TECHNICAL_RESULTS_FILE, index=False)

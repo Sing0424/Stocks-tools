@@ -15,10 +15,13 @@ def filter_symbols():
     try:
         df = pd.read_csv(Config.LISTING_STATUS_FILE, on_bad_lines='skip')
         initial = len(df)
+        # Ensure essential columns have no missing values and filter out unwanted security types.
+        df.dropna(subset=['symbol', 'name'], inplace=True)
         df = df[df['assetType'] != 'ETF']
-        df = df[~df['symbol'].str.contains(r'[\.\+\$\^\-=]', na=False, regex=True)]
+        df = df[~df['name'].str.contains('Warrants|Units', case=False, na=False)]
+        df = df[~df['symbol'].str.contains(r'[\.\+\$\^\-=()]', na=False, regex=True)] # Exclude symbols with special characters
         df[['symbol']].to_csv(Config.FILTERED_SYMBOLS_FILE, index=False)
-        print(f"Filtered {initial - len(df)} ETFs and non-standard symbols.")
+        print(f"Filtered {initial - len(df)} ETFs, non-standard symbols, Warrants, and Units.")
         print(f"{len(df)} symbols remain.")
         return True
     except Exception as e:

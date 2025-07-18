@@ -1,10 +1,19 @@
 # run_all_stages.py
-
+import os
 import sys
 import tracemalloc
 from datetime import datetime
+from config import Config
 
 tracemalloc.start()
+
+def init_paths():
+    if os.path.exists(Config.data_folder):
+        return
+    else:
+        print('folder path invaild, creating folder...')
+        os.makedirs(Config.data_folder, exist_ok=True)
+
 def run_stage(name, func):
     print(f"\n{'='*60}\nRunning {name}\n{'='*60}")
     try:
@@ -18,6 +27,7 @@ def run_stage(name, func):
         sys.exit(1)
 
 if __name__ == "__main__":
+    init_paths()
     from stage_01_download_symbols import download_symbols
     from stage_02_filter_symbols import filter_symbols
     from stage_03_download_price_data import download_price_data
