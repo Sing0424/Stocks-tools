@@ -18,7 +18,7 @@ def rank_stocks():
 
     # Reorder columns for final output
     cols_order = [
-        'symbol', 'industry', 'sector', 'price', 'rs_rank', 'rs_score',
+        'symbol', 'industry', 'sector', 'price', 'rs_rank',
         'high_52w', 'low_52w', 'avg_close_volume_30d'
     ]
     # Filter to columns that exist in the dataframe to avoid errors
