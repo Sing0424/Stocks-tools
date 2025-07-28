@@ -9,6 +9,7 @@ class Config:
     
     # Folder paths
     data_folder  = os.path.join('.','data')
+    GoogleAPI_folder = os.path.join('.','GoogleAPI')
 
     # File paths
     LISTING_STATUS_FILE = os.path.join('.', 'data', 'listing_status.csv')
@@ -22,8 +23,8 @@ class Config:
     TOKEN = os.path.join('.', 'GoogleAPI', 'token.json')
 
     # Web app data paths
-    # CONSOLIDATED_PRICE_DATA_FILE_WEBAPP = os.path.abspath(os.path.join('..', 'stock-chart-viewer', 'public', 'data','consolidated_price_data.csv'))
-    # FINAL_RESULTS_FILE_WEBAPP = os.path.abspath(os.path.join('..', 'stock-chart-viewer', 'public', 'data','screenResults.csv'))
+    CONSOLIDATED_PRICE_DATA_FILE_WEBAPP = os.path.abspath(os.path.join('..', 'stock-chart-viewer', 'public', 'data','consolidated_price_data.csv'))
+    FINAL_RESULTS_FILE_WEBAPP = os.path.abspath(os.path.join('..', 'stock-chart-viewer', 'public', 'data','screenResults.csv'))
     
     # CPU Threads config
     MAX_WORKERS = os.cpu_count()

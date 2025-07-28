@@ -56,11 +56,11 @@ def download_price_data():
         concat_df = pd.concat(successful_downloads, ignore_index=True)
         concat_df.to_csv(Config.CONSOLIDATED_PRICE_DATA_FILE, index=False)
         print(f"Saved {len(concat_df):,} records.")
+        concat_df.to_csv(Config.CONSOLIDATED_PRICE_DATA_FILE_WEBAPP, index=False)
+        print(f"Saved {len(concat_df):,} records for webapp.")
     else:
         print("No data was successfully downloaded.")
         return False
-    # concat_df.to_csv(Config.CONSOLIDATED_PRICE_DATA_FILE_WEBAPP, index=False)
-    # print(f"Saved {len(concat_df):,} records for webapp.")
     return True
 
 def download_multiple_stocks(symbols):

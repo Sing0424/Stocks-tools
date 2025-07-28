@@ -26,8 +26,9 @@ def rank_stocks():
     final = final[final_cols]
 
     final.to_csv(Config.FINAL_RESULTS_FILE, index=False)
-    # final.to_csv(Config.FINAL_RESULTS_FILE_WEBAPP, index=False)
     print(f"{len(final)} stocks meet RS criteria.")
+    final.to_csv(Config.FINAL_RESULTS_FILE_WEBAPP, index=False)
+    print(f"{len(final)} stocks meet RS criteria for webapp.")
     return True
 
 if __name__ == "__main__": # Added this if condition to prevent execution on import
