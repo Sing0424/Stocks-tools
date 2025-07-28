@@ -6,6 +6,7 @@ from datetime import datetime
 from multiprocessing import Pool
 from tqdm import tqdm
 from config import Config
+import yfinance as yf
 
 
 def analyze_stock(args):
@@ -45,8 +46,17 @@ def analyze_stock(args):
             p_9m = df['Close'].iloc[-189]
             p_12m = df['Close'].iloc[-252]
             rs_score = ((p_ / p_3m)*0.4 + (p_ / p_6m)*0.2 + (p_ / p_9m)*0.2 + (p_ / p_12m)*0.2) * 100
+            try:
+                info = yf.Ticker(symbol).info
+                industry = info.get('industry', 'N/A')
+                sector = info.get('sector', 'N/A')
+            except Exception:
+                industry = 'N/A'
+                sector = 'N/A'
             return {
                 'symbol': symbol,
+                'industry': industry,
+                'sector': sector,
                 'price': p_,
                 'high_52w': high52w,
                 'low_52w': low52w,
