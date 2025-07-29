@@ -8,18 +8,18 @@ from config import Config
 tracemalloc.start()
 
 def init_paths():
-    if os.path.exists(Config.data_folder):
-        print(f"Data folder exists: {Config.data_folder}")
+    if Config.DOWNLOAD_FOR_WEBAPP:
+        paths = [Config.data_folder, Config.GoogleAPI_folder, Config.WEBAPP_DATA_FOLDER]
     else:
-        print('folder path invaild, creating folder...')
-        os.makedirs(Config.data_folder, exist_ok=True)
-    if os.path.exists(Config.GoogleAPI_folder):
-        print(f"GoogleAPI folder exists: {Config.GoogleAPI_folder}")
-    else:
-        print('GoogleAPI folder path invaild, creating folder...')
-        os.makedirs(Config.GoogleAPI_folder, exist_ok=True)
-    return
+        paths = [Config.data_folder, Config.GoogleAPI_folder]
     
+    for path in paths:
+        if not os.path.exists(path):
+            os.makedirs(path)
+            print(f"Created folder: {path}")
+        else:
+            print(f"Folder exists: {path}")
+    return
 
 def run_stage(name, func):
     print(f"\n{'='*60}\nRunning {name}\n{'='*60}")

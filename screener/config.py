@@ -10,6 +10,7 @@ class Config:
     # Folder paths
     data_folder  = os.path.join('.','data')
     GoogleAPI_folder = os.path.join('.','GoogleAPI')
+    WEBAPP_DATA_FOLDER = os.path.abspath(os.path.join('..', 'stock-chart-viewer', 'public', 'data'))
 
     # File paths
     LISTING_STATUS_FILE = os.path.join('.', 'data', 'listing_status.csv')
@@ -48,3 +49,4 @@ class Config:
     FORCE_REFRESH_SYMBOLS = True
     FORCE_REFRESH_FILTERS = True
     FORCE_REFRESH_PRICE_DATA = True
+    DOWNLOAD_FOR_WEBAPP = False
