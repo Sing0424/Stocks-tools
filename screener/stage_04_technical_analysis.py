@@ -7,10 +7,14 @@ from multiprocessing import Pool
 from tqdm import tqdm
 from config import Config
 import yfinance as yf
+from curl_cffi import requests as cffi_requests
+from contextlib import redirect_stderr
+from io import StringIO
 
 
 def analyze_stock(args):
     symbol, df = args
+    session = cffi_requests.Session(impersonate="chrome110")
     try:
         df = df.sort_values('Date').set_index('Date')
         if len(df) < 252:
@@ -47,7 +51,8 @@ def analyze_stock(args):
             p_12m = df['Close'].iloc[-252]
             rs_score = ((p_ / p_3m)*0.4 + (p_ / p_6m)*0.2 + (p_ / p_9m)*0.2 + (p_ / p_12m)*0.2) * 100
             try:
-                info = yf.Ticker(symbol).info
+                with redirect_stderr(StringIO()):
+                    info = yf.Ticker(symbol, session=session).info
                 industry = info.get('industry', 'N/A')
                 sector = info.get('sector', 'N/A')
             except Exception:
@@ -66,6 +71,8 @@ def analyze_stock(args):
         return None
     except:
         return None
+    finally:
+        session.close()
 
 def analyze_all():
     print(f"[{datetime.now()}] Stage 4: Analyzing consolidated data...")
@@ -76,7 +83,7 @@ def analyze_all():
     df_all['Date'] = pd.to_datetime(df_all['Date'], utc=True)
     grouped = df_all.groupby('Symbol')
     args = [(sym, group) for sym, group in grouped]
-    with Pool(processes=Config.MAX_WORKERS) as pool:
+    with Pool(processes=Config.DOWNLOAD_WORKERS) as pool:
         results = list(tqdm(pool.imap(analyze_stock, args), total=len(args)))
     # warnings.resetwarnings()
     filtered = [r for r in results if r]

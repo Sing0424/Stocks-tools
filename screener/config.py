@@ -1,6 +1,5 @@
 # config.py
 import os
-import math
 
 class Config:
 
