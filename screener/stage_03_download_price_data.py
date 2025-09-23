@@ -63,6 +63,7 @@ def download_multiple_stocks(symbols):
             data = yf.download(
                 tickers=symbols,
                 period=Config.PRICE_DATA_PERIOD,
+                repair=True,
                 group_by='ticker',
                 session=session)
         
