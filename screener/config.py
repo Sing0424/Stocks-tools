@@ -45,7 +45,7 @@ class Config:
     MIN_RS_RANK = 89
     
     # Flags
-    FORCE_REFRESH_SYMBOLS = True
-    FORCE_REFRESH_FILTERS = True
+    FORCE_REFRESH_SYMBOLS = False
+    FORCE_REFRESH_FILTERS = False
     FORCE_REFRESH_PRICE_DATA = True
     DOWNLOAD_FOR_WEBAPP = False

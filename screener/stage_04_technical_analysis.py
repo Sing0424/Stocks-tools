@@ -14,7 +14,6 @@ from io import StringIO
 
 def analyze_stock(args):
     symbol, df = args
-    session = cffi_requests.Session(impersonate="chrome110")
     try:
         df = df.sort_values('Date').set_index('Date')
         if len(df) < 252:
@@ -51,11 +50,13 @@ def analyze_stock(args):
             p_12m = df['Close'].iloc[-252]
             rs_score = ((p_ / p_3m)*0.4 + (p_ / p_6m)*0.2 + (p_ / p_9m)*0.2 + (p_ / p_12m)*0.2) * 100
             try:
+                session = cffi_requests.Session(impersonate="chrome110")
                 with redirect_stderr(StringIO()):
                     info = yf.Ticker(symbol, session=session).info
                 industry = info.get('industry', 'N/A')
                 sector = info.get('sector', 'N/A')
-            except Exception:
+            except Exception as e:
+                print(f"Failed to retrieve info for {symbol}, Exception: {e}")
                 industry = 'N/A'
                 sector = 'N/A'
             return {

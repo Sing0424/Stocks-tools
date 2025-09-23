@@ -28,21 +28,29 @@ def download_price_data():
     # Split symbols into batches
     symbol_batches = [symbols[i:i + Config.BATCH_SIZE] for i in range(0, len(symbols), Config.BATCH_SIZE)]
 
-    results = []
+    # Create the output file and write the header
+    pd.DataFrame(columns=['Symbol', 'Date', 'Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']).to_csv(Config.CONSOLIDATED_PRICE_DATA_FILE, index=False)
+
+    total_records = 0
     with Pool(processes=Config.DOWNLOAD_WORKERS) as pool:
         for batch_result in tqdm(pool.imap(download_multiple_stocks, symbol_batches), total=len(symbol_batches)):
-            results.extend(batch_result)
-    
-    # Filter out None results and concatenate
-    successful_downloads = [result for result in results if result is not None]
-    if successful_downloads:
-        concat_df = pd.concat(successful_downloads, ignore_index=True)
-        concat_df.to_csv(Config.CONSOLIDATED_PRICE_DATA_FILE, index=False)
-        print(f"Saved {len(concat_df):,} records.")
+            successful_downloads = [result for result in batch_result if result is not None]
+            if successful_downloads:
+                concat_df = pd.concat(successful_downloads, ignore_index=True)
+                # Append to the CSV file without writing headers
+                concat_df.to_csv(Config.CONSOLIDATED_PRICE_DATA_FILE, mode='a', header=False, index=False)
+                total_records += len(concat_df)
+
+    if total_records > 0:
+        print(f"Saved {total_records:,} records.")
+        # Create the destination directory if it doesn't exist
+        os.makedirs(os.path.dirname(Config.CONSOLIDATED_PRICE_DATA_FILE_WEBAPP), exist_ok=True)
         shutil.copy(Config.CONSOLIDATED_PRICE_DATA_FILE, Config.CONSOLIDATED_PRICE_DATA_FILE_WEBAPP)
-        print(f"Saved {len(concat_df):,} records for webapp.")
+        print(f"Saved {total_records:,} records for webapp.")
     else:
         print("No data was successfully downloaded.")
+        # If no data, remove the created file (it will only have headers)
+        os.remove(Config.CONSOLIDATED_PRICE_DATA_FILE)
         return False
     return True
 
