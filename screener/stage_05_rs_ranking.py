@@ -3,6 +3,7 @@ import os
 import pandas as pd
 from datetime import datetime
 from config import Config
+import shutil
 
 def rank_stocks():
     print(f"[{datetime.now()}] Stage 5: Calculating RS rank...")
@@ -27,7 +28,7 @@ def rank_stocks():
 
     final.to_csv(Config.FINAL_RESULTS_FILE, index=False)
     print(f"{len(final)} stocks meet RS criteria.")
-    final.to_csv(Config.FINAL_RESULTS_FILE_WEBAPP, index=False)
+    shutil.copy(Config.FINAL_RESULTS_FILE, Config.FINAL_RESULTS_FILE_WEBAPP)
     print(f"{len(final)} stocks meet RS criteria for webapp.")
     return True
 
