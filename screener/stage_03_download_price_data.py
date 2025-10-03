@@ -11,23 +11,6 @@ from contextlib import redirect_stderr
 from io import StringIO
 from curl_cffi import requests as cffi_requests
 
-def download_single_stock(symbol):
-    session = cffi_requests.Session(impersonate="chrome110")
-    try:
-        with redirect_stderr(StringIO()):
-            # Pass the curl_cffi session to yfinance
-            stock = yf.Ticker(symbol, session=session)
-            data = stock.history(period=Config.PRICE_DATA_PERIOD)
-            
-        if data.empty:
-            return None
-        data = data.reset_index()
-        data['Symbol'] = symbol
-        cols = ['Symbol', 'Date'] + [c for c in data.columns if c not in ['Symbol', 'Date']]
-        data = data[cols]
-        return data
-    except:
-        return None
 
 def download_price_data():
     print(f"CPU Threads: {Config.DOWNLOAD_WORKERS}")

@@ -6,6 +6,9 @@ from datetime import datetime
 from multiprocessing import Pool
 from tqdm import tqdm
 from config import Config
+from io import StringIO
+from curl_cffi import requests as cffi_requests
+from contextlib import redirect_stderr
 import yfinance as yf
 
 
@@ -46,10 +49,14 @@ def analyze_stock(args):
             p_9m = df['Close'].iloc[-189]
             p_12m = df['Close'].iloc[-252]
             rs_score = ((p_ / p_3m)*0.4 + (p_ / p_6m)*0.2 + (p_ / p_9m)*0.2 + (p_ / p_12m)*0.2) * 100
+            session = cffi_requests.Session(impersonate="chrome110")
             try:
-                info = yf.Ticker(symbol).info
-                industry = info.get('industry', 'N/A')
-                sector = info.get('sector', 'N/A')
+                with redirect_stderr(StringIO()):
+                    info = yf.Ticker(symbol, session=session).info
+                    industry = info.get('industry', 'N/A')
+                    # print(industry)
+                    sector = info.get('sector', 'N/A')
+                    # print(sector)
             except Exception:
                 industry = 'N/A'
                 sector = 'N/A'
@@ -63,12 +70,13 @@ def analyze_stock(args):
                 'rs_score': rs_score,
                 'avg_close_volume_30d': close_volume_30d
             }
-        return None
+        else:
+            return None
     except:
         return None
 
-def analyze_all():
-    print(f"[{datetime.now()}] Stage 4: Analyzing consolidated data...")
+def analyze_and_rank():
+    print(f"[{datetime.now()}] Stage 4: Analyzing consolidated data and calculating RS rank...")
     if not os.path.exists(Config.CONSOLIDATED_PRICE_DATA_FILE):
         print("Run stage 3 first.")
         return False
@@ -80,12 +88,27 @@ def analyze_all():
         results = list(tqdm(pool.imap(analyze_stock, args), total=len(args)))
     # warnings.resetwarnings()
     filtered = [r for r in results if r]
-    if filtered:
-        pd.DataFrame(filtered).to_csv(Config.TECHNICAL_RESULTS_FILE, index=False)
-        print(f"Processed {len(filtered)} stocks.")
-        return True
-    print("No stocks passed.")
-    return False
+    if not filtered:
+        print("No stocks passed the initial analysis.")
+        return False
+    
+    df = pd.DataFrame(filtered)
+    df['rs_rank'] = df['rs_score'].rank(pct=True) * 100
+    final = df[df['rs_rank'] >= Config.MIN_RS_RANK].sort_values('rs_rank', ascending=False)
+
+    # Reorder columns for final output
+    cols_order = [
+        'symbol', 'industry', 'sector', 'price', 'rs_rank', 'rs_score',
+        'high_52w', 'low_52w', 'avg_close_volume_30d'
+    ]
+    # Filter to columns that exist in the dataframe to avoid errors
+    final_cols = [col for col in cols_order if col in final.columns]
+    final = final[final_cols]
+
+    final.to_csv(Config.FINAL_RESULTS_FILE, index=False)
+    # final.to_csv(Config.FINAL_RESULTS_FILE_WEBAPP, index=False)
+    print(f"{len(final)} stocks meet RS criteria.")
+    return True
 
 if __name__ == "__main__":
-    analyze_all()
+    analyze_and_rank()
