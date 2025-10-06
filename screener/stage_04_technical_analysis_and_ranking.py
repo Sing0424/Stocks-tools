@@ -13,6 +13,7 @@ import yfinance as yf
 
 
 def analyze_stock(args):
+    session = cffi_requests.Session(impersonate="chrome110")
     symbol, df = args
     try:
         df = df.sort_values('Date').set_index('Date')
@@ -49,7 +50,7 @@ def analyze_stock(args):
             p_9m = df['Close'].iloc[-189]
             p_12m = df['Close'].iloc[-252]
             rs_score = ((p_ / p_3m)*0.4 + (p_ / p_6m)*0.2 + (p_ / p_9m)*0.2 + (p_ / p_12m)*0.2) * 100
-            session = cffi_requests.Session(impersonate="chrome110")
+
             try:
                 with redirect_stderr(StringIO()):
                     info = yf.Ticker(symbol, session=session).info
