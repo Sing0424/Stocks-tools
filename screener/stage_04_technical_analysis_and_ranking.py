@@ -9,11 +9,12 @@ from config import Config
 from io import StringIO
 from curl_cffi import requests as cffi_requests
 from contextlib import redirect_stderr
+import csv
 import yfinance as yf
 
 
 def analyze_stock(args):
-    session = cffi_requests.Session(impersonate="chrome110")
+    session = cffi_requests.Session(impersonate="chrome")
     symbol, df = args
     try:
         df = df.sort_values('Date').set_index('Date')
@@ -85,7 +86,7 @@ def analyze_and_rank():
     df_all['Date'] = pd.to_datetime(df_all['Date'], utc=True)
     grouped = df_all.groupby('Symbol')
     args = [(sym, group) for sym, group in grouped]
-    with Pool(processes=Config.MAX_WORKERS) as pool:
+    with Pool(processes=Config.WORKERS) as pool:
         results = list(tqdm(pool.imap(analyze_stock, args), total=len(args)))
     # warnings.resetwarnings()
     filtered = [r for r in results if r]
@@ -109,6 +110,25 @@ def analyze_and_rank():
     final.to_csv(Config.FINAL_RESULTS_FILE, index=False)
     # final.to_csv(Config.FINAL_RESULTS_FILE_WEBAPP, index=False)
     print(f"{len(final)} stocks meet RS criteria.")
+    
+    # Generate and print the Finviz URL
+    if not final.empty:
+        symbols_list = final['symbol'].tolist()
+        symbols_str = ",".join(symbols_list)
+        finviz_url = f"https://finviz.com/screener.ashx?v=211&t={symbols_str}&o=tickersfilter&p=w"
+        print("\n--- Finviz URL for Quick View ---")
+        print(finviz_url)
+
+        # Append the URL to the CSV file
+        try:
+            with open(Config.FINAL_RESULTS_FILE, 'a', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow([])  # Write an empty row for separation
+                writer.writerow([finviz_url]) # Write the URL in the first column of a new row
+            print(f"Finviz URL also saved to {Config.FINAL_RESULTS_FILE}")
+        except Exception as e:
+            print(f"\nCould not append URL to CSV file: {e}")
+        
     return True
 
 if __name__ == "__main__":
