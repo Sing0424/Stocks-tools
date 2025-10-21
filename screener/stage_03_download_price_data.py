@@ -13,7 +13,7 @@ from curl_cffi import requests as cffi_requests
 
 
 def download_price_data():
-    print(f"CPU Threads: {Config.DOWNLOAD_WORKERS}")
+    print(f"CPU Threads: {Config.WORKERS}")
     print(f"Batch_Size: {Config.BATCH_SIZE}")
     print(f"[{datetime.now()}] Stage 3: Downloading to consolidated file...")
     if not os.path.exists(Config.FILTERED_SYMBOLS_FILE):
