@@ -53,26 +53,25 @@ def analyze_stock(args):
             rs_score = ((p_ / p_3m)*0.4 + (p_ / p_6m)*0.2 + (p_ / p_9m)*0.2 + (p_ / p_12m)*0.2) * 100
 
             try:
-                with redirect_stderr(StringIO()):
-                    info = yf.Ticker(symbol, session=session).info
-                    industry = info.get('industry', 'N/A')
-                    # print(industry)
-                    sector = info.get('sector', 'N/A')
-                    # print(sector)
+                info = yf.Ticker(symbol, session=session).info
+                industry = str(info.get('industry', 'N/A'))
+                sector = str(info.get('sector', 'N/A'))
+                # print(f"{symbol}: {industry}, {sector}")
+                return {
+                    'symbol': symbol,
+                    'industry': industry,
+                    'sector': sector,
+                    'price': p_,
+                    'high_52w': high52w,
+                    'low_52w': low52w,
+                    'rs_score': rs_score,
+                    'avg_close_volume_30d': close_volume_30d
+                }
             except Exception:
                 industry = 'N/A'
                 sector = 'N/A'
-            return {
-                'symbol': symbol,
-                'industry': industry,
-                'sector': sector,
-                'price': p_,
-                'high_52w': high52w,
-                'low_52w': low52w,
-                'rs_score': rs_score,
-                'avg_close_volume_30d': close_volume_30d
-            }
         else:
+            # print(f"{symbol} did not meet all conditions.")
             return None
     except:
         return None
@@ -89,7 +88,7 @@ def analyze_and_rank():
     with Pool(processes=Config.WORKERS) as pool:
         results = list(tqdm(pool.imap(analyze_stock, args), total=len(args)))
     # warnings.resetwarnings()
-    filtered = [r for r in results if r]
+        filtered = [r for r in results if r]
     if not filtered:
         print("No stocks passed the initial analysis.")
         return False
@@ -106,6 +105,7 @@ def analyze_and_rank():
     # Filter to columns that exist in the dataframe to avoid errors
     final_cols = [col for col in cols_order if col in final.columns]
     final = final[final_cols]
+    # print(final)
 
     final.to_csv(Config.FINAL_RESULTS_FILE, index=False)
     # final.to_csv(Config.FINAL_RESULTS_FILE_WEBAPP, index=False)

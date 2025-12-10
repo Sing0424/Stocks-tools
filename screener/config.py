@@ -13,7 +13,6 @@ class Config:
     # File paths
     LISTING_STATUS_FILE = os.path.join('.', 'data', 'listing_status.csv')
     FILTERED_SYMBOLS_FILE = os.path.join('.', 'data', 'filtered_symbols.csv')
-    TECHNICAL_RESULTS_FILE = os.path.join('.', 'data', 'technical_results.csv')
     FINAL_RESULTS_FILE = os.path.join('.', 'data', 'screenResults.csv')
     CONSOLIDATED_PRICE_DATA_FILE = os.path.join('.', 'data', 'consolidated_price_data.csv')
 
