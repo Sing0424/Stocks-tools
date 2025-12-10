@@ -9,5 +9,3 @@ start "" /B /W python "screener\run_all_stages.py"
 @REM start "" /B /W python "screener\stage_04_technical_analysis.py"
 @REM start "" /B /W python "screener\stage_05_rs_ranking.py"
 @REM start "" /B /W python "screener\stage_06_screenResultUpload.py"
-
-pause
