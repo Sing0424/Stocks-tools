@@ -1,11 +1,10 @@
 # config.py
 import os
-import math
 
 class Config:
 
     # API Key
-    ALPHA_VANTAGE_API_KEY = '7D80AAZF1EFC0TZJ'  # Replace with your key
+    ALPHA_VANTAGE_API_KEY = '7D80AAZF1EFC0TZJ'
     
     # Folder paths
     data_folder  = os.path.join('.','data')
@@ -46,3 +45,4 @@ class Config:
     FORCE_REFRESH_SYMBOLS = True
     FORCE_REFRESH_FILTERS = True
     FORCE_REFRESH_PRICE_DATA = True
+    FORCE_REFRESH_ANALYZE_DATA = True

@@ -6,12 +6,9 @@ from datetime import datetime
 from multiprocessing import Pool
 from tqdm import tqdm
 from config import Config
-from io import StringIO
 from curl_cffi import requests as cffi_requests
-from contextlib import redirect_stderr
 import csv
 import yfinance as yf
-
 
 def analyze_stock(args):
     session = cffi_requests.Session(impersonate="chrome")
@@ -28,8 +25,8 @@ def analyze_stock(args):
         s50, s150, s200 = latest['SMA50'], latest['SMA150'], latest['SMA200']
         if pd.isna([s50, s150, s200]).any():
             return None
-        high52w = df['Close'][-252:].max()
-        low52w = df['Close'][-252:].min()
+        high52w = df['High'][-252:].max()
+        low52w = df['Low'][-252:].min()
         if len(df) < 30:
             return None
         close_volume_30d = (df['Close'][-30:] * df['Volume'][-30:]).mean()

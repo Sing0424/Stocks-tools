@@ -81,7 +81,7 @@ def download_multiple_stocks(symbols):
                 symbol_data = data[symbol].reset_index()  # Reset index to make 'Date' a column
                 if not symbol_data.empty:
                     symbol_data['Symbol'] = symbol
-                    cols = ['Symbol', 'Date'] + [col for col in symbol_data.columns if col not in ['Symbol', 'Date']]
+                    cols = ['Symbol', 'Date', 'Open', 'High', 'Low', 'Close', 'Volume']
                     symbol_data = symbol_data[cols]
                     results.append(symbol_data)
                 else:
