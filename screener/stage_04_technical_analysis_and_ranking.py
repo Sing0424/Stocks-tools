@@ -9,6 +9,13 @@ from config import Config
 from curl_cffi import requests as cffi_requests
 import csv
 import yfinance as yf
+import asyncio
+import telegram
+
+async def tg_sd_msg(msg):
+    bot = telegram.Bot(Config.TG_BOT_TOKEN)
+    async with bot:
+        await bot.send_message(text=msg, chat_id=Config.TG_CHAT_ID)
 
 def analyze_stock(args):
     session = cffi_requests.Session(impersonate="chrome")
@@ -115,6 +122,8 @@ def analyze_and_rank():
         finviz_url = f"https://finviz.com/screener.ashx?v=211&t={symbols_str}&o=tickersfilter&p=w"
         print("\n--- Finviz URL for Quick View ---")
         print(finviz_url)
+
+        asyncio.run(tg_sd_msg(finviz_url))
 
         # Append the URL to the CSV file
         try:

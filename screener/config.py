@@ -5,6 +5,8 @@ class Config:
 
     # API Key
     ALPHA_VANTAGE_API_KEY = '7D80AAZF1EFC0TZJ'
+    TG_BOT_TOKEN = '8157791654:AAHjR3iuS9s2OhhWjUAmb_bjgPd2kEsQXkY'
+    TG_CHAT_ID = 730875759
     
     # Folder paths
     data_folder  = os.path.join('.','data')
