@@ -9,7 +9,6 @@ from tqdm import tqdm
 from config import Config
 from contextlib import redirect_stderr
 from io import StringIO
-from curl_cffi import requests as cffi_requests
 
 
 def download_price_data():
@@ -62,14 +61,12 @@ def download_price_data():
 def download_multiple_stocks(symbols):
     # Create a new session for each worker process to avoid pickling issues.
     # impersonate="chrome110" makes requests look like they're from a real browser.
-    session = cffi_requests.Session(impersonate="chrome")
     try:
         with redirect_stderr(StringIO()):
             data = yf.download(
                 tickers=symbols,
                 period=Config.PRICE_DATA_PERIOD,
-                group_by='ticker',
-                session=session)
+                group_by='ticker')
             # print(data)
         
         if data.empty:

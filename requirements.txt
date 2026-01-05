@@ -5,7 +5,6 @@ numpy
 # Financial data retrieval
 yfinance
 requests
-curl-cffi
 
 # Progress tracking and user interface
 tqdm
@@ -14,3 +13,6 @@ tqdm
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
+
+# Telegram integration
+python-telegram-bot

@@ -1,139 +1,204 @@
-# stage_04_technical_analysis.py
-
 import pandas as pd
 import os
+import logging
+import time
 from datetime import datetime
 from multiprocessing import Pool
 from tqdm import tqdm
 from config import Config
-from curl_cffi import requests as cffi_requests
 import csv
 import yfinance as yf
 import asyncio
 import telegram
 
-async def tg_sd_msg(msg):
-    bot = telegram.Bot(Config.TG_BOT_TOKEN)
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+async def send_telegram_message(message):
+    """
+    Sends a message to a specified Telegram chat.
+    """
+    bot = telegram.Bot(token=Config.TG_BOT_TOKEN)
     async with bot:
-        await bot.send_message(text=msg, chat_id=Config.TG_CHAT_ID)
+        await bot.send_message(text=message, chat_id=Config.TG_CHAT_ID)
 
 def analyze_stock(args):
-    session = cffi_requests.Session(impersonate="chrome")
+    """
+    Analyzes a single stock based on technical indicators and predefined criteria.
+    This function is designed to be run in parallel and does not perform network requests.
+
+    Args:
+        args (tuple): A tuple containing the stock symbol and its price history DataFrame.
+
+    Returns:
+        dict: A dictionary with analysis results if the stock passes the criteria, otherwise None.
+    """
     symbol, df = args
     try:
         df = df.sort_values('Date').set_index('Date')
+
+        # Ensure there is enough data for the analysis
         if len(df) < 252:
             return None
+
+        # Calculate SMAs
         df['SMA50'] = df['Close'].rolling(50).mean()
         df['SMA150'] = df['Close'].rolling(150).mean()
         df['SMA200'] = df['Close'].rolling(200).mean()
-        latest = df.iloc[-1]
-        p = latest['Close']
-        s50, s150, s200 = latest['SMA50'], latest['SMA150'], latest['SMA200']
-        if pd.isna([s50, s150, s200]).any():
+
+        latest_data = df.iloc[-1]
+        latest_price = latest_data['Close']
+        sma50, sma150, sma200 = latest_data['SMA50'], latest_data['SMA150'], latest_data['SMA200']
+
+        if pd.isna([sma50, sma150, sma200]).any():
             return None
-        high52w = df['High'][-252:].max()
-        low52w = df['Low'][-252:].min()
+
+        high_52w = df['High'][-252:].max()
+        low_52w = df['Low'][-252:].min()
+        
         if len(df) < 30:
             return None
-        close_volume_30d = (df['Close'][-30:] * df['Volume'][-30:]).mean()
-        conds = [
-            p > 12,
-            p > s150 and p > s200,
-            s150 > s200,
-            s200 > df['SMA200'].iloc[-21],
-            s50 > s150 and s50 > s200,
-            p > s50,
-            p >= low52w * 1.25,
-            p >= high52w * 0.75,
-            close_volume_30d > 10000000
-        ]
-        if all(conds):
-            p_ = df['Close'].iloc[-1]
-            p_3m = df['Close'].iloc[-63]
-            p_6m = df['Close'].iloc[-126]
-            p_9m = df['Close'].iloc[-189]
-            p_12m = df['Close'].iloc[-252]
-            rs_score = ((p_ / p_3m)*0.4 + (p_ / p_6m)*0.2 + (p_ / p_9m)*0.2 + (p_ / p_12m)*0.2) * 100
+        avg_close_volume_30d = (df['Close'][-30:] * df['Volume'][-30:]).mean()
 
-            try:
-                info = yf.Ticker(symbol, session=session).info
-                industry = str(info.get('industry', 'N/A'))
-                sector = str(info.get('sector', 'N/A'))
-                # print(f"{symbol}: {industry}, {sector}")
-                return {
-                    'symbol': symbol,
-                    'industry': industry,
-                    'sector': sector,
-                    'price': p_,
-                    'high_52w': high52w,
-                    'low_52w': low52w,
-                    'rs_score': rs_score,
-                    'avg_close_volume_30d': close_volume_30d
-                }
-            except Exception:
-                industry = 'N/A'
-                sector = 'N/A'
+        # Mark Minervini's Trend Template conditions
+        conditions = [
+            latest_price > Config.MIN_PRICE,
+            latest_price > sma150 and latest_price > sma200,
+            sma150 > sma200,
+            sma200 > df['SMA200'].iloc[-Config.SMA200_TREND_DAYS],
+            sma50 > sma150 and sma50 > sma200,
+            latest_price > sma50,
+            latest_price >= low_52w * Config.MIN_52W_LOW_INCREASE_FACTOR,
+            latest_price >= high_52w * Config.MIN_52W_HIGH_DECREASE_FACTOR,
+            avg_close_volume_30d > Config.MIN_CLOSE_VOLUME_30D
+        ]
+
+        if all(conditions):
+            # Calculate custom RS score
+            price_now = df['Close'].iloc[-1]
+            price_3m = df['Close'].iloc[-63]
+            price_6m = df['Close'].iloc[-126]
+            price_9m = df['Close'].iloc[-189]
+            price_12m = df['Close'].iloc[-252]
+
+            if 0 in [price_3m, price_6m, price_9m, price_12m]:
+                return None
+
+            rs_score = (
+                ((price_now / price_3m) - 1) * Config.RS_WEIGHT_3M +
+                ((price_now / price_6m) - 1) * Config.RS_WEIGHT_6M +
+                ((price_now / price_9m) - 1) * Config.RS_WEIGHT_9M +
+                ((price_now / price_12m) - 1) * Config.RS_WEIGHT_12M
+            ) * 100
+            
+            return {
+                'symbol': symbol,
+                'price': latest_price,
+                'high_52w': high_52w,
+                'low_52w': low_52w,
+                'rs_score': rs_score,
+                'avg_close_volume_30d': avg_close_volume_30d
+            }
         else:
-            # print(f"{symbol} did not meet all conditions.")
             return None
-    except:
+    except Exception as e:
+        # Log error but don't include stock symbol to avoid confusion in parallel logs
+        logging.error(f"Error analyzing a stock: {e}")
         return None
 
+def get_stock_metadata(symbol):
+    """
+    Fetches industry and sector for a single stock.
+    Includes a delay to prevent rate limiting.
+    """
+    try:
+        time.sleep(0.5) # Small delay to avoid rate limiting
+        stock_info = yf.Ticker(symbol).info
+        return {
+            'industry': str(stock_info.get('industry', 'N/A')),
+            'sector': str(stock_info.get('sector', 'N/A'))
+        }
+    except Exception as e:
+        logging.error(f"Could not fetch info for {symbol}: {e}")
+        return {
+            'industry': 'N/A',
+            'sector': 'N/A'
+        }
+
 def analyze_and_rank():
-    print(f"[{datetime.now()}] Stage 4: Analyzing consolidated data and calculating RS rank...")
+    """
+    Performs the main analysis and ranking process.
+    Reads consolidated data, filters stocks, ranks them, and saves the results.
+    """
+    logging.info("Stage 4: Analyzing consolidated data and calculating RS rank...")
     if not os.path.exists(Config.CONSOLIDATED_PRICE_DATA_FILE):
-        print("Run stage 3 first.")
+        logging.error("Consolidated price data file not found. Run stage 3 first.")
         return False
+
     df_all = pd.read_csv(Config.CONSOLIDATED_PRICE_DATA_FILE)
     df_all['Date'] = pd.to_datetime(df_all['Date'], utc=True)
     grouped = df_all.groupby('Symbol')
     args = [(sym, group) for sym, group in grouped]
+
+    # Step 1: Perform CPU-bound analysis in parallel
+    logging.info(f"Performing technical analysis on {len(args)} stocks...")
     with Pool(processes=Config.WORKERS) as pool:
         results = list(tqdm(pool.imap(analyze_stock, args), total=len(args)))
-    # warnings.resetwarnings()
-        filtered = [r for r in results if r]
-    if not filtered:
-        print("No stocks passed the initial analysis.")
+    
+    filtered_results = [r for r in results if r]
+    if not filtered_results:
+        logging.warning("No stocks passed the initial technical analysis.")
         return False
     
-    df = pd.DataFrame(filtered)
-    df['rs_rank'] = df['rs_score'].rank(pct=True) * 100
-    final = df[df['rs_rank'] >= Config.MIN_RS_RANK].sort_values('rs_rank', ascending=False)
+    df = pd.DataFrame(filtered_results)
+    
+    # Step 2: Fetch metadata (industry, sector) sequentially to avoid rate limiting
+    logging.info(f"Fetching metadata for {len(df)} filtered stocks...")
+    metadata_list = []
+    for symbol in tqdm(df['symbol'], total=len(df)):
+        metadata = get_stock_metadata(symbol)
+        metadata['symbol'] = symbol
+        metadata_list.append(metadata)
+        
+    metadata_df = pd.DataFrame(metadata_list)
+    df = pd.merge(df, metadata_df, on='symbol')
 
-    # Reorder columns for final output
+    # Step 3: Rank and finalize
+    df['rs_rank'] = df['rs_score'].rank(pct=True) * 100
+    final_df = df[df['rs_rank'] >= Config.MIN_RS_RANK].sort_values('rs_rank', ascending=False)
+
     cols_order = [
         'symbol', 'industry', 'sector', 'price', 'rs_rank', 'rs_score',
         'high_52w', 'low_52w', 'avg_close_volume_30d'
     ]
-    # Filter to columns that exist in the dataframe to avoid errors
-    final_cols = [col for col in cols_order if col in final.columns]
-    final = final[final_cols]
-    # print(final)
+    final_df = final_df[[col for col in cols_order if col in final_df.columns]]
 
-    final.to_csv(Config.FINAL_RESULTS_FILE, index=False)
-    # final.to_csv(Config.FINAL_RESULTS_FILE_WEBAPP, index=False)
-    print(f"{len(final)} stocks meet RS criteria.")
+    final_df.to_csv(Config.FINAL_RESULTS_FILE, index=False)
+    logging.info(f"{len(final_df)} stocks meet RS criteria.")
     
-    # Generate and print the Finviz URL
-    if not final.empty:
-        symbols_list = final['symbol'].tolist()
-        symbols_str = ",".join(symbols_list)
-        finviz_url = f"https://finviz.com/screener.ashx?v=211&t={symbols_str}&o=tickersfilter&p=w"
-        print("\n--- Finviz URL for Quick View ---")
-        print(finviz_url)
+    if not final_df.empty:
+        symbols = ",".join(final_df['symbol'].tolist())
+        finviz_url = f"https://finviz.com/screener.ashx?v=211&t={symbols}&o=tickersfilter&p=w"
+        
+        if len(finviz_url) > 2000:
+            logging.warning(f"Finviz URL is very long ({len(finviz_url)} chars). It may not work in all browsers.")
 
-        asyncio.run(tg_sd_msg(finviz_url))
+        logging.info("\n--- Finviz URL for Quick View ---")
+        logging.info(finviz_url)
 
-        # Append the URL to the CSV file
+        try:
+            asyncio.run(send_telegram_message(finviz_url))
+        except Exception as e:
+            logging.error(f"Failed to send Telegram message: {e}")
+
         try:
             with open(Config.FINAL_RESULTS_FILE, 'a', newline='', encoding='utf-8') as f:
                 writer = csv.writer(f)
-                writer.writerow([])  # Write an empty row for separation
-                writer.writerow([finviz_url]) # Write the URL in the first column of a new row
-            print(f"Finviz URL also saved to {Config.FINAL_RESULTS_FILE}")
+                writer.writerow([])
+                writer.writerow([finviz_url])
+            logging.info(f"Finviz URL also saved to {Config.FINAL_RESULTS_FILE}")
         except Exception as e:
-            print(f"\nCould not append URL to CSV file: {e}")
+            logging.error(f"Could not append URL to CSV file: {e}")
         
     return True
 

@@ -42,6 +42,18 @@ class Config:
     
     # Screening criteria
     MIN_RS_RANK = 89
+    MIN_PRICE = 12
+    MIN_CLOSE_VOLUME_30D = 8000000
+    MIN_52W_LOW_INCREASE_FACTOR = 1.25
+    MIN_52W_HIGH_DECREASE_FACTOR = 0.75
+    # The stock's 200-day moving average should be trending up for at least 1 month
+    SMA200_TREND_DAYS = 21
+
+    # RS score weights for 3, 6, 9, and 12 months
+    RS_WEIGHT_3M = 0.4
+    RS_WEIGHT_6M = 0.2
+    RS_WEIGHT_9M = 0.2
+    RS_WEIGHT_12M = 0.2
     
     # Flags
     FORCE_REFRESH_SYMBOLS = True
