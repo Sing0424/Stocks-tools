@@ -4,9 +4,8 @@ from contextlib import redirect_stderr
 import yfinance as yf
 
 def download_single_stock(symbol):
-    session = cffi_requests.Session(impersonate="chrome")
     with redirect_stderr(StringIO()):
-        info = yf.Ticker(symbol, session=session).info
+        info = yf.Ticker(symbol).info
         industry = info.get('industry')
         print(industry)
         sector = info.get('sector')
