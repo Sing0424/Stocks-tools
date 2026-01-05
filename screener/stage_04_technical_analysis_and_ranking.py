@@ -74,14 +74,17 @@ def analyze_stock(args):
         ]
 
         if all(conditions):
-            # Calculate custom RS score
+            # Calculate custom RS score with bounds checking
+            if len(df) < 252:
+                return None
+                
             price_now = df['Close'].iloc[-1]
-            price_3m = df['Close'].iloc[-63]
-            price_6m = df['Close'].iloc[-126]
-            price_9m = df['Close'].iloc[-189]
-            price_12m = df['Close'].iloc[-252]
+            price_3m = df['Close'].iloc[-63] if len(df) >= 63 else None
+            price_6m = df['Close'].iloc[-126] if len(df) >= 126 else None
+            price_9m = df['Close'].iloc[-189] if len(df) >= 189 else None
+            price_12m = df['Close'].iloc[-252] if len(df) >= 252 else None
 
-            if 0 in [price_3m, price_6m, price_9m, price_12m]:
+            if None in [price_3m, price_6m, price_9m, price_12m] or 0 in [price_3m, price_6m, price_9m, price_12m]:
                 return None
 
             rs_score = (
