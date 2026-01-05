@@ -18,7 +18,7 @@ def filter_symbols():
         # Ensure essential columns have no missing values and filter out unwanted security types.
         df.dropna(subset=['symbol', 'name'], inplace=True)
         df = df[df['assetType'] != 'ETF']
-        df = df[~df['name'].str.contains('Warrants|Units', case=False, na=False)]
+        df = df[~df['name'].str.contains('Warrants|Units|ETF', case=False, na=False)]
         df = df[~df['symbol'].str.contains(r'[\.\+\$\^\-=()]', na=False, regex=True)] # Exclude symbols with special characters
         df[['symbol']].to_csv(Config.FILTERED_SYMBOLS_FILE, index=False)
         print(f"Filtered {initial - len(df)} ETFs, non-standard symbols, Warrants, and Units.")
