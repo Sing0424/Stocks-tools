@@ -115,7 +115,7 @@ def get_stock_metadata(symbol):
     Includes a delay to prevent rate limiting.
     """
     try:
-        time.sleep(0.5) # Small delay to avoid rate limiting
+        # time.sleep(0.5) # Small delay to avoid rate limiting
         stock_info = yf.Ticker(symbol).info
         return {
             'industry': str(stock_info.get('industry', 'N/A')),

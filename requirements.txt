@@ -16,3 +16,6 @@ google-auth-oauthlib
 
 # Telegram integration
 python-telegram-bot
+
+#env
+python-dotenv

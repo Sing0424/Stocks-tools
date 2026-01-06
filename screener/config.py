@@ -1,12 +1,15 @@
 # config.py
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Config:
 
     # API Key
     ALPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY')
     TG_BOT_TOKEN = os.getenv('TG_BOT_TOKEN')
-    TG_CHAT_ID = int(os.getenv('TG_CHAT_ID', '0'))
+    TG_CHAT_ID = int(os.getenv('TG_CHAT_ID'))
     
     # Folder paths
     data_folder  = os.path.join('.','data')
@@ -58,7 +61,7 @@ class Config:
     RS_WEIGHT_12M = 0.2
     
     # Flags
-    FORCE_REFRESH_SYMBOLS = False
-    FORCE_REFRESH_FILTERS = False
+    FORCE_REFRESH_SYMBOLS = True
+    FORCE_REFRESH_FILTERS = True
     FORCE_REFRESH_PRICE_DATA = True
-    FORCE_REFRESH_ANALYZE_DATA = True
+    DOWNLOAD_FOR_WEBAPP = False
