@@ -109,24 +109,38 @@ def analyze_stock(args):
         logging.error(f"Error analyzing a stock: {e}")
         return None
 
-def get_stock_metadata(symbol):
+def get_stock_metadata(symbol, max_retries=5, initial_sleep=1, backoff_factor=2):
     """
-    Fetches industry and sector for a single stock.
-    Includes a delay to prevent rate limiting.
+    Fetches industry and sector for a single stock, with exponential backoff for rate limiting.
     """
-    try:
-        # time.sleep(0.5) # Small delay to avoid rate limiting
-        stock_info = yf.Ticker(symbol).info
-        return {
-            'industry': str(stock_info.get('industry', 'N/A')),
-            'sector': str(stock_info.get('sector', 'N/A'))
-        }
-    except Exception as e:
-        logging.error(f"Could not fetch info for {symbol}: {e}")
-        return {
-            'industry': 'N/A',
-            'sector': 'N/A'
-        }
+    sleep_time = initial_sleep
+    for i in range(max_retries):
+        try:
+            stock_info = yf.Ticker(symbol).info
+            if stock_info:
+                return {
+                    'industry': str(stock_info.get('industry', 'N/A')),
+                    'sector': str(stock_info.get('sector', 'N/A'))
+                }
+            else:
+                logging.warning(f"No info returned for {symbol}")
+                return {'industry': 'N/A', 'sector': 'N/A'}
+        except Exception as e:
+            if "Too Many Requests" in str(e) or "Rate limited" in str(e):
+                if i < max_retries - 1:
+                    logging.warning(f"Rate limited on {symbol}. Retrying in {sleep_time} seconds...")
+                    time.sleep(sleep_time)
+                    sleep_time *= backoff_factor
+                else:
+                    logging.error(f"Could not fetch info for {symbol} after {max_retries} retries: {e}")
+            else:
+                logging.error(f"Could not fetch info for {symbol}: {e}")
+                break  # Non-rate-limit error, break loop
+
+    return {
+        'industry': 'N/A',
+        'sector': 'N/A'
+    }
 
 def analyze_and_rank():
     """
@@ -155,20 +169,20 @@ def analyze_and_rank():
     
     df = pd.DataFrame(filtered_results)
     
-    # Step 2: Fetch metadata (industry, sector) sequentially to avoid rate limiting
-    logging.info(f"Fetching metadata for {len(df)} filtered stocks...")
+    # Step 2: Rank and finalize
+    df['rs_rank'] = df['rs_score'].rank(pct=True) * 100
+    final_df = df[df['rs_rank'] >= Config.MIN_RS_RANK].sort_values('rs_rank', ascending=False)
+
+    # Step 3: Fetch metadata (industry, sector) sequentially to avoid rate limiting
+    logging.info(f"Fetching metadata for {len(final_df)} filtered stocks...")
     metadata_list = []
-    for symbol in tqdm(df['symbol'], total=len(df)):
+    for symbol in tqdm(final_df['symbol'], total=len(final_df)):
         metadata = get_stock_metadata(symbol)
         metadata['symbol'] = symbol
         metadata_list.append(metadata)
         
     metadata_df = pd.DataFrame(metadata_list)
-    df = pd.merge(df, metadata_df, on='symbol')
-
-    # Step 3: Rank and finalize
-    df['rs_rank'] = df['rs_score'].rank(pct=True) * 100
-    final_df = df[df['rs_rank'] >= Config.MIN_RS_RANK].sort_values('rs_rank', ascending=False)
+    final_df = pd.merge(final_df, metadata_df, on='symbol')
 
     cols_order = [
         'symbol', 'industry', 'sector', 'price', 'rs_rank', 'rs_score',
