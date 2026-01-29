@@ -109,7 +109,7 @@ def analyze_stock(args):
         logging.error(f"Error analyzing a stock: {e}")
         return None
 
-def get_stock_metadata(symbol, max_retries=5, initial_sleep=1, backoff_factor=2):
+def get_stock_metadata(symbol, max_retries=5, initial_sleep=2):
     """
     Fetches industry and sector for a single stock, with exponential backoff for rate limiting.
     """
@@ -130,7 +130,6 @@ def get_stock_metadata(symbol, max_retries=5, initial_sleep=1, backoff_factor=2)
                 if i < max_retries - 1:
                     logging.warning(f"Rate limited on {symbol}. Retrying in {sleep_time} seconds...")
                     time.sleep(sleep_time)
-                    sleep_time *= backoff_factor
                 else:
                     logging.error(f"Could not fetch info for {symbol} after {max_retries} retries: {e}")
             else:
