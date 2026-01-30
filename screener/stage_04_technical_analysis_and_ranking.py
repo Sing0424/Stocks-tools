@@ -109,11 +109,10 @@ def analyze_stock(args):
         logging.error(f"Error analyzing a stock: {e}")
         return None
 
-def get_stock_metadata(symbol, max_retries=5, initial_sleep=2):
+def get_stock_metadata(symbol, max_retries=5, sleep_time=2):
     """
     Fetches industry and sector for a single stock, with exponential backoff for rate limiting.
     """
-    sleep_time = initial_sleep
     for i in range(max_retries):
         try:
             stock_info = yf.Ticker(symbol).info
