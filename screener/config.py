@@ -19,8 +19,8 @@ class Config:
     # File paths
     LISTING_STATUS_FILE = os.path.join('.', 'data', 'listing_status.csv')
     FILTERED_SYMBOLS_FILE = os.path.join('.', 'data', 'filtered_symbols.csv')
-    FINAL_RESULTS_FILE = os.path.join('.', 'data', 'screenResults.csv')
     CONSOLIDATED_PRICE_DATA_FILE = os.path.join('.', 'data', 'consolidated_price_data.csv')
+    EXCEL_REPORT_FILE = os.path.join('.', 'data', 'final_report.xlsx')
 
     # Google drive credential path
     CREDENTIAL = os.path.join('.', 'GoogleAPI', 'credentials.json')
@@ -28,7 +28,6 @@ class Config:
 
     # Web app data paths
     CONSOLIDATED_PRICE_DATA_FILE_WEBAPP = os.path.abspath(os.path.join('..', 'stock-chart-viewer', 'public', 'data','consolidated_price_data.csv'))
-    FINAL_RESULTS_FILE_WEBAPP = os.path.abspath(os.path.join('..', 'stock-chart-viewer', 'public', 'data','screenResults.csv'))
     
     # CPU Threads config
     if os.cpu_count() >= 4:

@@ -19,3 +19,4 @@ python-telegram-bot
 
 #env
 python-dotenv
+openpyxl

@@ -2,25 +2,13 @@ import pandas as pd
 import os
 import logging
 import time
-from datetime import datetime
 from multiprocessing import Pool
 from tqdm import tqdm
 from config import Config
-import csv
 import yfinance as yf
-import asyncio
-import telegram
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-async def send_telegram_message(message):
-    """
-    Sends a message to a specified Telegram chat.
-    """
-    bot = telegram.Bot(token=Config.TG_BOT_TOKEN)
-    async with bot:
-        await bot.send_message(text=message, chat_id=Config.TG_CHAT_ID)
 
 def analyze_stock(args):
     """
@@ -109,10 +97,11 @@ def analyze_stock(args):
         logging.error(f"Error analyzing a stock: {e}")
         return None
 
-def get_stock_metadata(symbol, max_retries=5, sleep_time=2):
+def get_stock_metadata(symbol, max_retries=5, sleep_time=3):
     """
     Fetches industry and sector for a single stock, with exponential backoff for rate limiting.
     """
+    time.sleep(sleep_time)
     for i in range(max_retries):
         try:
             stock_info = yf.Ticker(symbol).info
@@ -188,8 +177,10 @@ def analyze_and_rank():
     ]
     final_df = final_df[[col for col in cols_order if col in final_df.columns]]
 
-    final_df.to_csv(Config.FINAL_RESULTS_FILE, index=False)
-    logging.info(f"{len(final_df)} stocks meet RS criteria.")
+    # Save to Excel
+    final_df.to_excel(Config.EXCEL_REPORT_FILE, index=False, sheet_name='Screening Results')
+    
+    logging.info(f"{len(final_df)} stocks meet RS criteria and saved to {Config.EXCEL_REPORT_FILE}")
     
     if not final_df.empty:
         symbols = ",".join(final_df['symbol'].tolist())
@@ -200,20 +191,6 @@ def analyze_and_rank():
 
         logging.info("\n--- Finviz URL for Quick View ---")
         logging.info(finviz_url)
-
-        try:
-            asyncio.run(send_telegram_message(finviz_url))
-        except Exception as e:
-            logging.error(f"Failed to send Telegram message: {e}")
-
-        try:
-            with open(Config.FINAL_RESULTS_FILE, 'a', newline='', encoding='utf-8') as f:
-                writer = csv.writer(f)
-                writer.writerow([])
-                writer.writerow([finviz_url])
-            logging.info(f"Finviz URL also saved to {Config.FINAL_RESULTS_FILE}")
-        except Exception as e:
-            logging.error(f"Could not append URL to CSV file: {e}")
         
     return True
 
