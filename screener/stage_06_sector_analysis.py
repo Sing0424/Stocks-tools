@@ -9,7 +9,7 @@ def analyze_sector_performance():
     """
     Analyzes the performance of different sectors based on the RS ranks of their stocks.
     """
-    print(f"[{datetime.now()}] Stage 7: Analyzing Sector Performance...")
+    print(f"[{datetime.now()}] Stage 6: Analyzing Sector Performance...")
     
     # 1. Check if the Excel report file exists
     if not os.path.exists(Config.EXCEL_REPORT_FILE):

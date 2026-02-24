@@ -6,6 +6,13 @@ from multiprocessing import Pool
 from tqdm import tqdm
 from config import Config
 import yfinance as yf
+import asyncio
+import telegram
+
+async def tg_sd_msg(msg):
+    bot = telegram.Bot(Config.TG_BOT_TOKEN)
+    async with bot:
+        await bot.send_message(text=msg, chat_id=Config.TG_CHAT_ID)
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -162,6 +169,7 @@ def analyze_and_rank():
 
     # Step 3: Fetch metadata (industry, sector) sequentially to avoid rate limiting
     logging.info(f"Fetching metadata for {len(final_df)} filtered stocks...")
+
     metadata_list = []
     for symbol in tqdm(final_df['symbol'], total=len(final_df)):
         metadata = get_stock_metadata(symbol)
@@ -177,21 +185,29 @@ def analyze_and_rank():
     ]
     final_df = final_df[[col for col in cols_order if col in final_df.columns]]
 
-    # Save to Excel
-    final_df.to_excel(Config.EXCEL_REPORT_FILE, index=False, sheet_name='Screening Results')
-    
-    logging.info(f"{len(final_df)} stocks meet RS criteria and saved to {Config.EXCEL_REPORT_FILE}")
-    
-    if not final_df.empty:
-        symbols = ",".join(final_df['symbol'].tolist())
-        finviz_url = f"https://finviz.com/screener.ashx?v=211&t={symbols}&o=tickersfilter&p=w"
-        
-        if len(finviz_url) > 2000:
-            logging.warning(f"Finviz URL is very long ({len(finviz_url)} chars). It may not work in all browsers.")
+    # Save to Excel and append Finviz URL
+    with pd.ExcelWriter(Config.EXCEL_REPORT_FILE, engine='openpyxl') as writer:
+        final_df.to_excel(writer, index=False, sheet_name='Screening Results')
 
-        logging.info("\n--- Finviz URL for Quick View ---")
-        logging.info(finviz_url)
-        
+        if not final_df.empty:
+            worksheet = writer.sheets['Screening Results']
+            # Add a blank row
+            worksheet.append([])
+            # Generate and add Finviz URL
+            symbols = ",".join(final_df['symbol'].tolist())
+            finviz_url = f"https://finviz.com/screener.ashx?v=211&t={symbols}&o=tickersfilter&p=w"
+
+            asyncio.run(tg_sd_msg(finviz_url))
+
+            worksheet.append(['Finviz URL:', finviz_url])
+
+            if len(finviz_url) > 2000:
+                logging.warning(f"Finviz URL is very long ({len(finviz_url)} chars). It may not work in all browsers.")
+
+            logging.info("\n--- Finviz URL for Quick View ---")
+            logging.info(finviz_url)
+
+    logging.info(f"{len(final_df)} stocks meet RS criteria and saved to {Config.EXCEL_REPORT_FILE}")
     return True
 
 if __name__ == "__main__":

@@ -1,20 +1,9 @@
 # Stock Screening Output Files
-consolidated_price_data.csv
-filtered_symbols.csv
-listing_status.csv
-technical_results.csv
+data/
 
-
-# Screen Result directory (exclude all files)
-screenResults.csv
-
-
-# Authentication and API files
-token.json
-credentials.json
-
+GoogleAPI/
 # pycache files
-__pycache__/
+**/__pycache__/
 
 .devcontainer
 .env
