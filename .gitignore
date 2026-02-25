@@ -1,9 +1,0 @@
-# Stock Screening Output Files
-data/
-
-GoogleAPI/
-# pycache files
-**/__pycache__/
-
-.devcontainer
-.env
