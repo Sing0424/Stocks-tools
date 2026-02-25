@@ -1,0 +1,6 @@
+data/
+GoogleAPI/
+
+**/__pycache__/
+
+.env
