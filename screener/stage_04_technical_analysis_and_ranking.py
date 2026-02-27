@@ -116,11 +116,12 @@ def get_stock_metadata(symbol, max_retries=5, sleep_time=10):
                     'industry': str(stock_data.info.get('industry', 'N/A')),
                     'sector': str(stock_data.info.get('sector', 'N/A')),
                     'EPS': stock_data.quarterly_financials.loc['Diluted EPS'].iloc[0],
-                    'EPS_3m': stock_data.quarterly_financials.loc['Diluted EPS'].iloc[1]
+                    'EPS_3m': stock_data.quarterly_financials.loc['Diluted EPS'].iloc[1],
+                    'EPS_PCT_CHANGE_3m': ((stock_data.quarterly_financials.loc['Diluted EPS'].iloc[0] - stock_data.quarterly_financials.loc['Diluted EPS'].iloc[1]) / abs(stock_data.quarterly_financials.loc['Diluted EPS'].iloc[1])) * 100 if stock_data.quarterly_financials.loc['Diluted EPS'].iloc[1] != 0 else 'N/A'
                 }
             else:
                 logging.warning(f"No info returned for {symbol}")
-                return {'industry': 'N/A', 'sector': 'N/A','EPS': 'N/A', 'EPS_3m': 'N/A'}
+                return {'industry': 'N/A', 'sector': 'N/A','EPS': 'N/A', 'EPS_3m': 'N/A', 'EPS_PCT_CHANGE_3m': 'N/A'}
         except Exception as e:
             if "Too Many Requests" in str(e) or "Rate limited" in str(e):
                 if i < max_retries - 1:
@@ -136,7 +137,8 @@ def get_stock_metadata(symbol, max_retries=5, sleep_time=10):
         'industry': 'N/A',
         'sector': 'N/A',
         'EPS': 'N/A',
-        'EPS_3m': 'N/A'
+        'EPS_3m': 'N/A',
+        'EPS_PCT_CHANGE_3m': 'N/A'
     }
 
 def analyze_and_rank():
@@ -184,7 +186,7 @@ def analyze_and_rank():
 
     cols_order = [
         'symbol', 'industry', 'sector', 'price', 'rs_rank', 'rs_score',
-        'high_52w', 'low_52w', 'avg_close_volume_30d', 'EPS', 'EPS_3m'
+        'high_52w', 'low_52w', 'avg_close_volume_30d', 'EPS', 'EPS_3m', 'EPS_PCT_CHANGE_3m'
     ]
     final_df = final_df[[col for col in cols_order if col in final_df.columns]]
 
