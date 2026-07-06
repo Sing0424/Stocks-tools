@@ -39,16 +39,14 @@ if __name__ == "__main__":
     from stage_02_filter_symbols import filter_symbols
     from stage_03_download_price_data import download_price_data
     from stage_04_technical_analysis_and_ranking import analyze_and_rank
-    from stage_05_market_breadth import calculate_market_breadth
-    from stage_06_sector_analysis import analyze_sector_performance
-    from stage_07_screenResultUpload import upload_results
+    from stage_05_market_breadth import perform_reporting_analysis
+    from stage_06_screenResultUpload import upload_results
 
     print(f"Pipeline start: {datetime.now()}")
     run_stage("Download Symbols", download_symbols)
     run_stage("Filter Symbols", filter_symbols)
     run_stage("Download Price Data", download_price_data)
     run_stage("Technical Analysis and RS Ranking", analyze_and_rank)
-    run_stage("Market Breadth Analysis", calculate_market_breadth)
-    run_stage("Sector Performance Analysis", analyze_sector_performance)
+    run_stage("Reporting Analysis (Market Breadth & Sector)", perform_reporting_analysis)
     run_stage("Upload Results", upload_results)
     print(f"Pipeline completed: {datetime.now()}")
