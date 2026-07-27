@@ -180,6 +180,11 @@ def analyze_and_rank():
     metadata_df = pd.DataFrame(metadata_list)
     final_df = pd.merge(final_df, metadata_df, on='symbol')
 
+    # Filter out Biotechnology industry
+    initial_count = len(final_df)
+    final_df = final_df[final_df['industry'] != 'Biotechnology']
+    logging.info(f"Filtered out {initial_count - len(final_df)} stocks from 'Biotechnology' industry.")
+
     cols_order = [
         'symbol', 'industry', 'sector', 'price', 'rs_rank', 'rs_score',
         'high_52w', 'low_52w', 'avg_close_volume_30d', 'EPS_%'
