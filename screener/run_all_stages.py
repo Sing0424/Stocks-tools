@@ -1,6 +1,7 @@
 # run_all_stages.py
 import os
 import sys
+import time
 import tracemalloc
 from datetime import datetime
 from config import Config
@@ -21,11 +22,14 @@ def init_paths():
             print(f"Folder exists: {path}")
     return
 
-def run_stage(name, func):
+def run_stage(name, func, delay=5):
     print(f"\n{'='*60}\nRunning {name}\n{'='*60}")
     try:
         if func():
             print(f"[SUCCESS] {name}")
+            if delay > 0:
+                print(f"Waiting {delay}s before next stage...")
+                time.sleep(delay)
         else:
             print(f"[FAIL] {name}")
             sys.exit(1)

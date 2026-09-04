@@ -32,13 +32,13 @@ class Config:
     # CPU Threads config
     if os.cpu_count() >= 4:
         WORKERS = 4 #4
-        BATCH_SIZE = 72
+        BATCH_SIZE = 24
     elif os.cpu_count() >= 2:
         WORKERS = 2
-        BATCH_SIZE = 24
+        BATCH_SIZE = 12
     else:
         WORKERS = 1
-        BATCH_SIZE = 12
+        BATCH_SIZE = 3
     
     # Data download
     # Valid periods: 1d,5d,1mo,3mo,6mo,1y,2y,5y,10y,ytd,max
