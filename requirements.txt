@@ -1,6 +1,7 @@
 # Core data processing and analysis
 pandas
 numpy
+pyarrow
 
 # Financial data retrieval
 yfinance

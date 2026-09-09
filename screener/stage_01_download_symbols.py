@@ -1,8 +1,14 @@
 # stage_01_download_symbols.py
 import os
+import sys
 import csv
 import requests
 from datetime import datetime
+
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+if CURRENT_DIR not in sys.path:
+    sys.path.insert(0, CURRENT_DIR)
+
 from config import Config
 
 def download_symbols():
@@ -19,10 +25,10 @@ def download_symbols():
             decoded = response.content.decode('utf-8')
             cr = csv.reader(decoded.splitlines(), delimiter=',')
             all_rows = list(cr)
-            if len(all_rows) < 2:
-                print("Downloaded data is empty or malformed.")
-                return False
             header = all_rows[0]
+            if len(all_rows) < 2 or 'symbol' not in [c.strip().lower() for c in header]:
+                print(f"Downloaded data is invalid or API returned an error: {header}")
+                return False
             data_rows = all_rows[1:]
             data_rows.sort(key=lambda r: r[0])
             with open(Config.LISTING_STATUS_FILE, 'w', newline='', encoding='utf-8') as f:

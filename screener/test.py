@@ -6,7 +6,10 @@ import json
 
 def download_single_stock(symbol):
     with redirect_stderr(StringIO()):
-        info = yf.Ticker(symbol).quarterly_financials.loc['Diluted EPS'].iloc[1]
-        print(info)
+        ticker = yf.Ticker(symbol)
+        info = ticker.info or {}
+        industry = str(info.get('industry', 'N/A'))
+        print(f"Symbol: {symbol}")
+        print(f"Industry: {industry}")
 
-download_single_stock("WDC")
+download_single_stock("MU")

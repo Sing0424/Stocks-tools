@@ -4,34 +4,48 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class Config:
+# Root directory of the project
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    # API Key
+class Config:
+    BASE_DIR = BASE_DIR
+
+    # API Keys and External Services
     ALPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY')
     TG_BOT_TOKEN = os.getenv('TG_BOT_TOKEN')
-    TG_CHAT_ID = int(os.getenv('TG_CHAT_ID'))
+    _raw_chat_id = os.getenv('TG_CHAT_ID')
+    try:
+        TG_CHAT_ID = int(_raw_chat_id) if _raw_chat_id and _raw_chat_id.strip().lstrip('-').isdigit() else None
+    except (ValueError, TypeError):
+        TG_CHAT_ID = None
+    ENABLE_TELEGRAM = bool(TG_BOT_TOKEN and TG_CHAT_ID)
     
+    # Google Drive configuration
+    GDRIVE_FOLDER_ID = os.getenv('GDRIVE_FOLDER_ID', '1XJmBN164biI7oE3c_ZuQp7UHn7pa3tiG')
+    GDRIVE_FILE_ID = os.getenv('GDRIVE_FILE_ID', '1xHoV8EW40ziRAud57N28kOlw_G_RimpYUpN5LH8sVNs')
+
     # Folder paths
-    data_folder  = os.path.join('.','data')
-    GoogleAPI_folder = os.path.join('.','GoogleAPI')
-    WEBAPP_DATA_FOLDER = os.path.abspath(os.path.join('..', 'stock-chart-viewer', 'public', 'data'))
+    data_folder = os.path.join(BASE_DIR, 'data')
+    GoogleAPI_folder = os.path.join(BASE_DIR, 'GoogleAPI')
+    WEBAPP_DATA_FOLDER = os.path.join(BASE_DIR, 'stock-chart-viewer', 'public', 'data')
 
     # File paths
-    LISTING_STATUS_FILE = os.path.join('.', 'data', 'listing_status.csv')
-    FILTERED_SYMBOLS_FILE = os.path.join('.', 'data', 'filtered_symbols.csv')
-    CONSOLIDATED_PRICE_DATA_FILE = os.path.join('.', 'data', 'consolidated_price_data.csv')
-    EXCEL_REPORT_FILE = os.path.join('.', 'data', 'final_report.xlsx')
+    LISTING_STATUS_FILE = os.path.join(data_folder, 'listing_status.csv')
+    FILTERED_SYMBOLS_FILE = os.path.join(data_folder, 'filtered_symbols.csv')
+    CONSOLIDATED_PRICE_DATA_FILE = os.path.join(data_folder, 'consolidated_price_data.csv')
+    CONSOLIDATED_PRICE_DATA_PARQUET = os.path.join(data_folder, 'consolidated_price_data.parquet')
+    EXCEL_REPORT_FILE = os.path.join(data_folder, 'final_report.xlsx')
 
-    # Google drive credential path
-    CREDENTIAL = os.path.join('.', 'GoogleAPI', 'credentials.json')
-    TOKEN = os.path.join('.', 'GoogleAPI', 'token.json')
+    # Google drive credential paths
+    CREDENTIAL = os.path.join(GoogleAPI_folder, 'credentials.json')
+    TOKEN = os.path.join(GoogleAPI_folder, 'token.json')
 
     # Web app data paths
-    CONSOLIDATED_PRICE_DATA_FILE_WEBAPP = os.path.abspath(os.path.join('..', 'stock-chart-viewer', 'public', 'data','consolidated_price_data.csv'))
+    CONSOLIDATED_PRICE_DATA_FILE_WEBAPP = os.path.join(WEBAPP_DATA_FOLDER, 'consolidated_price_data.csv')
     
     # CPU Threads config
     if os.cpu_count() >= 4:
-        WORKERS = 4 #4
+        WORKERS = 4
         BATCH_SIZE = 24
     elif os.cpu_count() >= 2:
         WORKERS = 2
@@ -64,3 +78,4 @@ class Config:
     FORCE_REFRESH_FILTERS = True
     FORCE_REFRESH_PRICE_DATA = True
     DOWNLOAD_FOR_WEBAPP = False
+    USE_PARQUET = True
