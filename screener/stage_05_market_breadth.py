@@ -3,15 +3,49 @@
 import os
 import sys
 from datetime import datetime
+from io import StringIO
+from contextlib import redirect_stderr
 import pandas as pd
 import numpy as np
 from openpyxl.chart import LineChart, Reference
+from openpyxl.chart.shapes import GraphicalProperties
+from openpyxl.drawing.line import LineProperties
+import yfinance as yf
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURRENT_DIR not in sys.path:
     sys.path.insert(0, CURRENT_DIR)
 
 from config import Config
+
+SP500_COLUMN = 'S&P500 %'
+
+def download_sp500_close():
+    """
+    Downloads S&P 500 index (^GSPC) close prices via yfinance.
+    Returns a datetime-indexed Series, or None on failure.
+    """
+    try:
+        with redirect_stderr(StringIO()):
+            data = yf.download(
+                tickers='^GSPC',
+                period=Config.PRICE_DATA_PERIOD,
+                progress=False,
+                auto_adjust=True
+            )
+        if data is None or data.empty:
+            print("S&P 500 (^GSPC) download returned no data.")
+            return None
+
+        close = data['Close']
+        if isinstance(close, pd.DataFrame):
+            close = close.iloc[:, 0]
+        close = close.dropna()
+        close.index = pd.to_datetime(close.index).tz_localize(None)
+        return close
+    except Exception as e:
+        print(f"Error downloading S&P 500 (^GSPC): {e}")
+        return None
 
 def calculate_market_breadth():
     """
@@ -60,15 +94,30 @@ def calculate_market_breadth():
         'Date': [d.strftime('%Y-%m-%d') if hasattr(d, 'strftime') else str(d) for d in price_df_wide.index],
         'Above_SMA50_Count': above_sma_count.values,
         'Eligible_Universe_Count': total_eligible_stocks.values,
-        'Above_SMA50_Percentage': above_sma_percentage.round(2).values
+        'Market_Breadth': above_sma_percentage.round(2).values
     })
 
     # Skip first 49 days where SMA50 is not yet formed
     market_breadth_df = market_breadth_df.iloc[49:].copy()
 
-    # 7. Save the results to Excel
+    # 7. Add S&P500 cumulative % change since first breadth date (plotted on secondary Y-axis)
+    sp500_close = download_sp500_close()
+    if sp500_close is not None:
+        breadth_dates = pd.DatetimeIndex(pd.to_datetime(market_breadth_df['Date']))
+        sp500_aligned = sp500_close.reindex(breadth_dates.union(sp500_close.index)).ffill(limit=5).reindex(breadth_dates)
+        sp500_valid = sp500_aligned.dropna()
+        if not sp500_valid.empty:
+            sp500_pct = ((sp500_aligned / sp500_valid.iloc[0]) - 1) * 100
+            market_breadth_df[SP500_COLUMN] = sp500_pct.round(2).values
+            print(f"Latest S&P500 change: {market_breadth_df[SP500_COLUMN].iloc[-1]}%")
+        else:
+            print("S&P 500 data does not overlap with market breadth dates. Column skipped.")
+    else:
+        print("S&P 500 column skipped (download failed).")
+
+    # 8. Save the results to Excel
     latest_count = market_breadth_df['Above_SMA50_Count'].iloc[-1]
-    latest_pct = market_breadth_df['Above_SMA50_Percentage'].iloc[-1]
+    latest_pct = market_breadth_df['Market_Breadth'].iloc[-1]
     latest_eligible = market_breadth_df['Eligible_Universe_Count'].iloc[-1]
     print(f"Latest Market Breadth: {latest_count}/{latest_eligible} stocks ({latest_pct}%) above 50-day SMA.")
     
@@ -78,16 +127,18 @@ def calculate_market_breadth():
 
             worksheet = writer.sheets['Market Breadth (SMA50)']
 
-            # Create a line chart
+            # Create primary chart: Breadth % on left Y-axis
             chart = LineChart()
-            chart.title = "Market Breadth: % of Stocks Above 50-Day SMA"
+            chart.title = "Market Breadth: % of Stocks Above 50-Day SMA vs S&P500"
             chart.style = 13
-            chart.y_axis.title = "Percentage (%)"
+            chart.y_axis.title = "% Above 50-Day SMA"
             chart.x_axis.title = "Date"
+            chart.y_axis.scaling.min = 0
+            chart.y_axis.scaling.max = 100
             chart.height = 12
             chart.width = 22
 
-            # Data range: Col 4 is Above_SMA50_Percentage
+            # Breadth % data (Col 4)
             data = Reference(worksheet, min_col=4, min_row=1, max_col=4, max_row=len(market_breadth_df) + 1)
             chart.add_data(data, titles_from_data=True)
 
@@ -95,8 +146,33 @@ def calculate_market_breadth():
             cats = Reference(worksheet, min_col=1, min_row=2, max_col=1, max_row=len(market_breadth_df) + 1)
             chart.set_categories(cats)
 
-            # Place chart at cell F2
-            worksheet.add_chart(chart, "F2")
+            # Create secondary chart: S&P500 cumulative % change on right Y-axis
+            if SP500_COLUMN in market_breadth_df.columns:
+                chart2 = LineChart()
+                sp500_data = Reference(worksheet, min_col=5, min_row=1, max_col=5, max_row=len(market_breadth_df) + 1)
+                chart2.add_data(sp500_data, titles_from_data=True)
+                chart2.y_axis.axId = 200
+                chart2.y_axis.title = "S&P500 Change %"
+                chart2.y_axis.crosses = "max"
+
+                # Style S&P500 line: orange, thicker
+                s = chart2.series[0]
+                s.graphicalProperties = GraphicalProperties()
+                s.graphicalProperties.line = LineProperties(solidFill="ED7D31", w=25000)  # orange, 2pt
+                s.smooth = False
+
+                # Style breadth line: blue
+                s1 = chart.series[0]
+                s1.graphicalProperties = GraphicalProperties()
+                s1.graphicalProperties.line = LineProperties(solidFill="4472C4", w=20000)  # blue, 1.5pt
+                s1.smooth = False
+
+                # Combine charts into dual-axis chart
+                chart.y_axis.majorGridlines = None
+                chart += chart2
+
+            # Place chart at cell G2
+            worksheet.add_chart(chart, "G2")
         print(f"Market breadth data and chart appended to {Config.EXCEL_REPORT_FILE}")
     except FileNotFoundError:
         print(f"Error: Excel file not found at {Config.EXCEL_REPORT_FILE}. Run Stage 4 first.")

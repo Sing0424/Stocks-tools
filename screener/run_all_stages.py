@@ -20,9 +20,6 @@ from stage_06_screenResultUpload import upload_results
 
 def init_paths():
     paths = [Config.data_folder, Config.GoogleAPI_folder]
-    if Config.DOWNLOAD_FOR_WEBAPP:
-        paths.append(Config.WEBAPP_DATA_FOLDER)
-    
     for path in paths:
         if not os.path.exists(path):
             os.makedirs(path, exist_ok=True)

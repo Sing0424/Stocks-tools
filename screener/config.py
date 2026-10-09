@@ -7,17 +7,19 @@ load_dotenv()
 # Root directory of the project
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+def _parse_tg_chat_id():
+    raw_id = os.getenv('TG_CHAT_ID', '').strip()
+    return int(raw_id) if raw_id.lstrip('-').isdigit() else None
+
+
 class Config:
     BASE_DIR = BASE_DIR
 
     # API Keys and External Services
     ALPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY')
     TG_BOT_TOKEN = os.getenv('TG_BOT_TOKEN')
-    _raw_chat_id = os.getenv('TG_CHAT_ID')
-    try:
-        TG_CHAT_ID = int(_raw_chat_id) if _raw_chat_id and _raw_chat_id.strip().lstrip('-').isdigit() else None
-    except (ValueError, TypeError):
-        TG_CHAT_ID = None
+    TG_CHAT_ID = _parse_tg_chat_id()
     ENABLE_TELEGRAM = bool(TG_BOT_TOKEN and TG_CHAT_ID)
     
     # Google Drive configuration
@@ -27,7 +29,6 @@ class Config:
     # Folder paths
     data_folder = os.path.join(BASE_DIR, 'data')
     GoogleAPI_folder = os.path.join(BASE_DIR, 'GoogleAPI')
-    WEBAPP_DATA_FOLDER = os.path.join(BASE_DIR, 'stock-chart-viewer', 'public', 'data')
 
     # File paths
     LISTING_STATUS_FILE = os.path.join(data_folder, 'listing_status.csv')
@@ -39,9 +40,6 @@ class Config:
     # Google drive credential paths
     CREDENTIAL = os.path.join(GoogleAPI_folder, 'credentials.json')
     TOKEN = os.path.join(GoogleAPI_folder, 'token.json')
-
-    # Web app data paths
-    CONSOLIDATED_PRICE_DATA_FILE_WEBAPP = os.path.join(WEBAPP_DATA_FOLDER, 'consolidated_price_data.csv')
     
     # CPU Threads config
     if os.cpu_count() >= 4:
@@ -77,5 +75,4 @@ class Config:
     FORCE_REFRESH_SYMBOLS = True
     FORCE_REFRESH_FILTERS = True
     FORCE_REFRESH_PRICE_DATA = True
-    DOWNLOAD_FOR_WEBAPP = False
     USE_PARQUET = True

@@ -77,20 +77,13 @@ def download_price_data():
                             )
                         parquet_writer.write_table(table)
 
-                    # Write to CSV if Parquet is not used or if webapp sync is requested
-                    if not Config.USE_PARQUET or Config.DOWNLOAD_FOR_WEBAPP:
-                        csv_targets = []
-                        if not Config.USE_PARQUET:
-                            csv_targets.append(Config.CONSOLIDATED_PRICE_DATA_FILE)
-                        if Config.DOWNLOAD_FOR_WEBAPP:
-                            csv_targets.append(Config.CONSOLIDATED_PRICE_DATA_FILE_WEBAPP)
-
-                        for target_csv in csv_targets:
-                            os.makedirs(os.path.dirname(target_csv), exist_ok=True)
-                            if is_first_csv_batch:
-                                batch_df.to_csv(target_csv, index=False, mode='w')
-                            else:
-                                batch_df.to_csv(target_csv, index=False, mode='a', header=False)
+                    # Write to CSV if Parquet is not used
+                    if not Config.USE_PARQUET:
+                        os.makedirs(os.path.dirname(Config.CONSOLIDATED_PRICE_DATA_FILE), exist_ok=True)
+                        if is_first_csv_batch:
+                            batch_df.to_csv(Config.CONSOLIDATED_PRICE_DATA_FILE, index=False, mode='w')
+                        else:
+                            batch_df.to_csv(Config.CONSOLIDATED_PRICE_DATA_FILE, index=False, mode='a', header=False)
                         is_first_csv_batch = False
                     
                     total_records_saved += len(batch_df)
