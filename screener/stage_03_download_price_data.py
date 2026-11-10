@@ -11,6 +11,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 from tqdm import tqdm
 import yfinance as yf
+from contextlib import redirect_stderr, redirect_stdout
 
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 if CURRENT_DIR not in sys.path:
@@ -27,7 +28,6 @@ PRICE_DATA_SCHEMA = pa.schema([
     ('Close', pa.float64()),
     ('Volume', pa.float64()),
 ])
-
 def download_price_data():
     print(f"CPU Threads: {Config.WORKERS}")
     print(f"Batch_Size: {Config.BATCH_SIZE}")
@@ -68,6 +68,7 @@ def download_price_data():
 
                     # Write to Parquet
                     if Config.USE_PARQUET:
+                        os.makedirs(os.path.dirname(Config.CONSOLIDATED_PRICE_DATA_PARQUET), exist_ok=True)  # 確保 Parquet 目錄存在
                         table = pa.Table.from_pandas(batch_df, schema=PRICE_DATA_SCHEMA, preserve_index=False)
                         if parquet_writer is None:
                             parquet_writer = pq.ParquetWriter(
@@ -102,10 +103,10 @@ def download_price_data():
     output_path = Config.CONSOLIDATED_PRICE_DATA_PARQUET if Config.USE_PARQUET else Config.CONSOLIDATED_PRICE_DATA_FILE
     print(f"Saved {total_records_saved:,} records to {output_path}")
     return True
-
 def download_multiple_stocks(symbols):
     try:
-        with redirect_stderr(StringIO()):
+        # 同時導向標準輸出與標準錯誤，徹底封鎖 yfinance 的提示訊息
+        with redirect_stderr(StringIO()), redirect_stdout(StringIO()):
             data = yf.download(
                 tickers=symbols,
                 period=Config.PRICE_DATA_PERIOD,

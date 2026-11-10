@@ -48,10 +48,13 @@ def get_stock_metadata(symbol, max_retries=3, sleep_time=5):
             # 1. Fetch sector & industry
             try:
                 info = ticker.info or {}
-                industry = str(info.get('industry', 'N/A'))
-                sector = str(info.get('sector', 'N/A'))
+                sector = str(info['sector'])
+                industry = str(info['industry'])
+
             except Exception as e_info:
-                logging.debug(f"Could not fetch info for {symbol}: {e_info}")
+                print(f"Could not fetch info for {symbol}: {e_info}")
+                sector = 'N/A'
+                industry = 'N/A'
 
             # 2. Separately fetch quarterly EPS growth
             try:
@@ -214,9 +217,9 @@ def analyze_and_rank():
     final_df = pd.merge(candidates_df, metadata_df, on='symbol')
 
     # Filter out Biotechnology industry
-    before_bio = len(final_df)
-    final_df = final_df[final_df['industry'] != 'Biotechnology'].copy()
-    logging.info(f"Filtered out {before_bio - len(final_df)} Biotechnology stocks. {len(final_df)} stocks remaining.")
+    # before_bio = len(final_df)
+    # final_df = final_df[final_df['industry'] != 'Biotechnology'].copy()
+    # logging.info(f"Filtered out {before_bio - len(final_df)} Biotechnology stocks. {len(final_df)} stocks remaining.")
 
     cols_order = [
         'symbol', 'industry', 'sector', 'price', 'rs_rank', 'rs_score',
